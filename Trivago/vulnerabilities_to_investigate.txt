@@ -1,3 +1,4 @@
+--------- SEBASTiAn ---------
 # 1) Base64String
 
 - "name": "Base64 String Encryption",
@@ -136,3 +137,20 @@ cvss": {
 ​        "availability_impact": "None"
 
 ​      },
+--------- APK HUNT ----------
+==>> The potential Hard-coded Keys/Tokens/Secrets
+        ./Trivago/Trivago_SAST/resources/res/values/strings.xml
+==>> The potential SQL Injection instances...
+        ./Trivago/Trivago_SAST/sources/com/google/android/gms/internal/gtm/zzbj.java
+        ./Trivago/Trivago_SAST/sources/com/salesforce/marketingcloud/storage/p004db/*
+        ./Trivago/Trivago_SAST/sources/com/salesforce/marketingcloud/storage/p004db/upgrades/*
+        .Trivago/Trivago_SAST/sources/com/view/*
+==>>  The app is allowing cleartext traffic...
+        ./Trivago/Trivago_SAST/resources/res/xml/network_security_config.xml
+--------- MobSF ---------
+Sus Trackers
+    Salesforce Marketing Cloud
+Weak Cryptographic Hash Hunction (SHA1,MD5)
+        ./Trivago/Trivago_SAST/sources/com/salesforce/marketingcloud/sfmcsdk/components/encryption/*
+        ./Trivago/Trivago_SAST/sources/com/salesforce/marketingcloud/legacycrypto/OldSdkHash.java
+App signed with SHA1 with RSA
