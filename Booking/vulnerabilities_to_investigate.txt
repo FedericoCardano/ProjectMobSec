@@ -1,1 +1,104 @@
-TO DO
+--------- SEBASTiAn ---------
+2) "Base64String",
+      "name": "Base64 String Encryption",
+      "description": "This app contains Base64 encoded string(s). Please note that security is not the intent of the encoding step. Rather, the intent of the encoding is to encode non-HTTP-compatible characters that may be contained in usernames or passwords into characters that are HTTP-compatible.",
+      "remediation": "Please revise all the encoded strings and ensure a proper level of encryption if needed.",
+      
+      "cvss": {
+        "attack_vector": "Local",
+        "attack_complexity": "Low",
+        "privileges_required": "None",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "Low",
+        "integrity_impact": "None",
+        "availability_impact": "None"
+      }
+4)  "CryptoConstantKey",
+      "name": "Constant encryption key hardcoded",
+      "description": "Apps that store encryption keys in the source code are vulnerable to forgery attacks and information leaks. Android apps can use block cipher algorithms to encrypt sensitive information using the Cipher API. The Cipher API expects a key, if such a key used for encryption/decryption is saved in the source code, then an attacker can get access to it and abuse it.",
+      "remediation": "Do not hardcode the encryption key in the code.",
+      
+      "cvss": {
+        "attack_vector": "Local",
+        "attack_complexity": "High",
+        "privileges_required": "High",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "High",
+        "integrity_impact": "None",
+        "availability_impact": "None"
+      }
+11) "InsecureConnection",
+      "name": "SSL Connection Checking",
+      "description": "The application contains URLs that are **NOT** under SSL. This is a security hazard since information exchanged with those URLs can be intercepted and altered by a malicious user.",
+      "remediation": "Please carefully revise each URL and use SSL if possible. Make sure that **ALL** data displayed and sent through HTTP is not security-relevant, including Session Cookies.",
+      
+      "cvss": {
+        "attack_vector": "Network",
+        "attack_complexity": "High",
+        "privileges_required": "None",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "High",
+        "integrity_impact": "High",
+        "availability_impact": "Low"
+      },
+13): "KeystoreWithoutPassword",
+      "name": "KeyStore Protection Checking",
+      "description": "The Keystores below seem **NOT** protected by password. This is a security hazard since malicious users that have physical access to the Keystore file can access the keys and certificates contained in it.",
+      "remediation": "Please provide a valid password for each of the Keystores contained in the app.",
+      
+      "cvss": {
+        "attack_vector": "Local",
+        "attack_complexity": "Low",
+        "privileges_required": "Low",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "High",
+        "integrity_impact": "None",
+        "availability_impact": "None"
+      }
+16): "SqliteExecSql",
+      "name": "Potential SQL injection",
+      "description": "Android allows apps to save data in a local database called SQLite. SQL queries are used to interact with the SQLite database. `execSQL()` method of SQLite allows developers to execute queries such as `INSERT/DELETE/UPDATE` which do not return any result. If an app uses inputs (e.g., user input via UI or data from web) to create a SQL statement to be executed via `execSQL()` method, then the app may be vulnerable to SQL injection attack.",
+      "remediation": "Make sure to sanitize the inputs and use prepared statements if possible.",
+      
+      "cvss": {
+        "attack_vector": "Local",
+        "attack_complexity": "High",
+        "privileges_required": "Low",
+        "user_interaction": "Required",
+        "scope": "Unchanged",
+        "confidentiality_impact": "High",
+        "integrity_impact": "None",
+        "availability_impact": "None"
+      }
+20): "WebViewJavaScriptEnabled",
+      "name": "WebView Potential XSS Attacks Checking",
+      "description": "Found `\"setJavaScriptEnabled(true)\"` in WebView. Enabling JavaScript exposes to malicious injection of code that would be executed with the same permissions (XSS attacks).",
+      "remediation": "If JavaScript is not necessary for your web page, please disable it (`\"setJavaScriptEnabled(false)\"`). Otherwise, in order to minimize the risk of XSS attacks, carefully review the web page code and sanitize the output presented in the WebView.",
+      
+      "cvss": {
+        "attack_vector": "Network",
+        "attack_complexity": "High",
+        "privileges_required": "Low",
+        "user_interaction": "Required",
+        "scope": "Unchanged",
+        "confidentiality_impact": "High",
+        "integrity_impact": "Low",
+        "availability_impact": "None"
+      }
+--------- MobSF ---------
+App signed with SHA1 with RSA (certificates)
+Encryption mode CBC with PKCS5/PKCS7 padding
+    alipay/sdk/m/*
+Clear text traffic
+    bstatic.com
+    static.booking.cn
+    localhost
+
+    Permissions
+    GET.ACCOUNTS
+    MANAGE:ACCOUNTS
+    READ_PHONE_STATE
