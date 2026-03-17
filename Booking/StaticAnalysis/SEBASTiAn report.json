@@ -1,0 +1,2154 @@
+{
+  "platform": "Android",
+  "ascii_obfuscation_rate": 0.0,
+  "short_name_obfuscation_rate": 27.71318729819508,
+  "vulnerabilities": [
+    {
+      "id": "AccessDeviceId",
+      "name": "Getting IMEI and Device ID",
+      "description": "This app has code getting the \"device id (IMEI)\" (using `TelephonyManager.getDeviceId()` ) in order to identify the specific device. This approach has three major drawbacks: i) it is unusable on non-phones devices, ii) it persists across device data wipes, iii) it needs special privilege to be executed (`READ_PHONE_STATE` permission).",
+      "remediation": "We suggest to use different ways of tracking app installations like relying on the \"Installation\" framework.",
+      "references": {
+        "text": "Further information on identifying apps installations and the \"Installation\" framework can be found in the Android Developers Blog [[1]].",
+        "links": {
+          "1": "http://android-developers.blogspot.tw/2011/03/identifying-app-installations.html"
+        }
+      },
+      "owasp": [
+        "M1",
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Local",
+        "attack_complexity": "Low",
+        "privileges_required": "Low",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "Low",
+        "integrity_impact": "None",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "Landroid/telephony/TelephonyManager;->getDeviceId()Ljava/lang/String;",
+          "where": "Lcom/huawei/hms/hatool/z0;->f(Landroid/content/Context;)Ljava/lang/String;",
+          "full_path": "Lcom/huawei/hms/hatool/y0;->a(Landroid/content/Context;)Lcom/huawei/hms/hatool/v0; --> Lcom/huawei/hms/hatool/y0;->b(I Landroid/content/Context;)Lcom/huawei/hms/hatool/v0; --> Lcom/huawei/hms/hatool/y0;->b(Landroid/content/Context;)Ljava/lang/String; --> Lcom/huawei/hms/hatool/z0;->f(Landroid/content/Context;)Ljava/lang/String; --> Landroid/telephony/TelephonyManager;->getDeviceId()Ljava/lang/String;"
+        },
+        {
+          "what": "Landroid/telephony/TelephonyManager;->getDeviceId()Ljava/lang/String;",
+          "where": "Latd/w/getDeviceData;->ct_(Landroid/telephony/TelephonyManager;)Ljava/lang/String;",
+          "full_path": "Latd/h/getMessageVersion;->N_(Landroid/app/Application;)Lcom/adyen/threeds2/internal/deviceinfo/parameter/getSDKReferenceNumber; --> Latd/w/getDeviceData;->ct_(Landroid/telephony/TelephonyManager;)Ljava/lang/String; --> Landroid/telephony/TelephonyManager;->getDeviceId()Ljava/lang/String;"
+        }
+      ]
+    },
+    {
+      "id": "Base64String",
+      "name": "Base64 String Encryption",
+      "description": "This app contains Base64 encoded string(s). Please note that security is not the intent of the encoding step. Rather, the intent of the encoding is to encode non-HTTP-compatible characters that may be contained in usernames or passwords into characters that are HTTP-compatible.",
+      "remediation": "Please revise all the encoded strings and ensure a proper level of encryption if needed.",
+      "references": {
+        "text": "Further information on security consequences of Base64 encoding can be found in the following paper [[1]].",
+        "links": {
+          "1": "https://www.rsaconference.com/writable/presentations/file_upload/das-203.pdf"
+        }
+      },
+      "owasp": [
+        "M2",
+        "M5",
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Local",
+        "attack_complexity": "Low",
+        "privileges_required": "None",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "Low",
+        "integrity_impact": "None",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "Original string: \"VnlkU0FYQW9JUTFTQUNRYmJuRVlZVzBjWjM1NlF3d3BIM01GSW10S1JVNTBlRjhfWlhSUmZnd3hXaW9NY1I4bGNpOHJOVTFqYjBwa0ZoTjVMSGtwYmxZQUFVRTdSQU5TSUFZZFB4UXFBMEpxT2pjLUNCSmlMVDhCUERWOWZDRkdQdzlmWXdCbGVBNFViUlIzV21aUU55UVJIaEkzTWlkOEx4SWtGWDR3YTBZa1BpRTZhQVV5SUVKNFkxeHNheEJtVkVZdWFTcEFLWElwQ0JNQmZEWTRkd0ZrY21sSEZXTWhTMUlOSlZaUlJHdG5YeUZ0UEFGeERqNFJEU29xV0hZQ1B6Y1RlaGh2Q3pjSEYyb0tkeElNWlZJTEkxc1JLaXN3QWtFcWFXVkNabElvSVFNaUNDOHFVbHhVWEdSdWNSRkhUakk5TUEwb0VEUkZFMFpLQlYwZE1UeGVBaUJXYmhwR0l3UmVHM2tqVEFFSE5XWTFMV1prZVZRTlhVd2FYd1Y2TFFCSUd4Vk1Pd2cyWkNzWkNRQjhlUTEzSVRNWGZuQThBVDFrWkhKTFRVb1BhRkIwUG0wZkxna01DMHcxWjNFNGRsVVVEakFuYnlRMUpnZ2taaVo2RGlScFV4aGZGSGhDQlJnUWUxTUZCVnNhWmlRTGRUUlFVVzlVVVNOOFhGSWRkU1FlYkQ1b2NtRVZlMTFNY3o1LVZFMWJWRElMUWtaRVFERVRGd3RIVXhzaEZGQXlLanR4YWpVdkwza2RTbWR1S0NNVFVGWVphMEl6T2tKSk55UUJQbXBuTEJKQmNIa2NSQmtqRkZaaEdoOWNSVlZnRWtNU0xGQUNLQnRDWG5GQk5SOUxhRU14ZFhGMUdsaGtEMEJzTHk1SEVpd29EQlUzYVdabUExSWJOVDVYYVYwTkxGb2hHekFHQ3hRUlhXZFVKaXNER0VzRUVINThJaWNaSXlRUGFBVmxRUzl0VXljRVR6OWhkQklhTlR0Z0dFUmhjQjUzQUhWSlQwQmRMam8xVkVobkoySVNSUVpIZkY5TVlSNHNFRnNyS2d3dVdnaDVOeEEtVEZ4ekd3SUxUVEU3R3dNREFCWS1KeFpZTHpKME0zUmxPbDFqQUFaYlBnTU9ZMU1JWTFGLUN5SjZNQlktZGxrblBBc2tMRG81Q2pKN2RuZGZRZ2RkS3lSbkIxOWZBVWdoTVZRV1MxWVJHaFFMSFVCQkRGdzVUQlFpTVFFYUloWllGQnRmWm0xVUZoMGpIMlJ4S1dsMWF3STFQZ3hoTlM5S0ttVVdQeDh3ZVJvWFVsVVJjVFI5S1E4QlJYUkNVQmNOTEJrcWNRZ3ZJd1FKWDNaSlZ3QXRhVnhqWm1vOVh5QlJNek03SjNkdE1CUTNHSFk0WUM5QVV4NFRmbFUxVHlBMlVRMERJMHM4ZTNrWklGMUtMa0pxUWlKN01FSmtPZ0pPV2hjMFZSWjZUUVplVlVsdlZrTlliaWtSVXlRQkVWQTJiUmdVSzBvRVJ5RVlMenQ1TndWUEZRQUNMUXhkZGhFLWR3dDFMVVIzSGtWeWRRRlNQMUJzQlcxdGJtZGlEeGd1TDNaRE4yeHVZV1I5WFQ0akVSOUpPV29PUnlOSlQxQjNhVlVxVENCcURWNFVUak1BWHlCNE5Fa0FSVnN5SHg1YlhHeGRHenBFRVRGRmJSMXJBWHdZUWdGREFEaE5SeGgxY2pjTFJsRlpYVWNJVkE4WUgxNXRYaTVKQ1RBRVEyczZQaDVkQUR3ZGRWSnFBRVVoSlN0NE9FUklNVFpqZHdjY056aHBGa0k5ZlFCWlpGdEVCUjRaQ1hjQVhuc09ER3dwSFU5VVdnVmxkMHhYTzNOY2V4c3pOVmRoTUQ1akUzTkxmZ1Z1SUJGa2ZGOTZiMVVwSndCVEtYQTFLbTFsRHdaVUJ4eGxJVXh1RXlNQ1doRWxQZ0BHbTRiUlQxQ1lrNFRjR3Q4THdaUkl5eDdMaXM0QlZaRmZFdHdaaTBvYWkwN0xoTU5IeU0zTzNsNGJteGJGSHhTTVVoeWZBWU1OUU1lZkNNOGJRNWdHVEZaVkRsNFBrSVlZbUZUYVZacldoWXJVUUp6UlVNUldueFFaWEVyTFhBUGUwNFZMRk1oUFYxWkwxVXdHMWNGY21abWFWaG1aUllHUzFWeWJDUjNMVEpwYkd4TkxWUnJaQlFwTWhjb0ttQWtEZzVDQlVncGF6MWxaRXAwTVdSTEFFWTFLeTBSUkRKdER4Qkhad3daS0FjRk5tTThYa1kzUG1SOE5GTklDelJUYkFkNEFsRVZTbDlGY0NSY05WTkJLQlZnWlRCMGZYMUZTd2RvR2p3YU5EOUtFa2xXUVdwOEZnMHRIamNNUXloM0IzZHpja0JyVVd3QlJ3OHpTQmxNUm5JMFF4UWJPa014YlRVeFFqMVpCWFpKWVM5Q1lCd3RUQmxKT2pSVU5VUkplbW9MV1gwWWZrUjdKVUJlU0RFcFBFOGZiSEJERlFkRVFrY2xMakFzQXh4TktUYzVmd1lxWjBSZVFqdHdKaWg4SUFSRlJuUm1BMlpYZmtZVVBINHdaWDAtWTJBYWJqa1FSMzllTFJGRWFoWlpEV0pnRUdNR0pDWVJaVllxTldabE1sNWZObndQUERkWE9pNEJObFU0UHlnTUFrZENCQVEzR1dsQmVtbDBHVzlvVWhKLWVXODBBSGhzYWo1Y2V6SXJhVlJrTVFkT09YZHBiWFl1WW1ONVZnNGdkbVFpSFVsN0ZreHRVQjhuVUdrLWRnUUhRM05YV3pkWVcyd0hIeWdKZm5BUklUbGJSVEkwU3dFaVJIUXBhbThFWDJoUFZVeDJLeWNqUUJ3cEFWSXhNUlJsVGdOTVlsaC1hbHRtR3dGbVhud3hRQnBSYWhZdWNoVjZaM001V1RVZ2Jrd25PMTFlSzBVd0VIZFhCbUVoWEJBYkUxVWtjRDFtTEE4TWRBbHdiUWxTZmdwMU5VRXhMRGNyT1hWSVVtMTZiMWthRW0wUlVHSnFkVGtqYnpWb2ZsNW9iMmhpYUVKRWZTOFBZVkVsQWt3M2NUVlJhSFpwZVhKZVZTVk9DamhIYUV3T1lWNUdBQ3gyVG1COVhWRkJPRjVMT2pFdUpIQTRBSEltY1JvVWJDdE1DQVpWQUdaUWUxdEpjQlFDVGpCVERYQmdWazlNYWtkc1VWMDROemdZUlV4UGFGSVFSUUVYUG5oU2IyY29CMGtwVHlweFNFdFpDRTlnR2lKSU5XSXZHV1ZEQnhNMUZuaE1lVlY1SUdSWUZXVmxOeFFjTFdkOEFoVlJBQWxZRUVjbVoxcEtjZ0FwUjAxelRpUUlORzRSR3pGUlB3QkNEbGR6RXlKNVlnUi1IRGRQYUF4eWJBTU1lbWM1Y1E4bmUxc1hMVnBEREZJc0h6WTRGd29ZSVFneUwwWi1FRVZtV3hsdkJIbGNlWHBuRDJ3dVkwSkFYMThIZVd4Z1JEazNGQ01PQVZKR1p6YzdMUThFRnpJRFNnbGZUeDRoQUNVT2JVeHZaRFFrVUIwR0NnNHlEVzl5VlY0dWRpaGtCbUktS0FrUUtnUk5DVUpCT1IxdUtIWkRHMGs5QWlaR0NXTjFTMXBwRWowMVRYVVVZUU1jSFNvaWVEUk1jMjRnWkFFbUNGZE1RRjFjTUNrZUVqWnBCamRLZEc4b0hXWi1PWEV5SkNZVlVDNG5iSGN1TzJBdWVRNVJiMkVYV1hNSFZud2dOazR6Y0dBdmNoZE9PVU55RDJrQk1YMXdSejl0YXlsX09RUjdjd2NTRjJ3SlRoZ1JWMFU1UTM4RVpnMG9XMHM1YVFZRlJtTUNTVDR3S3dnd0RneFBFVThyV2dwZmZ3OG9lVGNYZlZkU1FBNGpkbUpuS0V0MlJB\" Decoded string: \"VydSAXAoIQ1SACQbbnEYYW0cZ356QwwpH3MFImtKRU50eF8_ZXRRfgwxWioMcR8lci8rNU1jb0pkFhN5LHkpblYAAUE7RANSIAYdPxQqA0JqOjc-CBJiLT8BPDV9fCFGPw9fYwBleA4UbRR3WmZQNyQRHhI3Mid8LxIkFX4wa0YkPiE6aAUyIEJ4Y1xsaxBmVEYuaSpAKXIpCBMBfDY4dwFkcmlHFWMhS1INJVZRRGtnXyFtPAFxDj4RDSoqWHYCPzcTehhvCzcHF2oKdxIMZVILI1sRKiswAkEqaWVCZlIoIQMiCC8qUlxUXGRucRFHTjI9MA0oEDRFE0ZKBV0dMTxeAiBWbhpGIwReG3kjTAEHNWY1LWZkeVQNXUwaXwV6LQBIGxVMOwg2ZCsZCQB8eQ13ITMXfnA8AT1kZHJLTUoPaFB0Pm0fLgkMC0w1Z3E4dlUUDjAnbyQ1JggkZiZ6DiRpUxhfFHhCBRgQe1MFBVsaZiQLdTRQUW9UUSN8XFIddSQebD5ocmEVe11Mcz5-VE1bVDILQkZEQDETFwtHUxshFFAyKjtxajUvL3kdSmduKCMTUFYZa0IzOkJJNyQBPmpnLBJBcHkcRBkjFFZhGh9cRVVgEkMSLFACKBtCXnFBNR9LaEMxdXF1GlhkD0BsLy5HEiwoDBU3aWZmA1IbNT5XaV0NLFohGzAGCxQRXWdUJisDGEsEEH58IicZIyQPaAVlQS9tUycETz9hdBIaNTtgGERhcB53AHVJT0BdLjo1VEhnJ2ISRQZHfF9MYR4sEFsrKgwuWgh5NxA-TFxzGwILTTE7GwMDABY-JxZYLzJ0M3RlOl1jAAZbPgMOY1MIY1F-CyJ6MBY-dlknPAskLDo5CjJ7dndfQgddKyRnB19fAUghMVQWS1YRGhQLHUBBDFw5TBQiMQEaIhZYFBtfZm1UFh0jH2RxKWl1awI1PgxhNS9KKmUWPx8weRoXUlURcTR9KQ8BRXRCUBcNLBkqcQgvIwQJX3ZJVwAtaVxjZmo9XyBRMzM7J3dtMBQ3GHY4YC9AUx4TflU1TyA2UQ0DI0s8e3kZIF1KLkJqQiJ7MEJkOgJOWhc0VRZ6TQZeVUlvVkNYbikRUyQBEVA2bRgUK0oERyEYLzt5NwVPFQACLQxddhE-dwt1LUR3HkVydQFSP1BsBW1tbmdiDxguL3ZDN2xuYWR9XT4jER9JOWoORyNJT1B3aVUqTCBqDV4UTjMAXyB4NEkARVsyHx5bXGxdGzpEETFFbR1rAXwYQgFDADhNRxh1cjcLRlFZXUcIVA8YH15tXi5JCTAEQ2s6Ph5dADwddVJqAEUhJSt4OERIMTZjdwccNzhpFkI9fQBZZFtEBR4ZCXcAXnsODGwpHU9UWgVld0xXO3NcexszNVdhMD5jE3NLfgVuIBFkfF96b1UpJwBTKXA1Km1lDwZUBxxlIUxuEyMCWhElPg@Gm4bRT1CYk4TcGt8LwZRIyx7Lis4BVZFfEtwZi0oai07LhMNHyM3O3l4bmxbFHxSMUhyfAYMNQMefCM8bQ5gGTFZVDl4PkIYYmFTaVZrWhYrUQJzRUMRWnxQZXErLXAPe04VLFMhPV1ZL1UwG1cFcmZmaVhmZRYGS1VybCR3LTJpbGxNLVRrZBQpMhcoKmAkDg5CBUgpaz1lZEp0MWRLAEY1Ky0RRDJtDxBHZwwZKAcFNmM8XkY3PmR8NFNICzRTbAd4AlEVSl9FcCRcNVNBKBVgZTB0fX1FSwdoGjwaND9KEklWQWp8Fg0tHjcMQyh3B3dzckBrUWwBRw8zSBlMRnI0QxQbOkMxbTUxQj1ZBXZJYS9CYBwtTBlJOjRUNURJemoLWX0YfkR7JUBeSDEpPE8fbHBDFQdEQkclLjAsAxxNKTc5fwYqZ0ReQjtwJih8IARFRnRmA2ZXfkYUPH4wZX0-Y2AabjkQR39eLRFEahZZDWJgEGMGJCYRZVYqNWZlMl5fNnwPPDdXOi4BNlU4PygMAkdCBAQ3GWlBeml0GW9oUhJ-eW80AHhsaj5cezIraVRkMQdOOXdpbXYuYmN5Vg4gdmQiHUl7FkxtUB8nUGk-dgQHQ3NXWzdYW2wHHygJfnARITlbRTI0SwEiRHQpam8EX2hPVUx2KycjQBwpAVIxMRRlTgNMYlh-altmGwFmXnwxQBpRahYuchV6Z3M5WTUgbkwnO11eK0UwEHdXBmEhXBAbE1UkcD1mLA8MdAlwbQlSfgp1NUExLDcrOXVIUm16b1kaEm0RUGJqdTkjbzVofl5ob2hiaEJEfS8PYVElAkw3cTVRaHZpeXJeVSVOCjhHaEwOYV5GACx2TmB9XVFBOF5LOjEuJHA4AHImcRoUbCtMCAZVAGZQe1tJcBQCTjBTDXBgVk9MakdsUV04NzgYRUxPaFIQRQEXPnhSb2coB0kpTypxSEtZCE9gGiJINWIvGWVDBxM1FnhMeVV5IGRYFWVlNxQcLWd8AhVRAAlYEEcmZ1pKcgApR01zTiQING4RGzFRPwBCDldzEyJ5YgR-HDdPaAxybAMMemc5cQ8ne1sXLVpDDFIsHzY4FwoYIQgyL0Z-EEVmWxlvBHlceXpnD2wuY0JAX18HeWxgRDk3FCMOAVJGZzc7LQ8EFzIDSglfTx4hACUObUxvZDQkUB0GCg4yDW9yVV4udihkBmI-KAkQKgRNCUJBOR1uKHZDG0k9AiZGCWN1S1ppEj01TXUUYQMcHSoieDRMc24gZAEmCFdMQF1cMCkeEjZpBjdKdG8oHWZ-OXEyJCYVUC4nbHcuO2AueQ5Rb2EXWXMHVnwgNk4zcGAvchdOOUNyD2kBMX1wRz9tayl_OQR7cwcSF2wJThgRV0U5Q38EZg0oW0s5aQYFRmMCST4wKwgwDgxPEU8rWgpffw8oeTcXfVdSQA4jdmJnKEt2RA\"",
+          "where": "Latd/aj/getDeviceData;->getDeviceData([Ljava/lang/Object;)Ljava/lang/Object;",
+          "full_path": "Latd/aj/getDeviceData;->AuthenticationRequestParameters(Lcom/adyen/threeds2/parameters/ConfigParameters;)Latd/am/getSDKAppID; --> Latd/aj/getDeviceData;->getSDKReferenceNumber([Ljava/lang/Object; I I I)Ljava/lang/Object; --> Latd/aj/getDeviceData;->getDeviceData([Ljava/lang/Object;)Ljava/lang/Object;"
+        },
+        {
+          "what": "Original string: \"VFVWYVZGVkhiekprVmxJMFRqTmFiVTVWVG5wUk0yaFpZa1JHYjJGVlZqRlVNVnAwV25wWk5XVlVVbFpqYTJRMVpWWmFWR1JVVGtoaFZXaHBWMVV4Y0dSWE1EVlJaejA5\" Decoded string: \"TUVaVFVHbzJkVlI0TjNabU5VTnpRM2hZYkRGb2FVVjFUMVp0WnpZNWVUUlZja2Q1ZVZaVGRUTkhhVWhpV1UxcGRXMDVRZz09\"",
+          "where": "Lcom/booking/observability/internal/embrace/EmbraceTracker;-><clinit>()V",
+          "full_path": "Lcom/booking/observability/di/ObservabilityModule_ProvideTelemetryTrackerFactory;->get()Ljava/lang/Object; --> Lcom/booking/observability/internal/embrace/EmbraceTracker;-><clinit>()V"
+        },
+        {
+          "what": "Original string: \"SURROUNDINGS\" Decoded string: \"IDQ9CC ђ\"",
+          "where": "Lcom/booking/property/PropertySection;-><clinit>()V",
+          "full_path": "Lcom/booking/property/PropertySection;-><clinit>()V"
+        },
+        {
+          "what": "Original string: \"airportsList\" Decoded string: \"j*颻l.+-\"",
+          "where": "Lcom/booking/publictransportpresentation/ui/airportsList/AirportsRecyclerViewAdapter;-><init>(Ljava/util/ArrayList; Lcom/booking/saba/SabaExtensionsKt$$ExternalSyntheticLambda1;)V",
+          "full_path": "Lcom/booking/publictransportpresentation/ui/PublicTransportTicketDetailsFragment$observeUiActions$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object; --> Lcom/booking/publictransportpresentation/ui/PublicTransportTicketDetailsFragment$observeUiActions$1$1;->emit(Ljava/lang/Object; Lkotlin/coroutines/Continuation;)Ljava/lang/Object; --> Lcom/booking/publictransportpresentation/ui/airportsList/AirportsRecyclerViewAdapter;-><init>(Ljava/util/ArrayList; Lcom/booking/saba/SabaExtensionsKt$$ExternalSyntheticLambda1;)V"
+        },
+        {
+          "what": "Original string: \"airportsList\" Decoded string: \"j*颻l.+-\"",
+          "where": "Lcom/booking/publictransportpresentation/ui/PublicTransportTicketDetailsFragment$observeUiActions$1$1;->emit(Ljava/lang/Object; Lkotlin/coroutines/Continuation;)Ljava/lang/Object;",
+          "full_path": "Lcom/booking/publictransportpresentation/ui/PublicTransportTicketDetailsFragment$observeUiActions$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object; --> Lcom/booking/publictransportpresentation/ui/PublicTransportTicketDetailsFragment$observeUiActions$1$1;->emit(Ljava/lang/Object; Lkotlin/coroutines/Continuation;)Ljava/lang/Object;"
+        },
+        {
+          "what": "Original string: \"Installments\" Decoded string: \"\"{-jYfz{l\"",
+          "where": "Lcom/stripe/android/model/KlarnaSourceParams$CustomPaymentMethods;-><clinit>()V",
+          "full_path": "Lcom/stripe/android/model/KlarnaSourceParams$CustomPaymentMethods;-><clinit>()V"
+        },
+        {
+          "what": "Original string: \"Installments\" Decoded string: \"\"{-jYfz{l\"",
+          "where": "Lcom/booking/type/Installments;-><clinit>()V",
+          "full_path": "Lcom/booking/type/Installments;-><clinit>()V"
+        },
+        {
+          "what": "Original string: \"eyJlcnJvciI6IlVOS05PV05fRVJST1IifQ==\" Decoded string: \"{\"error\":\"UNKNOWN_ERROR\"}\"",
+          "where": "Lcom/google/android/libraries/places/internal/zzgl;->onFailure(Ljava/lang/Throwable;)V",
+          "full_path": "Lcom/google/android/libraries/places/internal/zzgm;->zzu()Lcom/google/common/util/concurrent/ListenableFuture; --> Lcom/google/android/libraries/places/internal/zzgl;->onFailure(Ljava/lang/Throwable;)V"
+        },
+        {
+          "what": "Original string: \"Y29tLmhleXRhcC5vcGVuaWQuSU9wZW5JRA==\" Decoded string: \"com.heytap.openid.IOpenID\"",
+          "where": "Lcom/heytap/openid/m_a$m_a;-><clinit>()V",
+          "full_path": "Lcom/heytap/openid/m_a$m_a;-><clinit>()V"
+        },
+        {
+          "what": "Original string: \"U3RkSWRBcHBLZXk=\" Decoded string: \"StdIdAppKey\"",
+          "where": "Lcom/heytap/openid/sdk/m_a;->m_a(Landroid/content/SharedPreferences; Ljava/util/Map; Ljava/lang/String; Ljava/lang/String; Ljava/lang/String;)V",
+          "full_path": "Lcom/heytap/openid/sdk/OpenIDSDK;->getIds(Landroid/content/Context; I)Lcom/heytap/openid/bean/OpenIDInfo; --> Lcom/heytap/openid/sdk/m_d;->m_a(I)Ljava/util/HashMap; --> Lcom/heytap/openid/sdk/m_a;->m_a(Landroid/content/Context; Ljava/util/Map;)V --> Lcom/heytap/openid/sdk/m_a;->m_a(Landroid/content/SharedPreferences; Ljava/util/Map; Ljava/lang/String; Ljava/lang/String; Ljava/lang/String;)V"
+        },
+        {
+          "what": "Original string: \"U3RkSWRBcHBLZXk=\" Decoded string: \"StdIdAppKey\"",
+          "where": "Lcom/heytap/openid/sdk/m_a;->m_a(Landroid/content/SharedPreferences$Editor; Lcom/heytap/openid/sdk/m_f; Ljava/lang/String; Ljava/lang/String; Ljava/lang/String;)V",
+          "full_path": "Lcom/heytap/openid/sdk/m_a;->m_a(Landroid/content/SharedPreferences$Editor; Lcom/heytap/openid/sdk/m_f; Ljava/lang/String; Ljava/lang/String; Ljava/lang/String;)V"
+        },
+        {
+          "what": "Original string: \"SG1hY1NIQTI1Ng==\" Decoded string: \"HmacSHA256\"",
+          "where": "Llib/android/paypal/com/magnessdk/i;->a(J Ljava/lang/String; Ljava/lang/String; Ljava/lang/String;)Ljava/lang/String;",
+          "full_path": "Lcom/braintreepayments/api/DataCollector$1;->onResult(Lcom/braintreepayments/api/Configuration; Ljava/lang/Exception;)V --> Lcom/braintreepayments/api/PayPalDataCollector;->getClientMetadataId(Landroid/content/Context; Lcom/braintreepayments/api/PayPalDataCollectorInternalRequest; Lcom/braintreepayments/api/Configuration;)Ljava/lang/String; --> Llib/android/paypal/com/magnessdk/MagnesSDK;->collectAndSubmit(Landroid/content/Context; Ljava/lang/String;)Llib/android/paypal/com/magnessdk/MagnesResult; --> Llib/android/paypal/com/magnessdk/i;->a(I Llib/android/paypal/com/magnessdk/MagnesSettings;)V --> Llib/android/paypal/com/magnessdk/i;->a(J Ljava/lang/String; Ljava/lang/String; Ljava/lang/String;)Ljava/lang/String;"
+        },
+        {
+          "what": "Original string: \"QW5kcm9pZE1hZ25lcw==\" Decoded string: \"AndroidMagnes\"",
+          "where": "Llib/android/paypal/com/magnessdk/i;->a(I Llib/android/paypal/com/magnessdk/MagnesSettings;)V",
+          "full_path": "Lcom/booking/payment/component/core/common/braintree/BraintreeHelper;->collectDeviceData(Lkotlin/jvm/functions/Function1;)V --> Lcom/braintreepayments/api/DataCollector$1;->onResult(Lcom/braintreepayments/api/Configuration; Ljava/lang/Exception;)V --> Lcom/braintreepayments/api/PayPalDataCollector;->getClientMetadataId(Landroid/content/Context; Lcom/braintreepayments/api/PayPalDataCollectorInternalRequest; Lcom/braintreepayments/api/Configuration;)Ljava/lang/String; --> Llib/android/paypal/com/magnessdk/MagnesSDK;->collectAndSubmit(Landroid/content/Context; Ljava/lang/String;)Llib/android/paypal/com/magnessdk/MagnesResult; --> Llib/android/paypal/com/magnessdk/i;->a(I Llib/android/paypal/com/magnessdk/MagnesSettings;)V"
+        },
+        {
+          "what": "Original string: \"amF2YS5zZWN1cml0eS5TZWN1cmVSYW5kb20=\" Decoded string: \"java.security.SecureRandom\"",
+          "where": "Lcom/alipay/sdk/m/y/c;->a(Ljava/lang/String;)Ljavax/crypto/spec/PBEKeySpec;",
+          "full_path": "Lcom/alipay/apmobilesecuritysdk/face/APSecuritySdk;->getTokenResult()Lcom/alipay/apmobilesecuritysdk/face/APSecuritySdk$TokenResult; --> Lcom/alipay/apmobilesecuritysdk/a/a;->a(Landroid/content/Context; Ljava/lang/String;)Ljava/lang/String; --> Lcom/alipay/apmobilesecuritysdk/e/g;->a(Landroid/content/Context; Ljava/lang/String;)Ljava/lang/String; --> Lcom/alipay/sdk/m/y/c;->b(Ljava/lang/String; Ljava/lang/String;)Ljava/lang/String; --> Lcom/alipay/sdk/m/y/c;->a(Ljava/lang/String;)Ljavax/crypto/spec/PBEKeySpec;"
+        },
+        {
+          "what": "Original string: \"ZGV2aWNlaWQ=\" Decoded string: \"deviceid\"",
+          "where": "Lcom/baidu/sec/privacy/f/d$d;->a(Ljava/lang/String;)Lcom/baidu/sec/privacy/f/d$d;",
+          "full_path": "Lcom/baidu/sec/privacy/e/a;->d()Ljava/lang/String; --> Lcom/baidu/sec/privacy/f/d;->b(Landroid/content/Context;)Ljava/lang/String; --> Lcom/baidu/sec/privacy/f/d;->a(Landroid/content/Context;)Lcom/baidu/sec/privacy/f/d$d; --> Lcom/baidu/sec/privacy/f/d;->a()Lcom/baidu/sec/privacy/f/d$d; --> Lcom/baidu/sec/privacy/f/d$d;->a(Ljava/lang/String;)Lcom/baidu/sec/privacy/f/d$d;"
+        },
+        {
+          "what": "Original string: \"ZGV2aWNlaWQ=\" Decoded string: \"deviceid\"",
+          "where": "Lcom/baidu/b/f;->c(Ljava/lang/String;)Lcom/baidu/b/f;",
+          "full_path": "Lcom/baidu/a/a/a/a/a;->b(Ljava/lang/String;)Lcom/baidu/b/h$a; --> Lcom/baidu/a/a/a/a/a;->c(Ljava/lang/String;)Lcom/baidu/b/h$a; --> Lcom/baidu/b/g;->a(Ljava/lang/String;)Lcom/baidu/b/f; --> Lcom/baidu/b/f;->b(Ljava/lang/String;)Lcom/baidu/b/f; --> Lcom/baidu/b/f;->c(Ljava/lang/String;)Lcom/baidu/b/f;"
+        },
+        {
+          "what": "Original string: \"L3N5c3RlbS94YmluLy5yZ3M=\" Decoded string: \"/system/xbin/.rgs\"",
+          "where": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V",
+          "full_path": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V"
+        },
+        {
+          "what": "Original string: \"L3NiaW4vc3U=\" Decoded string: \"/sbin/su\"",
+          "where": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V",
+          "full_path": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V"
+        },
+        {
+          "what": "Original string: \"L3N5c3RlbS94YmluL3N1\" Decoded string: \"/system/xbin/su\"",
+          "where": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V",
+          "full_path": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V"
+        },
+        {
+          "what": "Original string: \"L3N5c3RlbS94YmluLy5zdQ==\" Decoded string: \"/system/xbin/.su\"",
+          "where": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V",
+          "full_path": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V"
+        },
+        {
+          "what": "Original string: \"L3N5c3RlbS9iaW4vLnN1\" Decoded string: \"/system/bin/.su\"",
+          "where": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V",
+          "full_path": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V"
+        },
+        {
+          "what": "Original string: \"L3N5c3RlbS9iaW4vLnN1dg==\" Decoded string: \"/system/bin/.suv\"",
+          "where": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V",
+          "full_path": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V"
+        },
+        {
+          "what": "Original string: \"L3N5c3RlbS94YmluLy5zdXY=\" Decoded string: \"/system/xbin/.suv\"",
+          "where": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V",
+          "full_path": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V"
+        },
+        {
+          "what": "Original string: \"L3N5c3RlbS94YmluL2Jkc3U=\" Decoded string: \"/system/xbin/bdsu\"",
+          "where": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V",
+          "full_path": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V"
+        },
+        {
+          "what": "Original string: \"L3N5c3RlbS9iaW4vYmRzdQ==\" Decoded string: \"/system/bin/bdsu\"",
+          "where": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V",
+          "full_path": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V"
+        },
+        {
+          "what": "Original string: \"L3N5c3RlbS94YmluL2F1\" Decoded string: \"/system/xbin/au\"",
+          "where": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V",
+          "full_path": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V"
+        },
+        {
+          "what": "Original string: \"L3N5c3RlbS9iaW4vYXU=\" Decoded string: \"/system/bin/au\"",
+          "where": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V",
+          "full_path": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V"
+        },
+        {
+          "what": "Original string: \"L3N5c3RlbS94YmluL2t1LnN1ZA==\" Decoded string: \"/system/xbin/ku.sud\"",
+          "where": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V",
+          "full_path": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V"
+        },
+        {
+          "what": "Original string: \"L3N5c3RlbS9iaW4va3Uuc3Vk\" Decoded string: \"/system/bin/ku.sud\"",
+          "where": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V",
+          "full_path": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V"
+        },
+        {
+          "what": "Original string: \"L3N5c3RlbS9iaW4vLnJncw==\" Decoded string: \"/system/bin/.rgs\"",
+          "where": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V",
+          "full_path": "Lcom/baidu/mshield/x0/d/d;-><clinit>()V"
+        },
+        {
+          "what": "Original string: \"L3NiaW5fb3JpZw==\" Decoded string: \"/sbin_orig\"",
+          "where": "Lcom/baidu/mshield/x0/d/d;->g(Landroid/content/Context;)Lorg/json/JSONObject;",
+          "full_path": "Lcom/baidu/mshield/x0/EngineImpl;->doInit(I Z)V --> Lcom/baidu/mshield/x0/b;->a(Landroid/content/Context; Lorg/json/JSONObject;)V --> Lcom/baidu/mshield/x0/g/a;->a(Landroid/content/Context; Lorg/json/JSONObject;)V --> Lcom/baidu/mshield/x0/g/a;->i(Landroid/content/Context; Lorg/json/JSONObject;)Z --> Lcom/baidu/mshield/x0/d/d;->g(Landroid/content/Context;)Lorg/json/JSONObject;"
+        }
+      ]
+    },
+    {
+      "id": "CheckCallingOrSelfPermission",
+      "name": "CheckCallingOrSelfPermission call with custom permissions",
+      "description": "A component that uses run-time permission checking via checkCallingOrSelfPermission for access control grants permission to all components if it grants permission even once to a component that is in the same app as that itself. Suppose checkCallingOrSelfPermission is used to protect a component that performs a sensitive operation. In that case, a component in a malicious app can escalate its privilege and access the component.",
+      "remediation": "",
+      "references": {
+        "text": "Further information about this problem and possible countermeasures can be found in Android Reference Guide [[1]].",
+        "links": {
+          "1": "https://developer.android.com/reference/android/content/Context.html#checkCallingOrSelfPermission(java.lang.String)"
+        }
+      },
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Network",
+        "attack_complexity": "High",
+        "privileges_required": "High",
+        "user_interaction": "Required",
+        "scope": "Unchanged",
+        "confidentiality_impact": "Low",
+        "integrity_impact": "Low",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "Landroid/content/Context;->checkCallingOrSelfPermission(Ljava/lang/String;)I",
+          "where": "Lcom/google/android/gms/internal/ads/zzbkk;->zza(Ljava/lang/Object; Ljava/util/Map;)V",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzcfm;->zzX(Lcom/google/android/gms/ads/internal/client/zza; Lcom/google/android/gms/internal/ads/zzbit; Lcom/google/android/gms/ads/internal/overlay/zzr; Lcom/google/android/gms/internal/ads/zzbiv; Lcom/google/android/gms/ads/internal/overlay/zzad; Z Lcom/google/android/gms/internal/ads/zzbkg; Lcom/google/android/gms/ads/internal/zzb; Lorg/commonmark/internal/Definitions; Lcom/google/android/gms/internal/ads/zzbxy; Lcom/google/android/gms/internal/ads/zzebs; Lcom/google/android/gms/internal/ads/zzfjq; Lcom/google/android/gms/internal/ads/zzdsc; Lcom/google/android/gms/internal/ads/zzbkx; Lcom/google/android/gms/internal/ads/zzddw; Lcom/google/android/gms/internal/ads/zzbkw; Lcom/google/android/gms/internal/ads/zzbkq; Lcom/google/android/gms/internal/ads/zzbke; Lcom/google/android/gms/internal/ads/zzcml;)V --> Lcom/google/android/gms/internal/ads/zzbkk;->zza(Ljava/lang/Object; Ljava/util/Map;)V --> Landroid/content/Context;->checkCallingOrSelfPermission(Ljava/lang/String;)I"
+        },
+        {
+          "what": "Landroid/content/Context;->checkCallingOrSelfPermission(Ljava/lang/String;)I",
+          "where": "Llib/android/paypal/com/magnessdk/g;->a(Landroid/content/Context; Ljava/lang/String;)Z",
+          "full_path": "Llib/android/paypal/com/magnessdk/h;->a(Llib/android/paypal/com/magnessdk/MagnesSettings; Llib/android/paypal/com/magnessdk/d; Llib/android/paypal/com/magnessdk/e;)V --> Llib/android/paypal/com/magnessdk/h;->a(I Llib/android/paypal/com/magnessdk/MagnesSettings;)V --> Llib/android/paypal/com/magnessdk/h;->g(Landroid/content/Context;)Ljava/lang/String; --> Llib/android/paypal/com/magnessdk/g;->a(Landroid/content/Context; Ljava/lang/String;)Z --> Landroid/content/Context;->checkCallingOrSelfPermission(Ljava/lang/String;)I"
+        },
+        {
+          "what": "Landroid/content/Context;->checkCallingOrSelfPermission(Ljava/lang/String;)I",
+          "where": "Lcom/google/android/gms/internal/ads/zzbsr;->zza(Ljava/lang/Object; Ljava/util/Map;)V",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzcfp;->zza()Ljava/lang/Object; --> Lcom/google/android/gms/internal/ads/zzbsr;->zza(Ljava/lang/Object; Ljava/util/Map;)V --> Landroid/content/Context;->checkCallingOrSelfPermission(Ljava/lang/String;)I"
+        }
+      ]
+    },
+    {
+      "id": "CryptoConstantKey",
+      "name": "Constant encryption key hardcoded",
+      "description": "Apps that store encryption keys in the source code are vulnerable to forgery attacks and information leaks. Android apps can use block cipher algorithms to encrypt sensitive information using the Cipher API. The Cipher API expects a key, if such a key used for encryption/decryption is saved in the source code, then an attacker can get access to it and abuse it.",
+      "remediation": "Do not hardcode the encryption key in the code.",
+      "references": {
+        "text": "Further information can be found on the Android Developer Guide [[1]] and in paper [[2]].",
+        "links": {
+          "1": "https://developer.android.com/reference/javax/crypto/spec/SecretKeySpec",
+          "2": "https://dl.acm.org/doi/10.1145/2508859.2516693"
+        }
+      },
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Local",
+        "attack_complexity": "High",
+        "privileges_required": "High",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "High",
+        "integrity_impact": "None",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "constant key \"IV size should be either 12 or 16 bytes\" parameter passed to SecretKeySpec",
+          "where": "Lcom/google/android/gms/internal/ads/zzgvq;-><init>([B I [B)V",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzcym;->run()V --> Lcom/booking/payment/util/DimensionUtilsKt;->zza(Lorg/bouncycastle/math/raw/Nat256;)Ljava/lang/Object; --> Lcom/google/android/gms/internal/ads/zzgvq;->zzb(Lcom/google/android/gms/internal/ads/zzggi;)Lcom/google/android/gms/internal/ads/zzgvq; --> Lcom/google/android/gms/internal/ads/zzgvq;-><init>([B I [B)V --> Ljavax/crypto/spec/SecretKeySpec;-><init>([B Ljava/lang/String;)V"
+        }
+      ]
+    },
+    {
+      "id": "CryptoEcbCipher",
+      "name": "Block Cipher ECB Information Exposure",
+      "description": "Apps that use a Block Cipher algorithm in ECB mode for encrypting sensitive information are vulnerable to exposing leaking information. The Cipher API enables developers to specify which block cipher algorithm to use and in which mode. If the app uses the block cipher algorithm AES in ECB mode to encrypt sensitive information then an attacker can break the encryption to get access to the sensitive information. An app can explicitly specify that it wants to use AES in ECB mode or it can specify that it will just use AES without explicitly specifying the mode, in which case Android will use the ECB mode by default.",
+      "remediation": "Please use an encryption mode other than ECB.",
+      "references": {
+        "text": "Further information can be found on the Android Developer Guide [[1]] and in paper [[2]].",
+        "links": {
+          "1": "https://developer.android.com/reference/javax/crypto/Cipher.html",
+          "2": "https://dl.acm.org/doi/10.1145/2508859.2516693"
+        }
+      },
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Local",
+        "attack_complexity": "High",
+        "privileges_required": "High",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "High",
+        "integrity_impact": "None",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "insecure cipher \"AES/ECB/PKCS5Padding\"",
+          "where": "Lcom/baidu/mapauto/auth/util/AESECBPKCS5PaddingUtil;->encrypt(Ljava/lang/String; Ljava/lang/String;)Ljava/lang/String;",
+          "full_path": "Lcom/baidu/mapauto/auth/process/a;->a(Lcom/baidu/mapauto/auth/AuthCore$AuthParam; Lcom/baidu/mapauto/auth/base/b;)Z --> Lcom/baidu/mapauto/auth/process/a;->a(Lcom/baidu/mapauto/auth/AuthCore$AuthParam; Lcom/baidu/mapauto/auth/proxy/b;)Z --> Lcom/baidu/mapauto/auth/util/AESECBPKCS5PaddingUtil;->encrypt(Ljava/lang/String; Ljava/lang/String;)Ljava/lang/String; --> Ljavax/crypto/Cipher;->getInstance(Ljava/lang/String;)Ljavax/crypto/Cipher;"
+        },
+        {
+          "what": "insecure cipher \"AES/ECB/PKCS5Padding\"",
+          "where": "Lcom/baidu/mapauto/auth/util/AESECBPKCS5PaddingUtil;->decrypt(Ljava/lang/String; Ljava/lang/String;)Ljava/lang/String;",
+          "full_path": "Lcom/baidu/mapauto/auth/process/a;->b(Lcom/baidu/mapauto/auth/AuthCore$AuthParam;)Ljava/lang/String; --> Lcom/baidu/mapauto/auth/util/AESECBPKCS5PaddingUtil;->decrypt(Ljava/lang/String; Ljava/lang/String;)Ljava/lang/String; --> Ljavax/crypto/Cipher;->getInstance(Ljava/lang/String;)Ljavax/crypto/Cipher;"
+        },
+        {
+          "what": "insecure cipher \"AES/ECB/NoPadding\"",
+          "where": "Lcom/baidu/mapauto/auth/util/AESUtil;->encrypt(Ljava/lang/String; [B)[B",
+          "full_path": "Lcom/baidu/mapauto/auth/util/AESUtil;->encrypt(Ljava/lang/String; [B)[B --> Ljavax/crypto/Cipher;->getInstance(Ljava/lang/String;)Ljavax/crypto/Cipher;"
+        },
+        {
+          "what": "insecure cipher \"AES/ECB/NoPadding\"",
+          "where": "Lcom/baidu/mapauto/auth/util/AESUtil;->decrypt(Ljava/lang/String; [B)[B",
+          "full_path": "Lcom/baidu/mapauto/auth/util/AESUtil;->decrypt(Ljava/lang/String; [B)[B --> Ljavax/crypto/Cipher;->getInstance(Ljava/lang/String;)Ljavax/crypto/Cipher;"
+        }
+      ]
+    },
+    {
+      "id": "CryptoSmallIterationCount",
+      "name": "Small iteration count for key derivation",
+      "description": "An iteration count smaller than 1000 passed to `PBEParameterSpec` and `PBEKeySpec` constructors is insecure.",
+      "remediation": "A minimum of 1000 iterations is recommended according to RFC 2898. This will increase the cost of exhaustive search for passwords significantly, without a noticeable impact in the cost of deriving individual keys.",
+      "references": {
+        "text": "Further information can be found on the Android Developer Guide [[1]] and in paper [[2]].",
+        "links": {
+          "1": "https://developer.android.com/reference/javax/crypto/spec/PBEKeySpec.html",
+          "2": "https://dl.acm.org/doi/10.1145/2508859.2516693"
+        }
+      },
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Local",
+        "attack_complexity": "High",
+        "privileges_required": "High",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "Low",
+        "integrity_impact": "None",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "small number of iterations (10) passed to PBEKeySpec",
+          "where": "Lcom/alipay/sdk/m/y/c;->b(Ljava/lang/String; Ljava/lang/String;)Ljava/lang/String;",
+          "full_path": "Lcom/alipay/apmobilesecuritysdk/a/a;->a(Ljava/util/Map;)I --> Lcom/alipay/apmobilesecuritysdk/e/h;->c(Landroid/content/Context;)Z --> Lcom/alipay/sdk/m/b0/a;->a(Landroid/content/Context; Ljava/lang/String;)Ljava/lang/String; --> Lcom/alipay/sdk/m/y/c;->b(Ljava/lang/String; Ljava/lang/String;)Ljava/lang/String; --> Ljavax/crypto/spec/PBEKeySpec;-><init>([C [B I I)V"
+        },
+        {
+          "what": "small number of iterations (10) passed to PBEKeySpec",
+          "where": "Lcom/alipay/sdk/m/y/c;->a(Ljava/lang/String;)Ljavax/crypto/spec/PBEKeySpec;",
+          "full_path": "Lcom/alipay/apmobilesecuritysdk/e/h;->a(Landroid/content/Context;)J --> Lcom/alipay/sdk/m/b0/a;->a(Landroid/content/Context; Ljava/lang/String;)Ljava/lang/String; --> Lcom/alipay/sdk/m/y/c;->b(Ljava/lang/String; Ljava/lang/String;)Ljava/lang/String; --> Lcom/alipay/sdk/m/y/c;->a(Ljava/lang/String;)Ljavax/crypto/spec/PBEKeySpec; --> Ljavax/crypto/spec/PBEKeySpec;-><init>([C [B I I)V"
+        }
+      ]
+    },
+    {
+      "id": "DynamicCodeLoading",
+      "name": "Dynamic Code Loading",
+      "description": "This app contains code that dynamically loads classes from `.jar` and `.apk` files containing a `classes.dex` entry. This can be used to execute code not installed as part of an application. This behavior is a security hazard since malicious code could be loaded and executed in the context of the app.",
+      "remediation": "We strongly suggest you to remove dynamic code loads unless necessary. If this is the case, we suggest to carefully revise all the code loaded and executed.",
+      "references": {
+        "text": "Further information on dynamic loading can be found in the official documentation [[1]].",
+        "links": {
+          "1": "https://developer.android.com/reference/dalvik/system/DexClassLoader.html"
+        }
+      },
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Local",
+        "attack_complexity": "High",
+        "privileges_required": "Low",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "High",
+        "integrity_impact": "High",
+        "availability_impact": "Low"
+      },
+      "code": [
+        {
+          "what": "Ldalvik/system/DexClassLoader;-><init>(Ljava/lang/String; Ljava/lang/String; Ljava/lang/String; Ljava/lang/ClassLoader;)V",
+          "where": "Lcom/google/android/gms/internal/ads/zzawv;->zzg(Landroid/content/Context; Z Lcom/google/android/gms/internal/ads/zzavv;)Lcom/google/android/gms/internal/ads/zzawv;",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzavq;->zzc(Landroid/content/Context;)Lcom/google/android/gms/internal/ads/zzasr; --> Lcom/google/android/gms/internal/ads/zzavq;->zzm(Landroid/content/Context; Z)Lcom/google/android/gms/internal/ads/zzawv; --> Lcom/google/android/gms/internal/ads/zzawv;->zzg(Landroid/content/Context; Z Lcom/google/android/gms/internal/ads/zzavv;)Lcom/google/android/gms/internal/ads/zzawv; --> Ldalvik/system/DexClassLoader;-><init>(Ljava/lang/String; Ljava/lang/String; Ljava/lang/String; Ljava/lang/ClassLoader;)V"
+        },
+        {
+          "what": "Ldalvik/system/DexClassLoader;-><init>(Ljava/lang/String; Ljava/lang/String; Ljava/lang/String; Ljava/lang/ClassLoader;)V",
+          "where": "Lcom/google/android/gms/internal/ads/zzfpv;->zzd(Lcom/google/android/gms/internal/ads/zzfpl;)Ljava/lang/Class;",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzavj;->run()V --> Lcom/google/android/gms/internal/ads/zzavk;->zzj(Lcom/google/android/gms/internal/ads/zzavk;)V --> Lcom/google/android/gms/internal/ads/zzfpv;->zzc(Lcom/google/android/gms/internal/ads/zzfpl;)Z --> Lcom/google/android/gms/internal/ads/zzfpv;->zzd(Lcom/google/android/gms/internal/ads/zzfpl;)Ljava/lang/Class; --> Ldalvik/system/DexClassLoader;-><init>(Ljava/lang/String; Ljava/lang/String; Ljava/lang/String; Ljava/lang/ClassLoader;)V"
+        }
+      ]
+    },
+    {
+      "id": "ExportedComponent",
+      "name": "AndroidManifest Exported Components Checking",
+      "description": "Found \"exported\" components (except for Launcher) for receiving outside applications' actions (`AndroidManifest.xml`). These components can be initialized by other apps and used maliciously.",
+      "remediation": "Please modify the attribute in each of the exported component to `exported=\"false\"` or protect it with a custom permission with \"signature\" or higher protection level and specify it in \"android:permission\" attribute.",
+      "references": {
+        "text": "Further information on the exported attribute can be found on the Android Developer Guide [[1]].",
+        "links": {
+          "1": "http://developer.android.com/guide/topics/manifest/provider-element.html#exported"
+        }
+      },
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Adjacent",
+        "attack_complexity": "Low",
+        "privileges_required": "Low",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "Low",
+        "integrity_impact": "Low",
+        "availability_impact": "Low"
+      },
+      "code": [
+        {
+          "what": "exported activity \"com.booking.deeplink.decoder.AssistantShortcutDeeplinkActivityDecoder\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.deeplink.decoder.GuestMessagingDecoderDeeplinkActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.deeplink.decoder.TaxisDeeplinkActivityDecoder\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.deeplink.decoder.TaxiPostbookDeeplinkActivityDecoder\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.deeplink.decoder.RewardsDeeplinkActivityDecoder\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.deeplink.decoder.WalletDeeplinkActivityDecoder\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.deeplink.decoder.FlightsOrderDeeplinkActivityDecoder\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.attractions.app.navigation.deeplink.AttractionsDeeplinkActivityDecoder\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.cruises.deeplink.CruisesDeeplinkActivityDecoder\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.deeplink.decoder.PaymentRedirectDeeplinkDecoderActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.deeplink.decoder.ShareLinkDecoderActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.deeplink.decoder.GeniusLandingDeeplinkDecoder\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.deeplink.decoder.WishlistDetailDeepLinkDecoder\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.deeplink.decoder.PaymentsDecoderDeeplinkActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.login.WXEntryActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.deeplink.decoder.PrivacyDeeplinkDecoder\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.postbooking.confirmation.activities.BookingDetailsActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.postbooking.confirmation.activities.BookingDetailsComposeActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.bookingprocess.activity.BookingStageActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"androidx.compose.ui.tooling.PreviewActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.tpi.bookprocess.marken.TPIBookProcessActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.rewardsandwalletpresentation.RewardsAndWalletActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.taxispresentation.TaxisSingleFunnelActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.attractions.app.AttractionsActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.flights.activity.FlightsActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.flightspostbooking.FlightsPostBookingActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.insurance.common.InsuranceActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.requesttobook.deeplink.RtbDeeplinkEntryActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.cruises.CruisesActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.identity.privacy.ui.PrivacyAppActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.identity.privacy.ui.PrivacySettingsActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.damagepayment.deeplink.DamagePaymentDeeplinkActivityDecoder\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.cobrandcreditcardpresentation.CoBrandCreditCardActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.identity.guest.AuthGuestActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"net.openid.appauth.RedirectUriReceiverActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.bugreporter.presentation.activity.BugReporterActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.deeplinkui.scheme.BookingDeeplinkSchemeActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.deeplinkui.decoder.DecoderDeeplinkActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.android.payment.payin.standalone.StandaloneActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.android.payment.payin.standalone.WebViewStandaloneActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.identity.account.migration.AccountMigrationActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.identity.account.AccountActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.identity.account.cotravellers.presentation.AccountCoTravellersActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.identity.account.presentation.AccountMvvmActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.identity.auth.activity.AuthActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.identity.auth.BottomSheetAuthActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.identity.privacy.ui.management.PrivacyManagementActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.identity.privacy.ui.webview.PrivacyDSRWebView\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.identity.privacy.ui.webview.PrivacyWebView\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.payment.component.ui.screen.directintegration.klarna.KlarnaDirectIntegrationActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.payment.component.core.directintegration.wechat.WeChatResultActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.payment.component.core.directintegration.braintree.paypal.PayPalBraintreeHostActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.payment.component.core.threedomainsecure2.braintree.Braintree3ds2HostActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.booking.payment.component.core.directintegration.revolut.RevolutHostActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.stripe.android.link.LinkRedirectHandlerActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.stripe.android.payments.StripeBrowserProxyReturnActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.revolut.revolutpay.ui.sandbox.SandboxConfirmationActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.klarna.mobile.sdk.activity.KlarnaAuthenticationRedirectReceiverActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.adyen.threeds2.internal.ui.activity.ChallengeActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.braintreepayments.api.BraintreeDeepLinkActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.stripe.android.financialconnections.lite.FinancialConnectionsSheetLiteRedirectActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.google.android.gms.tagmanager.TagManagerPreviewActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.alipay.sdk.app.PayResultActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.alipay.sdk.app.AlipayResultActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity-alias \"com.booking.dev.wxapi.WXEntryActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity-alias \"com.booking.dev.wxapi.WXPayEntryActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity-alias \"com.booking.wxapi.WXPayEntryActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity-alias \"com.booking.wxapi.WXEntryActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported service \"com.google.assistant.appactions.widgets.pinappwidget.PinAppWidgetService\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported service \"com.huawei.hms.support.api.push.service.HmsMsgService\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported receiver \"com.booking.subscriptions.NotificationAppBlockStateChangedReceiver\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported receiver \"com.booking.subscriptions.NotificationChannelBlockStateChangedReceiver\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported receiver \"com.booking.subscriptionsservices.tracking.push.PushChannelAndGroupBlockStateChangedReceiver\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        }
+      ]
+    },
+    {
+      "id": "ExternalStorage",
+      "name": "External Storage Accessing",
+      "description": "Found external storage access API. Please remember not to write security-critical files to external storage.",
+      "remediation": "Please revise all the external storage access in order to identify eventual leaks of critical information.",
+      "references": {
+        "text": "Further information on writing files can be found in the official documentation [[1]].",
+        "links": {
+          "1": "https://developer.android.com/training/basics/data-storage/files.html"
+        }
+      },
+      "owasp": [
+        "M2",
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Local",
+        "attack_complexity": "Low",
+        "privileges_required": "Low",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "Low",
+        "integrity_impact": "Low",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "Landroidx/core/content/FileProvider;->parsePathStrategy(Landroid/content/Context; Ljava/lang/String; I)Landroidx/core/content/FileProvider$PathStrategy;",
+          "full_path": "Landroidx/core/content/FileProvider;->getType(Landroid/net/Uri;)Ljava/lang/String; --> Landroidx/core/content/FileProvider;->getLocalPathStrategy()Landroidx/core/content/FileProvider$PathStrategy; --> Landroidx/core/content/FileProvider;->getPathStrategy(Landroid/content/Context; Ljava/lang/String; I)Landroidx/core/content/FileProvider$PathStrategy; --> Landroidx/core/content/FileProvider;->parsePathStrategy(Landroid/content/Context; Ljava/lang/String; I)Landroidx/core/content/FileProvider$PathStrategy; --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        },
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "Llib/android/paypal/com/magnessdk/h;->a(I Llib/android/paypal/com/magnessdk/MagnesSettings;)V",
+          "full_path": "Llib/android/paypal/com/magnessdk/MagnesSDK;->collectAndSubmit(Landroid/content/Context; Ljava/lang/String;)Llib/android/paypal/com/magnessdk/MagnesResult; --> Llib/android/paypal/com/magnessdk/MagnesSDK;->setUp(Llib/android/paypal/com/magnessdk/MagnesSettings;)V --> Llib/android/paypal/com/magnessdk/h;->a(Llib/android/paypal/com/magnessdk/MagnesSettings; Llib/android/paypal/com/magnessdk/d; Llib/android/paypal/com/magnessdk/e;)V --> Llib/android/paypal/com/magnessdk/h;->a(I Llib/android/paypal/com/magnessdk/MagnesSettings;)V --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        },
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "Llib/android/paypal/com/magnessdk/h$c;->b(Landroid/content/Context;)Ljava/lang/String;",
+          "full_path": "Llib/android/paypal/com/magnessdk/MagnesSDK;->setUp(Llib/android/paypal/com/magnessdk/MagnesSettings;)V --> Llib/android/paypal/com/magnessdk/h;->a(Llib/android/paypal/com/magnessdk/MagnesSettings; Llib/android/paypal/com/magnessdk/d; Llib/android/paypal/com/magnessdk/e;)V --> Llib/android/paypal/com/magnessdk/h;->a(I Llib/android/paypal/com/magnessdk/MagnesSettings;)V --> Llib/android/paypal/com/magnessdk/h$c;->b(Landroid/content/Context;)Ljava/lang/String; --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        },
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "Lcom/baidu/platform/comapi/util/a/b;->a(Landroid/content/Context;)V",
+          "full_path": "Lcom/baidu/platform/comapi/util/e;->d()V --> Lcom/baidu/platform/comapi/util/SysOSUtil;->getExternalFilesDir()Ljava/lang/String; --> Lcom/baidu/platform/comapi/util/a/b;->b()Ljava/lang/String; --> Lcom/baidu/platform/comapi/util/a/b;->a(Landroid/content/Context;)V --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        },
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "Lcom/alipay/sdk/m/b0/b;->a(Ljava/lang/String;)Ljava/lang/String;",
+          "full_path": "Lcom/alipay/apmobilesecuritysdk/a/a;->b(Ljava/util/Map;)Lcom/alipay/sdk/m/f0/c; --> Lcom/alipay/apmobilesecuritysdk/e/d;->b()Lcom/alipay/apmobilesecuritysdk/e/c; --> Lcom/alipay/apmobilesecuritysdk/f/a;->a(Ljava/lang/String; Ljava/lang/String;)Ljava/lang/String; --> Lcom/alipay/sdk/m/b0/b;->a(Ljava/lang/String;)Ljava/lang/String; --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        },
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "Lcom/alipay/apmobilesecuritysdk/a/a;->b()V",
+          "full_path": "Lcom/alipay/apmobilesecuritysdk/face/APSecuritySdk$1;->run()V --> Lcom/alipay/apmobilesecuritysdk/a/a;->a(Ljava/util/Map;)I --> Lcom/alipay/apmobilesecuritysdk/a/a;->a(Landroid/content/Context; Ljava/lang/String;)Ljava/lang/String; --> Lcom/alipay/apmobilesecuritysdk/a/a;->b()V --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        },
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "Lcom/alipay/apmobilesecuritysdk/f/a;->a(Ljava/lang/String; Ljava/lang/String; Ljava/lang/String;)V",
+          "full_path": "Lcom/alipay/apmobilesecuritysdk/face/APSecuritySdk;->initToken(I Ljava/util/Map; Lcom/alipay/apmobilesecuritysdk/face/APSecuritySdk$InitResultListener;)V --> Lcom/alipay/apmobilesecuritysdk/e/d;->a(Landroid/content/Context;)V --> Lcom/alipay/apmobilesecuritysdk/f/a;->a(Ljava/lang/String; Ljava/lang/String; Ljava/lang/String;)V --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        },
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "Lcom/google/android/gms/internal/ads/zzbca;->zze(I)V",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzdqr;->zzh()V --> Lcom/google/android/gms/internal/ads/zzbca;->zzc(I)V --> Lcom/google/android/gms/internal/ads/zzbca;->zze(I)V --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        },
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "Lcom/alipay/sdk/m/b0/c;->a()Z",
+          "full_path": "Lcom/alipay/apmobilesecuritysdk/e/a;->a(Landroid/content/Context;)V --> Lcom/alipay/apmobilesecuritysdk/f/a;->a(Ljava/lang/String; Ljava/lang/String; Ljava/lang/String;)V --> Lcom/alipay/sdk/m/b0/b;->a(Ljava/lang/String;)Ljava/lang/String; --> Lcom/alipay/sdk/m/b0/c;->a()Z --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        },
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "Lcom/baidu/mshield/x0/d/g;->d(Landroid/content/Context;)Ljava/lang/String;",
+          "full_path": "Lcom/baidu/mshield/x0/EngineImpl;->getNui()Ljava/lang/String; --> Lcom/baidu/mshield/x0/d/g;->b(Landroid/content/Context;)Ljava/lang/String; --> Lcom/baidu/mshield/x0/d/g;->f(Landroid/content/Context;)Ljava/lang/String; --> Lcom/baidu/mshield/x0/d/g;->d(Landroid/content/Context;)Ljava/lang/String; --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        },
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "Lcom/baidu/mshield/x6/f/b;->a(Landroid/content/Context; Ljava/lang/String;)Ljava/lang/String;",
+          "full_path": "Lcom/baidu/mshield/x6/e/h$d;->a()V --> Lcom/baidu/mshield/x6/e/e;->a()V --> Lcom/baidu/mshield/x6/f/b;->b(Landroid/content/Context;)Ljava/lang/String; --> Lcom/baidu/mshield/x6/f/b;->a(Landroid/content/Context; Ljava/lang/String;)Ljava/lang/String; --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        },
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "Lcom/google/android/gms/internal/ads/zzbdi;->zza(Lcom/google/android/gms/internal/ads/zzbdh; Lcom/google/android/gms/internal/ads/zzbdf;)V",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzbzq;->zzu(Landroid/content/Context; Lcom/google/android/gms/ads/internal/util/client/VersionInfoParcel;)V --> Lcom/google/android/gms/internal/ads/zzbzm;->zza()V --> Lcom/google/android/gms/internal/ads/zzbdi;->zza(Lcom/google/android/gms/internal/ads/zzbdh; Lcom/google/android/gms/internal/ads/zzbdf;)V --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        },
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "Lcom/baidu/xclient/gdid/b/a;->b(Landroid/content/Context; Ljava/lang/String;)V",
+          "full_path": "Lcom/baidu/xclient/gdid/d;->c()Lorg/json/JSONObject; --> Lcom/baidu/xclient/gdid/d;->a(Lorg/json/JSONObject;)V --> Lcom/baidu/xclient/gdid/b/a;->a(Landroid/content/Context;)Ljava/lang/String; --> Lcom/baidu/xclient/gdid/b/a;->b(Landroid/content/Context; Ljava/lang/String;)V --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        },
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "Lcom/baidu/xclient/gdid/b/a;->c(Landroid/content/Context;)Ljava/lang/String;",
+          "full_path": "Lcom/baidu/xclient/gdid/d;->c()Lorg/json/JSONObject; --> Lcom/baidu/xclient/gdid/d;->a(Lorg/json/JSONObject;)V --> Lcom/baidu/xclient/gdid/b/a;->a(Landroid/content/Context;)Ljava/lang/String; --> Lcom/baidu/xclient/gdid/b/a;->c(Landroid/content/Context;)Ljava/lang/String; --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        },
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "Lcom/baidu/xclient/gdid/jni/b;->a(Lorg/json/JSONObject; Lorg/json/JSONObject;)V",
+          "full_path": "Lcom/baidu/xclient/gdid/d;->c()Lorg/json/JSONObject; --> Lcom/baidu/xclient/gdid/d;->b(Lorg/json/JSONObject; Ljava/lang/StringBuilder;)V --> Lcom/baidu/xclient/gdid/jni/b;->a()Ljava/lang/String; --> Lcom/baidu/xclient/gdid/jni/b;->a(Lorg/json/JSONObject; Lorg/json/JSONObject;)V --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        },
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "Lcom/baidu/mshield/x6/f/b;->a(Landroid/content/Context; I)V",
+          "full_path": "Lcom/baidu/mshield/x6/EngineImpl;->init(I Z)Z --> Lcom/baidu/mshield/x6/f/f;->h(Landroid/content/Context;)V --> Lcom/baidu/mshield/x6/f/b;->c(Landroid/content/Context;)V --> Lcom/baidu/mshield/x6/f/b;->a(Landroid/content/Context; I)V --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        },
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "Lcom/baidu/xclient/gdid/i/a;->b()J",
+          "full_path": "Lcom/baidu/xclient/gdid/d;->f()V --> Lcom/baidu/xclient/gdid/d;->c()Lorg/json/JSONObject; --> Lcom/baidu/xclient/gdid/d;->b(Lorg/json/JSONObject; Ljava/lang/StringBuilder;)V --> Lcom/baidu/xclient/gdid/i/a;->b()J --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        },
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "Lcom/baidu/xclient/gdid/i/a;->a()J",
+          "full_path": "Lcom/baidu/xclient/gdid/d;->f()V --> Lcom/baidu/xclient/gdid/d;->c()Lorg/json/JSONObject; --> Lcom/baidu/xclient/gdid/d;->b(Lorg/json/JSONObject; Ljava/lang/StringBuilder;)V --> Lcom/baidu/xclient/gdid/i/a;->a()J --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        },
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "Lcom/baidu/b/g;->e(Ljava/lang/String;)Lcom/baidu/b/f;",
+          "full_path": "Lcom/baidu/a/a/a/a/a;->b(Ljava/lang/String;)Lcom/baidu/b/h$a; --> Lcom/baidu/a/a/a/a/a;->c(Ljava/lang/String;)Lcom/baidu/b/h$a; --> Lcom/baidu/b/g;->a(Ljava/lang/String;)Lcom/baidu/b/f; --> Lcom/baidu/b/g;->e(Ljava/lang/String;)Lcom/baidu/b/f; --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        },
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "Lcom/baidu/b/g;->a()Lcom/baidu/b/f;",
+          "full_path": "Lcom/baidu/a/a/a/a/a;->b(Ljava/lang/String;)Lcom/baidu/b/h$a; --> Lcom/baidu/a/a/a/a/a;->c(Ljava/lang/String;)Lcom/baidu/b/h$a; --> Lcom/baidu/b/g;->a(Ljava/lang/String;)Lcom/baidu/b/f; --> Lcom/baidu/b/g;->a()Lcom/baidu/b/f; --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        },
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "LTqWVS/MndKiU;->NmAalx(Ljava/lang/String; Ljava/lang/String;)Ljava/io/File;",
+          "full_path": "LTqWVS/MndKiU;-><clinit>()V --> LTqWVS/MndKiU;->NmAalx(Ljava/lang/String; Ljava/lang/String;)Ljava/io/File; --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        },
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "Lcom/baidu/vi/VDeviceAPI;->getSdcardTotalSpace()J",
+          "full_path": "Lcom/baidu/vi/VDeviceAPI;->getSdcardTotalSpace()J --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        },
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "Lcom/baidu/vi/VDeviceAPI;->getSdcardFreeSpace()J",
+          "full_path": "Lcom/baidu/vi/VDeviceAPI;->getSdcardFreeSpace()J --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        }
+      ]
+    },
+    {
+      "id": "ImplicitIntentService",
+      "name": "Implicit Service Checking",
+      "description": "The application contains implicit Intents for starting Services. Using an implicit Intent to start a service is a security hazard because you cannot be certain of what service will respond to the intent, and the user cannot see which service starts.",
+      "remediation": "To ensure that your app is secure, always use an explicit Intent when starting a Service and **DO NOT** declare intent filters for your services. Beginning with Android 5.0 (API level 21), the system throws an exception if you call `bindService()` with an implicit Intent.",
+      "references": {
+        "text": "Further information on implicit and explicit Intents can be found in the official documentation [[1]].",
+        "links": {
+          "1": "http://developer.android.com/guide/components/intents-filters.html#Types"
+        }
+      },
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Local",
+        "attack_complexity": "High",
+        "privileges_required": "High",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "None",
+        "integrity_impact": "None",
+        "availability_impact": "High"
+      },
+      "code": [
+        {
+          "what": "service \"com.google.assistant.appactions.widgets.pinappwidget.PinAppWidgetService\" has intent filters",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "service \"com.huawei.hms.support.api.push.service.HmsMsgService\" has intent filters",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        }
+      ]
+    },
+    {
+      "id": "InsecureConnection",
+      "name": "SSL Connection Checking",
+      "description": "The application contains URLs that are **NOT** under SSL. This is a security hazard since information exchanged with those URLs can be intercepted and altered by a malicious user.",
+      "remediation": "Please carefully revise each URL and use SSL if possible. Make sure that **ALL** data displayed and sent through HTTP is not security-relevant, including Session Cookies.",
+      "references": {
+        "text": "For further information on using Android with HTTPS and SSL please refer to the official guide [[1]].",
+        "links": {
+          "1": "https://developer.android.com/training/articles/security-ssl.html"
+        }
+      },
+      "owasp": [
+        "M3"
+      ],
+      "cvss": {
+        "attack_vector": "Network",
+        "attack_complexity": "High",
+        "privileges_required": "None",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "High",
+        "integrity_impact": "High",
+        "availability_impact": "Low"
+      },
+      "code": [
+        {
+          "what": "http://booking.com",
+          "where": "Lcom/booking/property/hostprofile/HostDescriptionFacet$$ExternalSyntheticLambda0;->invoke(Ljava/lang/Object;)Ljava/lang/Object;",
+          "full_path": "Lcom/booking/tripcomponents/ui/jpc/connectormodal/LateCheckInConnectorModalKt;->handlePrimaryActionClick(Landroid/content/Context; Ljava/lang/String; Lcom/booking/mybookingslist/domain/model/ConnectorCode; Lcom/booking/mybookingslist/domain/type/Source; Lkotlin/jvm/functions/Function2;)V --> Lcom/booking/property/hostprofile/HostDescriptionFacet$$ExternalSyntheticLambda0;->invoke(Ljava/lang/Object;)Ljava/lang/Object;"
+        },
+        {
+          "what": "http://booking.com",
+          "where": "Lcom/booking/unfinishedbookings/facets/UnfinishedBookingFacet$special$$inlined$observeValue$1;->invoke(Ljava/lang/Object; Ljava/lang/Object;)Ljava/lang/Object;",
+          "full_path": "Lcom/booking/unfinishedbookings/facets/UnfinishedBookingFacet;-><init>(Ljava/lang/String; Ljava/lang/String;)V --> Lcom/booking/unfinishedbookings/facets/UnfinishedBookingFacet$special$$inlined$observeValue$1;->invoke(Ljava/lang/Object; Ljava/lang/Object;)Ljava/lang/Object;"
+        },
+        {
+          "what": "http://booking.com",
+          "where": "Lcom/booking/assistant/entrypoint/AssistantReservationsFragment$2$$ExternalSyntheticLambda0;->accept(Ljava/lang/Object;)V",
+          "full_path": "Lcom/booking/assistant/entrypoint/AssistantReservationsFragment$2;->onClick(Landroid/view/View;)V --> Lcom/booking/assistant/entrypoint/AssistantReservationsFragment$2$$ExternalSyntheticLambda0;->accept(Ljava/lang/Object;)V"
+        },
+        {
+          "what": "http://booking.com",
+          "where": "Lcom/booking/assistant/entrypoint/AssistantReservationsFragment$2;->onClick(Landroid/view/View;)V",
+          "full_path": "Lcom/booking/assistant/entrypoint/AssistantReservationsFragment;->onCreateView(Landroid/view/LayoutInflater; Landroid/view/ViewGroup; Landroid/os/Bundle;)Landroid/view/View; --> Lcom/booking/assistant/entrypoint/AssistantReservationsFragment$2;->onClick(Landroid/view/View;)V"
+        },
+        {
+          "what": "http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=31010602003631",
+          "where": "Lcom/booking/china/privacy/ChinaLicenses;-><init>()V",
+          "full_path": "Lcom/booking/china/privacy/ChinaPrivacyUtils;-><clinit>()V --> Lcom/booking/china/privacy/ChinaLicenses;-><init>()V"
+        },
+        {
+          "what": "http://www.url.com",
+          "where": "Lcom/booking/commons/ui/UiUtils;->openUri(Landroid/content/Context; Landroid/net/Uri;)V",
+          "full_path": "Lcom/booking/deeplink/scheme/HttpSchemeDeeplinkLauncher;->openUniversalLinkSuspend(Landroid/content/Context; Landroid/net/Uri; Lkotlinx/coroutines/CoroutineDispatcher; Lkotlin/coroutines/jvm/internal/ContinuationImpl;)Ljava/lang/Object; --> Lcom/booking/deeplink/scheme/HttpSchemeDeeplinkLauncher$openUniversalLinkSuspend$3;->invoke(Ljava/lang/Object; Ljava/lang/Object;)Ljava/lang/Object; --> Lcom/booking/deeplink/scheme/HttpSchemeDeeplinkLauncher$openUniversalLinkSuspend$3;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object; --> Lcom/booking/commons/ui/UiUtils;->openUri(Landroid/content/Context; Landroid/net/Uri;)V"
+        },
+        {
+          "what": "http://m.booking.com/content/dsar.html",
+          "where": "Lcom/booking/dynamiclanding/root/ui/DynamicLandingScreenFacet$1$$ExternalSyntheticLambda0;->invoke()Ljava/lang/Object;",
+          "full_path": "Lcom/booking/ugc/presentation/ui/components/ReviewFormAttachPhotosKt;->PhotoBox(Landroidx/compose/ui/Modifier; Landroid/net/Uri; Lkotlin/jvm/functions/Function0; Landroidx/compose/runtime/Composer; I)V --> Lcom/booking/dynamiclanding/root/ui/DynamicLandingScreenFacet$1$$ExternalSyntheticLambda0;->invoke()Ljava/lang/Object;"
+        },
+        {
+          "what": "http://xx.bstatic.com/static/img/coupon/inactive_code@3x.png",
+          "where": "Lcom/booking/incentivescomponents/activeoffer/IncentivesActiveOfferBlockKt;->IncentivesActiveOfferBlock(Lcom/booking/incentivescomponents/activeoffer/IncentivesActiveOfferBlock$IncentivesOffer; Lkotlin/jvm/functions/Function0; Lkotlin/jvm/functions/Function0; Landroidx/compose/runtime/Composer; I)V",
+          "full_path": "Lcom/booking/flights/ancillariesBeforePax/FlightsTicketTypeScreenKt$$ExternalSyntheticLambda2;->invoke(Ljava/lang/Object; Ljava/lang/Object;)Ljava/lang/Object; --> Lcom/booking/bookingprocess/viewitems/providers/incentives/BPIncentivesActiveOfferBlockKt;->BPIncentivesActiveOfferBlock(Landroidx/compose/ui/Modifier; Lcom/booking/bookingprocess/data/flowprovider/IncentivesActiveOfferBlockFlowProvider$provide$$inlined$map$1; Lcom/booking/bookingprocess/compose/actionhandler/IncentivesActiveOfferBlockActionHandler; Landroidx/compose/runtime/Composer; I)V --> Lcom/booking/incentivescomponents/activeoffer/IncentivesActiveOfferBlockKt;->IncentivesComponentBlock(Landroidx/compose/ui/Modifier; Lcom/booking/incentivescomponents/activeoffer/IncentivesActiveOfferBlock$Props; Lkotlin/jvm/functions/Function3; Landroid/content/Context; Lkotlin/jvm/functions/Function0; Lkotlin/jvm/functions/Function0; Lkotlin/jvm/functions/Function0; Landroidx/compose/runtime/Composer; I)V --> Lcom/booking/incentivescomponents/activeoffer/IncentivesActiveOfferBlockKt;->IncentivesComponent(Landroidx/compose/ui/Modifier; Lcom/booking/incentivescomponents/activeoffer/IncentivesActiveOfferBlock$Props; Lkotlin/jvm/functions/Function3; Lkotlin/jvm/functions/Function0; Lkotlin/jvm/functions/Function0; Landroidx/compose/runtime/Composer; I)V --> Lcom/booking/incentivescomponents/activeoffer/IncentivesActiveOfferBlockKt;->IncentivesActiveOfferBlock(Lcom/booking/incentivescomponents/activeoffer/IncentivesActiveOfferBlock$IncentivesOffer; Lkotlin/jvm/functions/Function0; Lkotlin/jvm/functions/Function0; Landroidx/compose/runtime/Composer; I)V"
+        },
+        {
+          "what": "http://maps.google.com/maps?q=%s",
+          "where": "Lcom/booking/wishlist/deeplink/UniversalLinkHandler$$ExternalSyntheticLambda0;->invoke()Ljava/lang/Object;",
+          "full_path": "Lcom/booking/flights/pricealerts/permissions/PriceAlertsSubscriptionFlow$Companion$$ExternalSyntheticLambda6;->invoke()Ljava/lang/Object; --> Lcom/booking/helpcenter/ui/component/ListItemFacet$$ExternalSyntheticLambda0;->invoke(Ljava/lang/Object;)Ljava/lang/Object; --> Lcom/booking/wishlist/ui/handler/WishlistMapActionsHandlerImpl;->onItemClicked(Lcom/booking/tripplandatamodels/domain/model/WishlistItem; Lcom/booking/tripplandatamodels/domain/model/searchconfig/SearchConfig;)V --> Lcom/booking/wishlist/ui/handler/WishlistDetailsActionsHandlerBase;->openWishlistItemDetailsPage(Landroidx/appcompat/app/AppCompatActivity; Lcom/booking/tripplandatamodels/domain/model/details/WishlistItemDetails; Lcom/booking/tripplandatamodels/domain/model/searchconfig/SearchConfig;)V --> Lcom/booking/wishlist/deeplink/UniversalLinkHandler$$ExternalSyntheticLambda0;->invoke()Ljava/lang/Object;"
+        },
+        {
+          "what": "http://10.0.2.2:3000/",
+          "where": "Lcom/braintreepayments/api/TokenizationKey;-><init>(Ljava/lang/String;)V",
+          "full_path": "Lcom/booking/payment/component/core/common/braintree/BraintreeHelper$$ExternalSyntheticLambda1;->invoke()Ljava/lang/Object; --> Lcom/braintreepayments/api/BraintreeClient;-><init>(Landroid/content/Context; Ljava/lang/String; Ljava/lang/String; I)V --> Lcom/braintreepayments/api/BraintreeClientParams;-><init>(Lcom/braintreepayments/api/BraintreeOptions;)V --> Lcom/braintreepayments/api/Authorization$Companion;->fromString(Ljava/lang/String;)Lcom/braintreepayments/api/Authorization; --> Lcom/braintreepayments/api/TokenizationKey;-><init>(Ljava/lang/String;)V"
+        },
+        {
+          "what": "http://sample_url.com",
+          "where": "Lcom/booking/payment/component/ui/screen/web/deeplink/UniversalDeeplinksWebViewUrlInterceptor;-><clinit>()V",
+          "full_path": "Lcom/booking/payment/component/ui/screen/web/PaymentWebViewActivity$$ExternalSyntheticLambda0;->invoke()Ljava/lang/Object; --> Lcom/booking/payment/component/ui/screen/web/deeplink/UniversalDeeplinksWebViewUrlInterceptor;-><clinit>()V"
+        },
+        {
+          "what": "http://www.360.cn/privacy/v5/index.html",
+          "where": "Lcom/booking/privacy/china/PersonalInfoData;-><clinit>()V",
+          "full_path": "Lcom/booking/privacy/china/PersonalInfoData;-><clinit>()V"
+        },
+        {
+          "what": "http://www.oracle.com/legal/privacy/addthis-privacy-policy.html",
+          "where": "Lcom/booking/privacy/china/PersonalInfoData;-><clinit>()V",
+          "full_path": "Lcom/booking/privacy/china/PersonalInfoData;-><clinit>()V"
+        },
+        {
+          "what": "http://jin-han.com.cn/",
+          "where": "Lcom/booking/privacy/china/PersonalInfoData;-><clinit>()V",
+          "full_path": "Lcom/booking/privacy/china/PersonalInfoData;-><clinit>()V"
+        },
+        {
+          "what": "http://terms.aliyun.com/legal-agreement/terms/suit_bu1_ali_cloud/suit_bu1_ali_cloud201902141711_54837.html?spm=5176.19720258.J_9220772140.82.542176f4r1Q3HI",
+          "where": "Lcom/booking/privacy/china/PersonalInfoData;-><clinit>()V",
+          "full_path": "Lcom/booking/privacy/china/PersonalInfoData;-><clinit>()V"
+        },
+        {
+          "what": "http://10.0.2.2:3000",
+          "where": "Lcom/booking/saba/sabaMFEConfig/SabaMFELocalConfigSharedPrefRepo;->reset()V",
+          "full_path": "Lcom/booking/saba/sabaMFEConfig/ConfigureLocalSabaConfigInterceptor;->intercept(Lokhttp3/Interceptor$Chain;)Lokhttp3/Response; --> Lcom/booking/saba/sabaMFEConfig/SabaMFELocalConfigSharedPrefRepo;->reset()V"
+        },
+        {
+          "what": "http://10.0.2.2:3000",
+          "where": "Lcom/booking/saba/sabaMFEConfig/SabaMFELocalConfigSharedPrefRepo;->getSabaMFEConfig()Lcom/booking/saba/sabaMFEConfig/SabaMFELocalConfig;",
+          "full_path": "Lcom/booking/saba/sabaMFEConfig/ConfigureLocalSabaConfigInterceptor;->intercept(Lokhttp3/Interceptor$Chain;)Lokhttp3/Response; --> Lcom/booking/saba/sabaMFEConfig/SabaMFELocalConfigSharedPrefRepo;->getSabaMFEConfig()Lcom/booking/saba/sabaMFEConfig/SabaMFELocalConfig;"
+        },
+        {
+          "what": "http://g.co/dev/packagevisibility.",
+          "where": "Lcom/google/android/gms/internal/ads/zzhh;->zzb(Lcom/google/android/gms/internal/ads/zzgo;)J",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzgq;->zzb(Lcom/google/android/gms/internal/ads/zzgo;)J --> Lcom/google/android/gms/internal/ads/zzhh;->zzb(Lcom/google/android/gms/internal/ads/zzgo;)J"
+        },
+        {
+          "what": "http://wappaygw.alipay.com/service/rest.htm",
+          "where": "Lcom/alipay/sdk/app/PayTask;->fetchOrderInfoFromH5PayUrl(Ljava/lang/String;)Ljava/lang/String;",
+          "full_path": "Lcom/booking/payment/nativeintegration/alipay/AliPayPaymentHelper$AliPayAsyncTask;->doInBackground([Ljava/lang/Object;)Ljava/lang/Object; --> Lcom/alipay/sdk/app/PayTask;->payInterceptorWithUrl(Ljava/lang/String; Z Lcom/alipay/sdk/app/H5PayCallback;)Z --> Lcom/alipay/sdk/app/PayTask;->fetchOrderInfoFromH5PayUrl(Ljava/lang/String;)Ljava/lang/String;"
+        },
+        {
+          "what": "http://mclient.alipay.com/service/rest.htm",
+          "where": "Lcom/alipay/sdk/app/PayTask;->fetchOrderInfoFromH5PayUrl(Ljava/lang/String;)Ljava/lang/String;",
+          "full_path": "Lcom/booking/payment/nativeintegration/alipay/AliPayPaymentHelper$AliPayAsyncTask;->doInBackground([Ljava/lang/Object;)Ljava/lang/Object; --> Lcom/alipay/sdk/app/PayTask;->payInterceptorWithUrl(Ljava/lang/String; Z Lcom/alipay/sdk/app/H5PayCallback;)Z --> Lcom/alipay/sdk/app/PayTask;->fetchOrderInfoFromH5PayUrl(Ljava/lang/String;)Ljava/lang/String;"
+        },
+        {
+          "what": "http://mclient.alipay.com/home/exterfaceAssign.htm",
+          "where": "Lcom/alipay/sdk/app/PayTask;->fetchOrderInfoFromH5PayUrl(Ljava/lang/String;)Ljava/lang/String;",
+          "full_path": "Lcom/booking/payment/nativeintegration/alipay/AliPayPaymentHelper$AliPayAsyncTask;->doInBackground([Ljava/lang/Object;)Ljava/lang/Object; --> Lcom/alipay/sdk/app/PayTask;->payInterceptorWithUrl(Ljava/lang/String; Z Lcom/alipay/sdk/app/H5PayCallback;)Z --> Lcom/alipay/sdk/app/PayTask;->fetchOrderInfoFromH5PayUrl(Ljava/lang/String;)Ljava/lang/String;"
+        },
+        {
+          "what": "http://mclient.alipay.com/cashier/mobilepay.htm",
+          "where": "Lcom/alipay/sdk/app/PayTask;->fetchOrderInfoFromH5PayUrl(Ljava/lang/String;)Ljava/lang/String;",
+          "full_path": "Lcom/booking/payment/nativeintegration/alipay/AliPayPaymentHelper$AliPayAsyncTask;->doInBackground([Ljava/lang/Object;)Ljava/lang/Object; --> Lcom/alipay/sdk/app/PayTask;->payInterceptorWithUrl(Ljava/lang/String; Z Lcom/alipay/sdk/app/H5PayCallback;)Z --> Lcom/alipay/sdk/app/PayTask;->fetchOrderInfoFromH5PayUrl(Ljava/lang/String;)Ljava/lang/String;"
+        },
+        {
+          "what": "http://m.alipay.com/?action=h5quit",
+          "where": "Lcom/alipay/sdk/m/u/n;->a(Lcom/alipay/sdk/app/H5PayActivity; Lcom/alipay/sdk/m/s/a; Ljava/lang/String;)Z",
+          "full_path": "Lcom/alipay/sdk/m/x/e;->setWebClientProxy(Lcom/alipay/sdk/m/x/e$g;)V --> Lcom/alipay/sdk/m/x/e$d;->shouldOverrideUrlLoading(Landroid/webkit/WebView; Ljava/lang/String;)Z --> Lcom/alipay/sdk/m/u/n;->a(Lcom/alipay/sdk/app/H5PayActivity; Lcom/alipay/sdk/m/s/a; Ljava/lang/String;)Z"
+        },
+        {
+          "what": "http://m.booking.com",
+          "where": "Lcom/booking/activity/ObsoleteAppActivity$$ExternalSyntheticLambda3;->invoke()Ljava/lang/Object;",
+          "full_path": "Lcom/booking/ugc/ui/compose/PropertyPageReviewsBlockKt;->NoReviewScoreInfoCard(Lcom/booking/ugc/ui/compose/PropertyPageReviewsBlock$Props; Landroidx/compose/ui/Modifier$Companion; Landroidx/compose/runtime/Composer; I)V --> Lcom/booking/activity/ObsoleteAppActivity$$ExternalSyntheticLambda3;->invoke()Ljava/lang/Object;"
+        }
+      ]
+    },
+    {
+      "id": "InsecureHostnameVerifier",
+      "name": "SSL Implementation Checking (Verifying Host Name in Custom Classes)",
+      "description": "This app allows self-defined HOSTNAME VERIFIER to accept all Common Names (CN). This is a critical vulnerability and allows attackers to do MitM attacks with their valid certificate without your knowledge. This behavior also represents a violation in OWASP Mobile TOP 10 Security Risks.",
+      "remediation": "Please remove all the code that skips SSL certificate validation and relies on default implementations. The compliant solution may vary, depending on the app implementation. For examples of secure implementation please refer to best practices like those presented in \"Android Secure Coding\" book [[1]].",
+      "references": {
+        "text": "Further information on the SSL Security can be found in the official Android developers guide [[2]], while information on security risks can be found in the OWASP Mobile TOP 10 [[3]].",
+        "links": {
+          "1": "http://www.jssec.org/dl/android_securecoding.pdf",
+          "2": "http://developer.android.com/training/articles/security-ssl.html",
+          "3": "https://www.owasp.org/index.php/Mobile_Top_10_2016-M3-Insecure_Communication"
+        }
+      },
+      "owasp": [
+        "M3",
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Network",
+        "attack_complexity": "High",
+        "privileges_required": "Low",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "High",
+        "integrity_impact": "High",
+        "availability_impact": "Low"
+      },
+      "code": [
+        {
+          "what": "Lcom/huawei/secure/android/common/ssl/hostname/StrictHostnameVerifier;->verify(Ljava/lang/String; Ljavax/net/ssl/SSLSession;)Z",
+          "where": "Lcom/huawei/hms/hatool/a0;->a(Ljava/net/HttpURLConnection;)V",
+          "full_path": "Lcom/huawei/hms/hatool/a0;->a(Ljava/lang/String; [B Ljava/util/Map;)Lcom/huawei/hms/hatool/b0; --> Lcom/huawei/hms/hatool/a0;->a(Ljava/lang/String; [B Ljava/util/Map; Ljava/lang/String;)Lcom/huawei/hms/hatool/b0; --> Lcom/huawei/hms/hatool/a0;->a(Ljava/lang/String; I Ljava/util/Map; Ljava/lang/String;)Ljava/net/HttpURLConnection; --> Lcom/huawei/hms/hatool/a0;->a(Ljava/net/HttpURLConnection;)V --> Ljavax/net/ssl/HttpsURLConnection;->setHostnameVerifier(Ljavax/net/ssl/HostnameVerifier;)V"
+        },
+        {
+          "what": "Lcom/huawei/secure/android/common/ssl/hostname/StrictHostnameVerifier;->verify(Ljava/lang/String; Ljavax/net/ssl/SSLSession;)Z",
+          "where": "Lcom/huawei/hms/availableupdate/k;->a(Ljava/lang/String; Landroid/content/Context;)V",
+          "full_path": "Lcom/huawei/hms/availableupdate/e;-><init>(Landroid/content/Context;)V --> Lcom/huawei/hms/availableupdate/k;->a(Ljava/lang/String; Ljava/io/OutputStream; I I Landroid/content/Context;)I --> Lcom/huawei/hms/availableupdate/k;->a(Ljava/lang/String; Landroid/content/Context;)V --> Ljavax/net/ssl/HttpsURLConnection;->setHostnameVerifier(Ljavax/net/ssl/HostnameVerifier;)V"
+        }
+      ]
+    },
+    {
+      "id": "KeystoreWithoutPassword",
+      "name": "KeyStore Protection Checking",
+      "description": "The Keystores below seem **NOT** protected by password. This is a security hazard since malicious users that have physical access to the Keystore file can access the keys and certificates contained in it.",
+      "remediation": "Please provide a valid password for each of the Keystores contained in the app.",
+      "references": {
+        "text": "Further information on the creation and usage of a valid Keystore file can be found in the following example guides [[1], [2]].",
+        "links": {
+          "1": "https://davidtruxall.com/android-certificate-pinning/",
+          "2": "https://infinum.co/the-capsized-eight/securing-mobile-banking-on-android-with-ssl-certificate-pinning"
+        }
+      },
+      "owasp": [
+        "M5"
+      ],
+      "cvss": {
+        "attack_vector": "Local",
+        "attack_complexity": "Low",
+        "privileges_required": "Low",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "High",
+        "integrity_impact": "None",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "Ljava/security/KeyStore;->load(Ljava/io/InputStream; [C)V",
+          "where": "Lcom/stripe/android/stripe3ds2/transaction/DefaultJwsValidator$Companion;->access$validateChain(Ljava/util/List; Ljava/util/List;)V",
+          "full_path": "Lcom/stripe/android/stripe3ds2/transaction/DefaultInitChallengeRepository;->startChallenge(Lcom/stripe/android/stripe3ds2/transaction/InitChallengeArgs; Lkotlin/coroutines/jvm/internal/ContinuationImpl;)Ljava/lang/Object; --> Lcom/stripe/android/stripe3ds2/transaction/DefaultJwsValidator;->getPayload(Ljava/lang/String;)Lorg/json/JSONObject; --> Lcom/stripe/android/stripe3ds2/transaction/DefaultJwsValidator;->isValid(Lcom/nimbusds/jose/JWSObject; Ljava/util/List;)Z --> Lcom/stripe/android/stripe3ds2/transaction/DefaultJwsValidator$Companion;->access$validateChain(Ljava/util/List; Ljava/util/List;)V --> Ljava/security/KeyStore;->load(Ljava/io/InputStream; [C)V"
+        },
+        {
+          "what": "Ljava/security/KeyStore;->load(Ljava/io/InputStream; [C)V",
+          "where": "Lcom/booking/identity/session/internal/DPoPEncryptor$Builder;->doBuild()Lcom/booking/identity/session/internal/DPoPEncryptor;",
+          "full_path": "Lcom/booking/identity/session/SessionInterceptor;->addDPoPHeader(Lokhttp3/Request$Builder; Lokhttp3/Request; Ljava/lang/Long;)V --> Lcom/booking/identity/session/internal/TokenState;->getDPoPEncryptor()Lcom/booking/identity/session/internal/DPoPEncryptor; --> Lcom/booking/identity/session/internal/DPoPEncryptor$Builder;->build()Lcom/booking/identity/session/internal/DPoPEncryptor; --> Lcom/booking/identity/session/internal/DPoPEncryptor$Builder;->doBuild()Lcom/booking/identity/session/internal/DPoPEncryptor; --> Ljava/security/KeyStore;->load(Ljava/io/InputStream; [C)V"
+        },
+        {
+          "what": "Ljava/security/KeyStore;->load(Ljava/io/InputStream; [C)V",
+          "where": "Lcom/booking/identity/storage/IdentityEncryptor$Builder;->doBuild()Lcom/booking/identity/storage/IdentityEncryptor;",
+          "full_path": "Lcom/booking/identity/dependencies/TokenStorageDependency$Companion$$ExternalSyntheticLambda0;->getBuilder()Lcom/booking/identity/session/internal/storage/TokenStorage$Builder; --> Lcom/booking/identity/dependencies/TokenStorageDependency$Companion$$ExternalSyntheticLambda1;->invoke()Ljava/lang/Object; --> Lcom/booking/identity/storage/IdentityDataSerializer;-><init>(Lcom/google/gson/Gson; Lcom/booking/identity/storage/MessageRow$BytesSerializer; I)V --> Lcom/booking/identity/storage/IdentityEncryptor$Builder;->doBuild()Lcom/booking/identity/storage/IdentityEncryptor; --> Ljava/security/KeyStore;->load(Ljava/io/InputStream; [C)V"
+        },
+        {
+          "what": "Ljava/security/KeyStore;->load(Ljava/io/InputStream; [C)V",
+          "where": "Lcom/flexdb/crypto/Encryptor$Builder;->doBuild()Lcom/flexdb/crypto/Encryptor;",
+          "full_path": "Lcom/booking/flexdb/FlexDatabaseEncryption$createEncryptedSerializer$3;->invoke(Ljava/lang/Object; Ljava/lang/Object;)Ljava/lang/Object; --> Lcom/booking/flexdb/FlexDatabaseEncryption$createEncryptedSerializer$3;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object; --> Lcom/flexdb/crypto/Encryptor$Builder;->build()Lcom/flexdb/crypto/Encryptor; --> Lcom/flexdb/crypto/Encryptor$Builder;->doBuild()Lcom/flexdb/crypto/Encryptor; --> Ljava/security/KeyStore;->load(Ljava/io/InputStream; [C)V"
+        },
+        {
+          "what": "Ljava/security/KeyStore;->load(Ljava/io/InputStream; [C)V",
+          "where": "Llib/android/paypal/com/magnessdk/network/base/f;->b()[Ljavax/net/ssl/TrustManager;",
+          "full_path": "Llib/android/paypal/com/magnessdk/network/a;->run()V --> Llib/android/paypal/com/magnessdk/network/base/MagnesNetworkingFactoryImpl;->createHttpClient(Llib/android/paypal/com/magnessdk/c$h$b;)Llib/android/paypal/com/magnessdk/network/base/MagnesNetworking; --> Llib/android/paypal/com/magnessdk/network/base/f;-><init>()V --> Llib/android/paypal/com/magnessdk/network/base/f;->b()[Ljavax/net/ssl/TrustManager; --> Ljava/security/KeyStore;->load(Ljava/io/InputStream; [C)V"
+        },
+        {
+          "what": "Ljava/security/KeyStore;->load(Ljava/io/InputStream; [C)V",
+          "where": "Latd/an/getMessageVersion;->AuthenticationRequestParameters(Ljava/security/cert/X509Certificate; Ljava/util/List;)V",
+          "full_path": "Latd/a/getAdditionalDetails;->getDeviceData(Ljava/lang/String;)Latd/g/getDeviceData; --> Latd/ak/AuthenticationRequestParameters;->getSDKAppID(Ljava/util/List;)V --> Latd/ak/AuthenticationRequestParameters;->getSDKTransactionID(Ljava/security/cert/X509Certificate;)V --> Latd/an/getMessageVersion;->AuthenticationRequestParameters(Ljava/security/cert/X509Certificate; Ljava/util/List;)V --> Ljava/security/KeyStore;->load(Ljava/io/InputStream; [C)V"
+        },
+        {
+          "what": "Ljava/security/KeyStore;->load(Ljava/io/InputStream; [C)V",
+          "where": "Lcom/braintreepayments/api/TLSSocketFactory;-><init>(Ljava/io/ByteArrayInputStream;)V",
+          "full_path": "Lcom/braintreepayments/api/AnalyticsUploadWorker;->doWork()Landroidx/work/ListenableWorker$Result; --> Lcom/braintreepayments/api/AnalyticsClient;-><init>(Landroid/content/Context;)V --> Lcom/braintreepayments/api/BraintreeHttpClient;-><init>()V --> Lcom/braintreepayments/api/TLSSocketFactory;-><init>(Ljava/io/ByteArrayInputStream;)V --> Ljava/security/KeyStore;->load(Ljava/io/InputStream; [C)V"
+        },
+        {
+          "what": "Ljava/security/KeyStore;->load(Ljava/io/InputStream; [C)V",
+          "where": "Lorg/conscrypt/Platform;->getDefaultCertKeyStore()Ljava/security/KeyStore;",
+          "full_path": "Lorg/conscrypt/TrustManagerFactoryImpl;->engineInit(Ljava/security/KeyStore;)V --> Lorg/conscrypt/Platform;->getDefaultCertKeyStore()Ljava/security/KeyStore; --> Ljava/security/KeyStore;->load(Ljava/io/InputStream; [C)V"
+        },
+        {
+          "what": "Ljava/security/KeyStore;->load(Ljava/io/InputStream; [C)V",
+          "where": "Lorg/conscrypt/KeyManagerFactoryImpl;->engineInit(Ljava/security/KeyStore; [C)V",
+          "full_path": "Lorg/conscrypt/KeyManagerFactoryImpl;->engineInit(Ljava/security/KeyStore; [C)V --> Ljava/security/KeyStore;->load(Ljava/io/InputStream; [C)V"
+        }
+      ]
+    },
+    {
+      "id": "ObfuscationMissing",
+      "name": "Not sufficient code obfuscation",
+      "description": "The app seems not using sufficient code obfuscation.",
+      "remediation": null,
+      "references": null,
+      "owasp": [
+        "M7",
+        "M9"
+      ],
+      "cvss": {
+        "attack_vector": "Local",
+        "attack_complexity": "High",
+        "privileges_required": "Low",
+        "user_interaction": "Required",
+        "scope": "Unchanged",
+        "confidentiality_impact": "High",
+        "integrity_impact": "High",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "ASCII Obfuscation: 0.00% Renaming Obfuscation: 27.71%",
+          "where": "application",
+          "full_path": "application"
+        }
+      ]
+    },
+    {
+      "id": "RuntimeCommand",
+      "name": "Runtime Command Checking",
+      "description": "This app is using critical function `Runtime.getRuntime().exec(\"...\")`. Please confirm that the following code sections are not harmful.",
+      "remediation": null,
+      "references": null,
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Local",
+        "attack_complexity": "High",
+        "privileges_required": "High",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "High",
+        "integrity_impact": "Low",
+        "availability_impact": "Low"
+      },
+      "code": [
+        {
+          "what": "Ljava/lang/Runtime;->exec(Ljava/lang/String;)Ljava/lang/Process;",
+          "where": "Lcom/baidu/mshield/x0/d/d;->e()Ljava/lang/String;",
+          "full_path": "Lcom/baidu/mshield/x0/EngineImpl;->initReport()V --> Lcom/baidu/mshield/x0/EngineImpl$b;->a()V --> Lcom/baidu/mshield/x0/d/d;->q(Landroid/content/Context;)V --> Lcom/baidu/mshield/x0/d/d;->e()Ljava/lang/String; --> Ljava/lang/Runtime;->exec(Ljava/lang/String;)Ljava/lang/Process;"
+        },
+        {
+          "what": "Ljava/lang/Runtime;->exec(Ljava/lang/String;)Ljava/lang/Process;",
+          "where": "Lcom/baidu/mshield/b/a/f;->a([Ljava/lang/String; Z Z)Lcom/baidu/mshield/b/a/f$a;",
+          "full_path": "Lcom/baidu/mshield/x0/c/a$a;->run()V --> Lcom/baidu/mshield/b/a/b;->a(Ljava/lang/String;)[Ljava/lang/String; --> Lcom/baidu/mshield/b/a/f;->a(Ljava/lang/String; Z)Lcom/baidu/mshield/b/a/f$a; --> Lcom/baidu/mshield/b/a/f;->a([Ljava/lang/String; Z Z)Lcom/baidu/mshield/b/a/f$a; --> Ljava/lang/Runtime;->exec(Ljava/lang/String;)Ljava/lang/Process;"
+        }
+      ]
+    },
+    {
+      "id": "SqliteExecSql",
+      "name": "Potential SQL injection",
+      "description": "Android allows apps to save data in a local database called SQLite. SQL queries are used to interact with the SQLite database. `execSQL()` method of SQLite allows developers to execute queries such as `INSERT/DELETE/UPDATE` which do not return any result. If an app uses inputs (e.g., user input via UI or data from web) to create a SQL statement to be executed via `execSQL()` method, then the app may be vulnerable to SQL injection attack.",
+      "remediation": "Make sure to sanitize the inputs and use prepared statements if possible.",
+      "references": {
+        "text": "Further information on SQLite can be found in the official documentation [[1]].",
+        "links": {
+          "1": "https://developer.android.com/reference/android/database/sqlite/SQLiteDatabase#execSQL(java.lang.String)"
+        }
+      },
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Local",
+        "attack_complexity": "High",
+        "privileges_required": "Low",
+        "user_interaction": "Required",
+        "scope": "Unchanged",
+        "confidentiality_impact": "High",
+        "integrity_impact": "None",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Landroidx/sqlite/db/framework/FrameworkSQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "full_path": "Landroidx/work/impl/Migration_7_8;->migrate(Landroidx/sqlite/db/framework/FrameworkSQLiteDatabase;)V --> Landroidx/sqlite/db/framework/FrameworkSQLiteDatabase;->execSQL(Ljava/lang/String;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/google/android/gms/measurement/internal/zzau;->zza(Lcom/google/android/gms/measurement/internal/zzgi; Landroid/database/sqlite/SQLiteDatabase; Ljava/lang/String; Ljava/lang/String; Ljava/lang/String; [Ljava/lang/String;)V",
+          "full_path": "Lcom/google/android/gms/measurement/internal/zzam;-><init>(Lcom/google/android/gms/measurement/internal/zznv;)V --> Lcom/google/android/gms/measurement/internal/zzav;->onOpen(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/google/android/gms/measurement/internal/zzau;->zza(Lcom/google/android/gms/measurement/internal/zzgi; Landroid/database/sqlite/SQLiteDatabase; Ljava/lang/String; Ljava/lang/String; Ljava/lang/String; [Ljava/lang/String;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/google/android/gms/measurement/internal/zzam;->zza(Ljava/util/List;)V",
+          "full_path": "Lcom/google/android/gms/measurement/internal/zznv;->zzw()V --> Lcom/google/android/gms/measurement/internal/zznv;->zza(Z I Ljava/io/IOException; [B Ljava/lang/String; Ljava/util/List;)V --> Lcom/google/android/gms/measurement/internal/zzam;->zza(Ljava/util/List;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/booking/core/exps3/DbUtils$TableBuilder;->make(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/booking/core/exps3/EtApi$Builder;->build()Lcom/booking/core/exps3/EtApi; --> Lcom/booking/core/exps3/Database;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/booking/core/exps3/Database;->createGoalTracksTable(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/booking/core/exps3/DbUtils$TableBuilder;->make(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/booking/core/exps3/Database;->createGoalTracksTable(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/booking/core/exps3/EtApi$Builder;->build()Lcom/booking/core/exps3/EtApi; --> Lcom/booking/core/exps3/Database;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/booking/core/exps3/Database;->createGoalTracksTable(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/booking/core/exps3/DbUtils$TriggerBuilder;->make(Ljava/lang/String;)V",
+          "full_path": "Lcom/booking/core/exps3/Database;->createDb(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/booking/core/exps3/Database;->createExpRunTable(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/booking/core/exps3/DbUtils$TriggerBuilder;->makeAll()V --> Lcom/booking/core/exps3/DbUtils$TriggerBuilder;->make(Ljava/lang/String;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/google/android/gms/internal/ads/zzeag;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzeah;->zzb()Ljava/lang/Object; --> Lcom/google/android/gms/internal/ads/zzeag;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/google/android/gms/internal/ads/zzeag;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/booking/core/exps3/SqliteVisitorRepository;-><init>(Landroid/database/sqlite/SQLiteOpenHelper; Lcom/booking/core/exps3/Squeaker;)V",
+          "full_path": "Lcom/booking/core/exps3/ReposFactory;->getVisitorRepo()Lcom/booking/core/exps3/Repos$VisitorRepository; --> Lcom/booking/core/exps3/SqliteVisitorRepository;-><init>(Landroid/database/sqlite/SQLiteOpenHelper; Lcom/booking/core/exps3/Squeaker;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/booking/core/exp/SQLiteCopyExperimentsStorage$DbOpenHelper;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/booking/core/exp/SQLiteCopyExperimentsStorage;-><init>(Landroid/content/Context; Ljava/lang/String;)V --> Lcom/booking/core/exp/SQLiteCopyExperimentsStorage$DbOpenHelper;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/booking/core/exp/SQLiteCopyExperimentsStorage$DbOpenHelper;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/google/android/gms/measurement/internal/zzam;->zza(Ljava/lang/Long;)V",
+          "full_path": "Lcom/google/android/gms/measurement/internal/zznv;->zze(Ljava/lang/String;)V --> Lcom/google/android/gms/measurement/internal/zznz;->zza(Ljava/lang/String; I Ljava/io/IOException; [B Ljava/util/Map;)V --> Lcom/google/android/gms/measurement/internal/zzam;->zza(Ljava/lang/Long;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/booking/core/exps3/Database;->dropTable(Landroid/database/sqlite/SQLiteDatabase; Ljava/lang/String;)V",
+          "full_path": "Lcom/booking/core/exps3/Database;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/booking/core/exps3/Database;->dropTable(Landroid/database/sqlite/SQLiteDatabase; Ljava/lang/String;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/google/android/datatransport/runtime/scheduling/persistence/SchemaManager$$ExternalSyntheticLambda4;->upgrade(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/google/android/datatransport/runtime/scheduling/persistence/SchemaManager;-><clinit>()V --> Lcom/google/android/datatransport/runtime/scheduling/persistence/SchemaManager$$ExternalSyntheticLambda4;->upgrade(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/google/android/datatransport/runtime/scheduling/persistence/SchemaManager;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V",
+          "full_path": "Lcom/google/android/datatransport/runtime/scheduling/persistence/SchemaManager_Factory;->get()Ljava/lang/Object; --> Lcom/google/android/datatransport/runtime/scheduling/persistence/SchemaManager;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/booking/core/exp/SQLiteCopyExperimentsStorage$DbOpenHelper;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V",
+          "full_path": "Lcom/booking/core/exp/SQLiteCopyExperimentsStorage;-><init>(Landroid/content/Context; Ljava/lang/String;)V --> Lcom/booking/core/exp/SQLiteCopyExperimentsStorage$DbOpenHelper;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/google/android/gms/internal/gtm/zzbj;->onOpen(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/google/android/gms/internal/gtm/zzbk;-><init>(Lcom/google/android/gms/internal/gtm/zzby; Landroid/content/Context;)V --> Lcom/google/android/gms/internal/gtm/zzbj;->onOpen(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/booking/core/squeaks/StorageDatabase$DBHelper;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/booking/core/squeaks/StorageDatabase$DBHelper;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/booking/core/squeaks/StorageDatabase$DBHelper;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/booking/core/squeaks/StorageDatabase$DBHelper;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V",
+          "full_path": "Lcom/booking/core/squeaks/StorageDatabase;-><init>(Landroid/content/Context; Ljava/lang/String;)V --> Lcom/booking/core/squeaks/StorageDatabase$DBHelper;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/google/android/gms/internal/ads/zzear;->zza(Ljava/lang/Object;)Ljava/lang/Object;",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzeba;->zzdG(Lcom/google/android/gms/internal/ads/zzfgm; Ljava/lang/String;)V --> Lcom/google/android/gms/internal/ads/zzear;->zza(Ljava/lang/Object;)Ljava/lang/Object; --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/booking/core/exps3/Database;->setForeignKeysConstraints(Landroid/database/sqlite/SQLiteDatabase; Z)V",
+          "full_path": "Lcom/booking/core/exps3/Database;->onOpen(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/booking/core/exps3/Database;->setForeignKeysConstraints(Landroid/database/sqlite/SQLiteDatabase; Z)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/google/android/gms/internal/ads/zzebs;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzebt;->zzb()Ljava/lang/Object; --> Lcom/google/android/gms/internal/ads/zzebs;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/booking/core/exps3/Database;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V",
+          "full_path": "Lcom/booking/core/exps3/EtApi$Builder;->build()Lcom/booking/core/exps3/EtApi; --> Lcom/booking/core/exps3/Database;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/google/android/gms/internal/ads/zzeau;->zza(Ljava/lang/Object;)Ljava/lang/Object;",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzeav;->zzb(Ljava/lang/Object;)V --> Lcom/google/android/gms/internal/ads/zzeau;->zza(Ljava/lang/Object;)Ljava/lang/Object; --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/baidu/mshield/x0/f/a$a;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/baidu/mshield/x0/f/a;-><init>(Landroid/content/Context;)V --> Lcom/baidu/mshield/x0/f/a$a;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/baidu/mshield/rp/c/a$a;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/baidu/mshield/rp/c/a;-><init>(Landroid/content/Context;)V --> Lcom/baidu/mshield/rp/c/a$a;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/booking/core/exps3/SqliteTrackEventRepository$2;->run()V",
+          "full_path": "Lcom/booking/core/exps3/SqliteTrackEventRepository;->deleteTracks(Ljava/util/List;)V --> Lcom/booking/core/exps3/SqliteTrackEventRepository$2;->run()V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/google/android/datatransport/runtime/scheduling/persistence/SchemaManager$$ExternalSyntheticLambda6;->upgrade(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/google/android/datatransport/runtime/scheduling/persistence/SchemaManager$$ExternalSyntheticLambda6;->upgrade(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/google/android/datatransport/runtime/scheduling/persistence/SchemaManager$$ExternalSyntheticLambda3;->upgrade(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/google/android/datatransport/runtime/scheduling/persistence/SchemaManager$$ExternalSyntheticLambda3;->upgrade(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/google/android/datatransport/runtime/scheduling/persistence/SchemaManager$$ExternalSyntheticLambda0;->upgrade(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/google/android/datatransport/runtime/scheduling/persistence/SchemaManager$$ExternalSyntheticLambda0;->upgrade(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/google/android/datatransport/runtime/scheduling/persistence/SchemaManager$$ExternalSyntheticLambda2;->upgrade(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/google/android/datatransport/runtime/scheduling/persistence/SchemaManager$$ExternalSyntheticLambda2;->upgrade(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/google/android/datatransport/runtime/scheduling/persistence/SchemaManager$$ExternalSyntheticLambda1;->upgrade(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/google/android/datatransport/runtime/scheduling/persistence/SchemaManager$$ExternalSyntheticLambda1;->upgrade(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/google/android/datatransport/runtime/scheduling/persistence/SchemaManager$$ExternalSyntheticLambda5;->upgrade(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/google/android/datatransport/runtime/scheduling/persistence/SchemaManager$$ExternalSyntheticLambda5;->upgrade(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/booking/core/squeaks/StorageDatabase$DBHelper;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V",
+          "full_path": "Lcom/booking/core/squeaks/StorageDatabase$DBHelper;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/google/android/gms/internal/ads/zzebs;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzebs;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/google/android/gms/internal/ads/zzeag;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzeag;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/google/android/gms/internal/ads/zzebs;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzebs;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        }
+      ]
+    },
+    {
+      "id": "WebViewAddJavaScriptInterface",
+      "name": "Checking Java code execution from WebView",
+      "description": "`\"addJavascriptInterface\"` method was found in the code. Use of this method in a WebView containing untrusted content could allow an attacker to manipulate the host application in unintended ways, executing Java code with the permissions of the host application.",
+      "remediation": "Use extreme care when using `\"addJavascriptInterface\"` method in a WebView which could contain untrusted content.",
+      "references": {
+        "text": "Further information can be found on the Android Developer Guide [[1]].",
+        "links": {
+          "1": "https://developer.android.com/reference/android/webkit/WebView.html#addJavascriptInterface(java.lang.Object, java.lang.String)"
+        }
+      },
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Network",
+        "attack_complexity": "High",
+        "privileges_required": "Low",
+        "user_interaction": "Required",
+        "scope": "Unchanged",
+        "confidentiality_impact": "High",
+        "integrity_impact": "None",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V",
+          "where": "Lcom/google/android/gms/internal/ads/zzcgd;-><init>(Lcom/google/android/gms/internal/ads/zzcgx; Lcom/google/android/gms/internal/ads/zzcgy; Ljava/lang/String; Z Lcom/google/android/gms/internal/ads/zzavs; Lcom/google/android/gms/internal/ads/zzbej; Lcom/google/android/gms/ads/internal/util/client/VersionInfoParcel; Lcom/google/android/gms/internal/ads/zzdor; Lcom/google/android/gms/ads/internal/zza; Lcom/google/android/gms/internal/ads/zzbca; Lcom/google/android/gms/internal/ads/zzfbt; Lcom/google/android/gms/internal/ads/zzfbw; Lcom/google/android/gms/internal/ads/zzfcs;)V",
+          "full_path": "Lcom/google/android/gms/ads/internal/overlay/zzm;->zzD(Z)V --> Lcom/google/android/gms/internal/ads/zzcfr;->zza(Landroid/content/Context; Lcom/google/android/gms/ads/internal/util/client/VersionInfoParcel; Lcom/google/android/gms/ads/internal/zza; Lcom/google/android/gms/internal/ads/zzavs; Lcom/google/android/gms/internal/ads/zzbca; Lcom/google/android/gms/internal/ads/zzbej; Lcom/google/android/gms/internal/ads/zzcgy; Lcom/google/android/gms/internal/ads/zzdor; Lcom/google/android/gms/internal/ads/zzdsc; Lcom/google/android/gms/internal/ads/zzecd; Lcom/google/android/gms/internal/ads/zzfbt; Lcom/google/android/gms/internal/ads/zzfbw; Lcom/google/android/gms/internal/ads/zzfcs; Ljava/lang/String; Z Z)Lcom/google/android/gms/internal/ads/zzcfe; --> Lcom/google/android/gms/internal/ads/zzcfp;->zza()Ljava/lang/Object; --> Lcom/google/android/gms/internal/ads/zzcgd;-><init>(Lcom/google/android/gms/internal/ads/zzcgx; Lcom/google/android/gms/internal/ads/zzcgy; Ljava/lang/String; Z Lcom/google/android/gms/internal/ads/zzavs; Lcom/google/android/gms/internal/ads/zzbej; Lcom/google/android/gms/ads/internal/util/client/VersionInfoParcel; Lcom/google/android/gms/internal/ads/zzdor; Lcom/google/android/gms/ads/internal/zza; Lcom/google/android/gms/internal/ads/zzbca; Lcom/google/android/gms/internal/ads/zzfbt; Lcom/google/android/gms/internal/ads/zzfbw; Lcom/google/android/gms/internal/ads/zzfcs;)V --> Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V",
+          "where": "Lcom/klarna/mobile/sdk/core/ui/dialog/internalbrowser/BaseInternalBrowserDialogFragment$DefaultImpls;->bindViews(Lcom/klarna/mobile/sdk/core/ui/dialog/internalbrowser/BaseInternalBrowserDialogFragment; Landroid/view/View;)V",
+          "full_path": "Lcom/klarna/mobile/sdk/core/ui/dialog/internalbrowser/InternalBrowserDialogFragment$Companion;->newInstance(Ljava/lang/String; Ljava/lang/String; Ljava/lang/String; Ljava/lang/Boolean; Ljava/lang/String; Ljava/lang/Integer;)Lcom/klarna/mobile/sdk/core/ui/dialog/internalbrowser/InternalBrowserDialogFragment; --> Lcom/klarna/mobile/sdk/core/ui/dialog/internalbrowser/InternalBrowserDialogFragment;->onContentViewCreated(Landroid/view/View; Landroid/os/Bundle;)V --> Lcom/klarna/mobile/sdk/core/ui/dialog/internalbrowser/BaseInternalBrowserDialogFragment$DefaultImpls;->onContentViewCreated(Lcom/klarna/mobile/sdk/core/ui/dialog/internalbrowser/BaseInternalBrowserDialogFragment; Landroid/view/View; Landroid/os/Bundle;)V --> Lcom/klarna/mobile/sdk/core/ui/dialog/internalbrowser/BaseInternalBrowserDialogFragment$DefaultImpls;->bindViews(Lcom/klarna/mobile/sdk/core/ui/dialog/internalbrowser/BaseInternalBrowserDialogFragment; Landroid/view/View;)V --> Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V",
+          "where": "Lcom/klarna/mobile/sdk/core/webview/WebViewNativeHook;->a(Lcom/klarna/mobile/sdk/core/natives/models/SDKWebViewType;)V",
+          "full_path": "Lcom/klarna/mobile/sdk/api/standalonewebview/KlarnaStandaloneWebView;->setLoadableProducts(Ljava/util/Set;)V --> Lcom/klarna/mobile/sdk/core/webview/WebViewStateController;->b()V --> Lcom/klarna/mobile/sdk/core/webview/WebViewWrapper;->g()V --> Lcom/klarna/mobile/sdk/core/webview/WebViewNativeHook;->a(Lcom/klarna/mobile/sdk/core/natives/models/SDKWebViewType;)V --> Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V",
+          "where": "Lcom/klarna/mobile/sdk/core/webview/WebViewNativeHook;->d()V",
+          "full_path": "Lcom/klarna/mobile/sdk/core/webview/clients/BaseComponentWebViewClient;->onPageFinished(Landroid/webkit/WebView; Ljava/lang/String;)V --> Lcom/klarna/mobile/sdk/core/webview/WebViewStateController;->b(Landroid/webkit/WebView;)V --> Lcom/klarna/mobile/sdk/core/webview/WebViewWrapper;->i()V --> Lcom/klarna/mobile/sdk/core/webview/WebViewNativeHook;->d()V --> Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V",
+          "where": "Lcom/booking/cobrandcreditcardpresentation/cardsignup/CardSignupScreenKt$$ExternalSyntheticLambda1;->invoke(Ljava/lang/Object;)Ljava/lang/Object;",
+          "full_path": "Lcom/booking/cobrandcreditcardpresentation/cardsignup/CardSignupScreenKt;->CardSignupContent(Lcom/booking/cobrandcreditcardpresentation/cardsignup/CardSignupViewModel; Ljava/lang/String; Landroidx/compose/runtime/Composer; I)V --> Lcom/booking/cobrandcreditcardpresentation/cardsignup/CardSignupScreenKt$$ExternalSyntheticLambda1;->invoke(Ljava/lang/Object;)Ljava/lang/Object; --> Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V",
+          "where": "Lcom/booking/identity/privacy/ui/webview/PrivacyWebViewComposeKt$$ExternalSyntheticLambda1;->invoke(Ljava/lang/Object;)Ljava/lang/Object;",
+          "full_path": "Lcom/booking/identity/privacy/ui/webview/PrivacyWebViewComposeKt;->WebViewContent(Ljava/lang/String; Lcom/booking/identity/privacy/webview/WebAppInterface; Landroid/webkit/WebViewClient; Landroidx/compose/runtime/Composer; I)V --> Lcom/booking/identity/privacy/ui/webview/PrivacyWebViewComposeKt$$ExternalSyntheticLambda1;->invoke(Ljava/lang/Object;)Ljava/lang/Object; --> Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V",
+          "where": "Lzendesk/ui/android/conversation/conversationextension/ConversationExtensionView;-><init>(Landroid/content/Context; Landroid/util/AttributeSet; I I)V",
+          "full_path": "Lzendesk/ui/android/conversation/conversationextension/ConversationExtensionView;-><init>(Landroid/content/Context;)V --> Lzendesk/ui/android/conversation/conversationextension/ConversationExtensionView;-><init>(Landroid/content/Context; Landroid/util/AttributeSet; I I)V --> Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V",
+          "where": "LTqWVS/ZNeki;->SgBjNC()V",
+          "full_path": "Lcom/lexisnexisrisk/threatmetrix/TMXWebView;-><init>(Landroid/content/Context;)V --> LTqWVS/ZNeki;-><init>(Landroid/content/Context;)V --> LTqWVS/ZNeki;->SgBjNC()V --> Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V",
+          "where": "Lcom/booking/marketplacewebviewcomponents/webcontainer/MarketplaceWebView;->setupWebview(Landroid/webkit/WebView;)V",
+          "full_path": "Lcom/booking/marketplacewebviewcomponents/webcontainer/MarketplaceWebView;->setupWebview(Landroid/webkit/WebView;)V --> Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V",
+          "where": "Lcom/booking/survey/gizmo/GizmoWebViewActivity;->onPageStarted(Landroid/webkit/WebView; Ljava/lang/String;)V",
+          "full_path": "Lcom/booking/survey/gizmo/GizmoWebViewActivity;->onPageStarted(Landroid/webkit/WebView; Ljava/lang/String;)V --> Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V",
+          "where": "Lcom/google/android/gms/internal/ads/zzbyx;->zzde(I Landroid/os/Parcel; Landroid/os/Parcel;)Z",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzbyx;->zzde(I Landroid/os/Parcel; Landroid/os/Parcel;)Z --> Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V"
+        }
+      ]
+    },
+    {
+      "id": "WebViewAllowFileAccess",
+      "name": "WebView Local File Access Attacks Checking",
+      "description": "Found `setAllowFileAccess(true)` or not set (enabled by default) in WebView. The attackers could inject malicious script into WebView and exploit the opportunity to access local resources. ",
+      "remediation": "This vulnerability can be mitigated by disabling local file system access (which is enabled by default) by setting `yourWebView.getSettings().setAllowFileAccess(false)`. This precaution disables the file system access only. Assets and resources are still accessible using URIs, like `file:///android_asset` and `file:///android_res`. The attackers can still use method `yourWebView.loadUrl(\"file:///data/data/[your_package_name]/[file]\");` to access app's local file.",
+      "references": {
+        "text": "Further information about this problem and possible countermeasures can be found in InfoSecurity Blog post [[1]] and in Android Reference Guide [[2]].",
+        "links": {
+          "1": "https://labs.mwrinfosecurity.com/blog/2012/04/23/adventures-with-android-webviews/",
+          "2": "http://developer.android.com/reference/android/webkit/WebSettings.html#setAllowFileAccess(boolean)"
+        }
+      },
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Network",
+        "attack_complexity": "High",
+        "privileges_required": "High",
+        "user_interaction": "Required",
+        "scope": "Unchanged",
+        "confidentiality_impact": "Low",
+        "integrity_impact": "Low",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "Landroid/webkit/WebSettings;->setAllowFileAccess(Z)V",
+          "where": "Lcom/klarna/mobile/sdk/core/payments/PaymentSDKController;-><init>(Lcom/klarna/mobile/sdk/bridge/PaymentViewAbstraction; Lcom/klarna/mobile/sdk/core/payments/di/PaymentsDependencyContainerImpl;)V",
+          "full_path": "Lcom/klarna/mobile/sdk/api/payments/KlarnaPaymentView;-><init>(Landroid/content/Context;)V --> Lcom/klarna/mobile/sdk/api/payments/KlarnaPaymentView;-><init>(Landroid/content/Context; Landroid/util/AttributeSet; I)V --> Lcom/klarna/mobile/sdk/api/payments/KlarnaPaymentView;->a(Lcom/klarna/mobile/sdk/bridge/PaymentViewAbstraction; Lcom/klarna/mobile/sdk/api/KlarnaResourceEndpoint; Ljava/lang/String;)V --> Lcom/klarna/mobile/sdk/core/payments/PaymentSDKController;-><init>(Lcom/klarna/mobile/sdk/bridge/PaymentViewAbstraction; Lcom/klarna/mobile/sdk/core/payments/di/PaymentsDependencyContainerImpl;)V --> Landroid/webkit/WebSettings;->setAllowFileAccess(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setAllowFileAccess(Z)V",
+          "where": "Lcom/google/android/gms/internal/ads/zzfmt;->zzo()V",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzflh;-><init>(Lcom/google/android/gms/internal/ads/zzfle; Lcom/google/android/gms/internal/ads/zzflf; Ljava/lang/String;)V --> Lcom/google/android/gms/internal/ads/zzfmt;->zzo()V --> Landroid/webkit/WebSettings;->setAllowFileAccess(Z)V"
+        }
+      ]
+    },
+    {
+      "id": "WebViewInterceptRequest",
+      "name": "WebView intercept request",
+      "description": "Android allows apps to load resources (e.g, JavaScript, CSS files etc.) in a web page in a WebView, and control the resources being loaded in a webpage via the `shouldInterceptRequest` method in `WebViewClient`. The `shouldInterceptRequest` method takes an instance of WebView and the resource request as input and returns a response object. If the response object returned is `null` then the WebView is loaded with the web page containing the resource that was requested. But if a non-`null` response is returned then the WebView is loaded with the web page containing the non-`null` response. If the app does not validate the resource in `shouldInterceptRequest` method of `WebViewClient`, any resource can be loaded into WebView.",
+      "remediation": null,
+      "references": {
+        "text": "Further information can be found on the Android Developer Guide [[1]].",
+        "links": {
+          "1": "https://developer.android.com/reference/android/webkit/WebViewClient#shouldInterceptRequest(android.webkit.WebView, android.webkit.WebResourceRequest)"
+        }
+      },
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Network",
+        "attack_complexity": "High",
+        "privileges_required": "Low",
+        "user_interaction": "Required",
+        "scope": "Unchanged",
+        "confidentiality_impact": "Low",
+        "integrity_impact": "Low",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "LTqWVS/ESVACg;",
+          "full_path": "LTqWVS/ESVACg;"
+        },
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "Landroidx/webkit/WebViewClientCompat;",
+          "full_path": "Landroidx/webkit/WebViewClientCompat;"
+        },
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "Lcom/booking/cruises/CruisesSearchResultsKt$WebContent$1$1$1$1$1;",
+          "full_path": "Lcom/booking/cruises/CruisesSearchResultsKt$WebContent$1$1$1$1$1;"
+        },
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "Lcom/booking/flights/externalVerification/ExternalVerificationWebView$setupWebSettings$1$onCreateWindow$fakeView$1$1;",
+          "full_path": "Lcom/booking/flights/externalVerification/ExternalVerificationWebView$setupWebSettings$1$onCreateWindow$fakeView$1$1;"
+        },
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "Lcom/booking/identity/account/emailnotifications/AccountEmailNotificationsFacet$WebViewEventListener;",
+          "full_path": "Lcom/booking/identity/account/emailnotifications/AccountEmailNotificationsFacet$WebViewEventListener;"
+        },
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "Lcom/booking/identity/auth/facet/captcha/CaptchaWebViewFacet$WebViewEventListener;",
+          "full_path": "Lcom/booking/identity/auth/facet/captcha/CaptchaWebViewFacet$WebViewEventListener;"
+        },
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "Lcom/booking/identity/auth/facet/common/WebViewFacet$WebViewEventListener;",
+          "full_path": "Lcom/booking/identity/auth/facet/common/WebViewFacet$WebViewEventListener;"
+        },
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "Lcom/booking/identity/auth/facet/web/StepUrlFacet$WebViewEventListener;",
+          "full_path": "Lcom/booking/identity/auth/facet/web/StepUrlFacet$WebViewEventListener;"
+        },
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "Lcom/booking/postbooking/confirmation/components/whatsnext/ConfirmationPrintWebClient;",
+          "full_path": "Lcom/booking/postbooking/confirmation/components/whatsnext/ConfirmationPrintWebClient;"
+        },
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "Lcom/cardinalcommerce/shared/cs/userinterfaces/ChallengeHTMLView$2;",
+          "full_path": "Lcom/cardinalcommerce/shared/cs/userinterfaces/ChallengeHTMLView$2;"
+        },
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "Lcom/booking/taxispresentation/marken/web/WebFacet$FreeTaxiWebViewClient;",
+          "full_path": "Lcom/booking/taxispresentation/marken/web/WebFacet$FreeTaxiWebViewClient;"
+        },
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "Lcom/google/android/gms/ads/internal/zzo;",
+          "full_path": "Lcom/google/android/gms/ads/internal/zzo;"
+        },
+        {
+          "what": "shouldInterceptRequest(Landroid/webkit/WebView; Ljava/lang/String;)Landroid/webkit/WebResourceResponse;",
+          "where": "Lcom/google/android/gms/internal/ads/zzbky;",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzbky;->shouldInterceptRequest(Landroid/webkit/WebView; Ljava/lang/String;)Landroid/webkit/WebResourceResponse;"
+        },
+        {
+          "what": "shouldInterceptRequest(Landroid/webkit/WebView; Ljava/lang/String;)Landroid/webkit/WebResourceResponse;",
+          "where": "Lcom/google/android/gms/internal/ads/zzcfm;",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzcfm;->shouldInterceptRequest(Landroid/webkit/WebView; Ljava/lang/String;)Landroid/webkit/WebResourceResponse;"
+        },
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "Lcom/google/android/gms/internal/ads/zzfmr;",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzfmr;"
+        },
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "Lcom/klarna/mobile/sdk/core/webview/clients/BaseWebViewClient;",
+          "full_path": "Lcom/klarna/mobile/sdk/core/webview/clients/BaseWebViewClient;"
+        },
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "Lcom/revolut/revolutpay/ui/webview/WebViewConfirmationActivity$b;",
+          "full_path": "Lcom/revolut/revolutpay/ui/webview/WebViewConfirmationActivity$b;"
+        },
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "Lcom/stripe/android/financialconnections/lite/FinancialConnectionsSheetLiteActivity$setupWebView$1$2;",
+          "full_path": "Lcom/stripe/android/financialconnections/lite/FinancialConnectionsSheetLiteActivity$setupWebView$1$2;"
+        },
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "Lcom/stripe/android/view/PaymentAuthWebViewClient;",
+          "full_path": "Lcom/stripe/android/view/PaymentAuthWebViewClient;"
+        },
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "Lzendesk/ui/android/conversation/conversationextension/ConversationExtensionView$setupWebViewClient$1$1;",
+          "full_path": "Lzendesk/ui/android/conversation/conversationextension/ConversationExtensionView$setupWebViewClient$1$1;"
+        },
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "Lcom/alipay/sdk/m/x/e$d;",
+          "full_path": "Lcom/alipay/sdk/m/x/e$d;"
+        },
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "Lcom/booking/android/payment/payin/standalone/UrlInterceptingWebViewClient;",
+          "full_path": "Lcom/booking/android/payment/payin/standalone/UrlInterceptingWebViewClient;"
+        }
+      ]
+    },
+    {
+      "id": "WebViewJavaScriptEnabled",
+      "name": "WebView Potential XSS Attacks Checking",
+      "description": "Found `\"setJavaScriptEnabled(true)\"` in WebView. Enabling JavaScript exposes to malicious injection of code that would be executed with the same permissions (XSS attacks).",
+      "remediation": "If JavaScript is not necessary for your web page, please disable it (`\"setJavaScriptEnabled(false)\"`). Otherwise, in order to minimize the risk of XSS attacks, carefully review the web page code and sanitize the output presented in the WebView.",
+      "references": {
+        "text": "Further information on XSS attacks can be found in the OWASP documentation [[1]], while a guide for building secure web apps in Android can be found in the official documentation [[2]].",
+        "links": {
+          "1": "https://www.owasp.org/index.php/Cross-site_Scripting_(XSS)",
+          "2": "https://developer.android.com/guide/webapps/webview.html"
+        }
+      },
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Network",
+        "attack_complexity": "High",
+        "privileges_required": "Low",
+        "user_interaction": "Required",
+        "scope": "Unchanged",
+        "confidentiality_impact": "High",
+        "integrity_impact": "Low",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/google/android/gms/internal/ads/zzcgd;-><init>(Lcom/google/android/gms/internal/ads/zzcgx; Lcom/google/android/gms/internal/ads/zzcgy; Ljava/lang/String; Z Lcom/google/android/gms/internal/ads/zzavs; Lcom/google/android/gms/internal/ads/zzbej; Lcom/google/android/gms/ads/internal/util/client/VersionInfoParcel; Lcom/google/android/gms/internal/ads/zzdor; Lcom/google/android/gms/ads/internal/zza; Lcom/google/android/gms/internal/ads/zzbca; Lcom/google/android/gms/internal/ads/zzfbt; Lcom/google/android/gms/internal/ads/zzfbw; Lcom/google/android/gms/internal/ads/zzfcs;)V",
+          "full_path": "Lcom/google/android/gms/ads/internal/overlay/zzm;->zzD(Z)V --> Lcom/google/android/gms/internal/ads/zzcfr;->zza(Landroid/content/Context; Lcom/google/android/gms/ads/internal/util/client/VersionInfoParcel; Lcom/google/android/gms/ads/internal/zza; Lcom/google/android/gms/internal/ads/zzavs; Lcom/google/android/gms/internal/ads/zzbca; Lcom/google/android/gms/internal/ads/zzbej; Lcom/google/android/gms/internal/ads/zzcgy; Lcom/google/android/gms/internal/ads/zzdor; Lcom/google/android/gms/internal/ads/zzdsc; Lcom/google/android/gms/internal/ads/zzecd; Lcom/google/android/gms/internal/ads/zzfbt; Lcom/google/android/gms/internal/ads/zzfbw; Lcom/google/android/gms/internal/ads/zzfcs; Ljava/lang/String; Z Z)Lcom/google/android/gms/internal/ads/zzcfe; --> Lcom/google/android/gms/internal/ads/zzcfp;->zza()Ljava/lang/Object; --> Lcom/google/android/gms/internal/ads/zzcgd;-><init>(Lcom/google/android/gms/internal/ads/zzcgx; Lcom/google/android/gms/internal/ads/zzcgy; Ljava/lang/String; Z Lcom/google/android/gms/internal/ads/zzavs; Lcom/google/android/gms/internal/ads/zzbej; Lcom/google/android/gms/ads/internal/util/client/VersionInfoParcel; Lcom/google/android/gms/internal/ads/zzdor; Lcom/google/android/gms/ads/internal/zza; Lcom/google/android/gms/internal/ads/zzbca; Lcom/google/android/gms/internal/ads/zzfbt; Lcom/google/android/gms/internal/ads/zzfbw; Lcom/google/android/gms/internal/ads/zzfcs;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/klarna/mobile/sdk/core/ui/dialog/internalbrowser/BaseInternalBrowserDialogFragment$DefaultImpls;->bindViews(Lcom/klarna/mobile/sdk/core/ui/dialog/internalbrowser/BaseInternalBrowserDialogFragment; Landroid/view/View;)V",
+          "full_path": "Lcom/klarna/mobile/sdk/core/ui/dialog/internalbrowser/InternalBrowserDialogFragment$Companion;->newInstance(Ljava/lang/String; Ljava/lang/String; Ljava/lang/String; Ljava/lang/Boolean; Ljava/lang/String; Ljava/lang/Integer;)Lcom/klarna/mobile/sdk/core/ui/dialog/internalbrowser/InternalBrowserDialogFragment; --> Lcom/klarna/mobile/sdk/core/ui/dialog/internalbrowser/InternalBrowserDialogFragment;->onContentViewCreated(Landroid/view/View; Landroid/os/Bundle;)V --> Lcom/klarna/mobile/sdk/core/ui/dialog/internalbrowser/BaseInternalBrowserDialogFragment$DefaultImpls;->onContentViewCreated(Lcom/klarna/mobile/sdk/core/ui/dialog/internalbrowser/BaseInternalBrowserDialogFragment; Landroid/view/View; Landroid/os/Bundle;)V --> Lcom/klarna/mobile/sdk/core/ui/dialog/internalbrowser/BaseInternalBrowserDialogFragment$DefaultImpls;->bindViews(Lcom/klarna/mobile/sdk/core/ui/dialog/internalbrowser/BaseInternalBrowserDialogFragment; Landroid/view/View;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/klarna/mobile/sdk/core/webview/KlarnaWebView;-><init>(Landroid/content/Context; Lcom/klarna/mobile/sdk/core/integration/Integration;)V",
+          "full_path": "Lcom/klarna/mobile/sdk/core/payments/PaymentSDKController;-><init>(Lcom/klarna/mobile/sdk/bridge/PaymentViewAbstraction; Lcom/klarna/mobile/sdk/core/payments/di/PaymentsDependencyContainerImpl;)V --> Lcom/klarna/mobile/sdk/core/webview/KlarnaWebView;-><init>(Landroid/content/Context; Lcom/klarna/mobile/sdk/core/integration/Integration;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/google/android/gms/internal/ads/zzflh;-><init>(Lcom/google/android/gms/internal/ads/zzfle; Lcom/google/android/gms/internal/ads/zzflf; Ljava/lang/String;)V",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzdhy;->run()V --> Lcom/google/android/gms/internal/ads/zzdih;->zzf(Ljava/lang/String; Z)Lcom/google/android/gms/internal/ads/zzecz; --> Lcom/google/android/gms/internal/ads/zzecl;->zza()Ljava/lang/Object; --> Lcom/google/android/gms/internal/ads/zzflh;-><init>(Lcom/google/android/gms/internal/ads/zzfle; Lcom/google/android/gms/internal/ads/zzflf; Ljava/lang/String;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/identity/auth/facet/common/WebViewFacet$$ExternalSyntheticLambda0;->invoke(Ljava/lang/Object;)Ljava/lang/Object;",
+          "full_path": "Lcom/booking/identity/auth/facet/common/WebViewFacet;-><init>()V --> Lcom/booking/identity/auth/facet/common/WebViewFacet$$ExternalSyntheticLambda0;->invoke(Ljava/lang/Object;)Ljava/lang/Object; --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/google/android/gms/ads/internal/zzu;-><init>(Landroid/content/Context; Lcom/google/android/gms/ads/internal/client/zzr; Ljava/lang/String; Lcom/google/android/gms/ads/internal/util/client/VersionInfoParcel;)V",
+          "full_path": "Lcom/google/android/gms/ads/internal/client/zzcq;->zzde(I Landroid/os/Parcel; Landroid/os/Parcel;)Z --> Lcom/google/android/gms/ads/internal/ClientApi;->zzf(Lcom/google/android/gms/dynamic/IObjectWrapper; Lcom/google/android/gms/ads/internal/client/zzr; Ljava/lang/String; I)Lcom/google/android/gms/ads/internal/client/zzbx; --> Lcom/google/android/gms/ads/internal/zzu;-><init>(Landroid/content/Context; Lcom/google/android/gms/ads/internal/client/zzr; Ljava/lang/String; Lcom/google/android/gms/ads/internal/util/client/VersionInfoParcel;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/alipay/sdk/m/x/e;->c(Lcom/alipay/sdk/app/H5PayActivity;)V",
+          "full_path": "Lcom/alipay/sdk/m/x/d;->a(Ljava/lang/String; Ljava/lang/String; Ljava/lang/String;)V --> Lcom/alipay/sdk/m/x/d;->b(Ljava/lang/String; Ljava/lang/String;)V --> Lcom/alipay/sdk/m/x/e;-><init>(Lcom/alipay/sdk/app/H5PayActivity; Lcom/alipay/sdk/m/x/e$e;)V --> Lcom/alipay/sdk/m/x/e;->c(Lcom/alipay/sdk/app/H5PayActivity;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/tripcomponents/ui/jpc/viewmodel/TripsStateInterfaceExtKt$$ExternalSyntheticLambda0;->invoke(Ljava/lang/Object;)Ljava/lang/Object;",
+          "full_path": "Lcom/booking/identity/auth/facet/common/WebViewFacet$renderJetpackComposeView$1$1;->invoke(Ljava/lang/Object; Ljava/lang/Object;)Ljava/lang/Object; --> Lcom/booking/tripcomponents/ui/jpc/viewmodel/TripsStateInterfaceExtKt$$ExternalSyntheticLambda0;->invoke(Ljava/lang/Object;)Ljava/lang/Object; --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/requesttobook/ui/RtbFacet$$ExternalSyntheticLambda3;->invoke(Ljava/lang/Object;)Ljava/lang/Object;",
+          "full_path": "Lcom/booking/identity/account/emailnotifications/AccountEmailNotificationsFacet;-><init>()V --> Lcom/booking/requesttobook/ui/RtbFacet$$ExternalSyntheticLambda3;->invoke(Ljava/lang/Object;)Ljava/lang/Object; --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/bui/compose/avatar/block/BuiAvatarBlockKt$$ExternalSyntheticLambda0;->invoke(Ljava/lang/Object;)Ljava/lang/Object;",
+          "full_path": "Lcom/booking/identity/auth/facet/captcha/CaptchaWebViewFacet;-><init>()V --> Lcom/booking/bui/compose/avatar/block/BuiAvatarBlockKt$$ExternalSyntheticLambda0;->invoke(Ljava/lang/Object;)Ljava/lang/Object; --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/cars/rentalhelper/RentalHelperViewModelFactoryKt$$ExternalSyntheticLambda0;->invoke(Ljava/lang/Object;)Ljava/lang/Object;",
+          "full_path": "Lcom/booking/identity/auth/facet/captcha/CaptchaWebViewFacet$renderJetpackComposeView$1$1;->invoke(Ljava/lang/Object; Ljava/lang/Object;)Ljava/lang/Object; --> Lcom/booking/cars/rentalhelper/RentalHelperViewModelFactoryKt$$ExternalSyntheticLambda0;->invoke(Ljava/lang/Object;)Ljava/lang/Object; --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/stripe/android/view/PaymentAuthWebView;-><init>(Landroid/content/Context; Landroid/util/AttributeSet; I)V",
+          "full_path": "Lcom/stripe/android/view/PaymentAuthWebView;-><init>(Landroid/content/Context;)V --> Lcom/stripe/android/view/PaymentAuthWebView;-><init>(Landroid/content/Context; Landroid/util/AttributeSet; I I)V --> Lcom/stripe/android/view/PaymentAuthWebView;-><init>(Landroid/content/Context; Landroid/util/AttributeSet; I)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/cobrandcreditcardpresentation/cardsignup/CardSignupScreenKt$$ExternalSyntheticLambda1;->invoke(Ljava/lang/Object;)Ljava/lang/Object;",
+          "full_path": "Lcom/booking/cobrandcreditcardpresentation/cardsignup/CardSignupScreenKt;->CardSignupContent(Lcom/booking/cobrandcreditcardpresentation/cardsignup/CardSignupViewModel; Ljava/lang/String; Landroidx/compose/runtime/Composer; I)V --> Lcom/booking/cobrandcreditcardpresentation/cardsignup/CardSignupScreenKt$$ExternalSyntheticLambda1;->invoke(Ljava/lang/Object;)Ljava/lang/Object; --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/identity/privacy/ui/webview/PrivacyWebViewComposeKt$$ExternalSyntheticLambda1;->invoke(Ljava/lang/Object;)Ljava/lang/Object;",
+          "full_path": "Lcom/booking/identity/privacy/ui/webview/PrivacyWebViewComposeKt;->WebViewContent(Ljava/lang/String; Lcom/booking/identity/privacy/webview/WebAppInterface; Landroid/webkit/WebViewClient; Landroidx/compose/runtime/Composer; I)V --> Lcom/booking/identity/privacy/ui/webview/PrivacyWebViewComposeKt$$ExternalSyntheticLambda1;->invoke(Ljava/lang/Object;)Ljava/lang/Object; --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/taxispresentation/ui/webview/webpage/WebPageFragment;->onViewCreated(Landroid/view/View; Landroid/os/Bundle;)V",
+          "full_path": "Lcom/booking/taxispresentation/flowdata/FlowStepFragmentResolverKt;->resolveFragment(Lcom/booking/taxiservices/flow/FragmentStep;)Lcom/booking/taxispresentation/ui/RidesFragment; --> Lcom/booking/taxispresentation/ui/webview/webpage/WebPageFragment;->onViewCreated(Landroid/view/View; Landroid/os/Bundle;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lzendesk/ui/android/conversation/conversationextension/ConversationExtensionView;-><init>(Landroid/content/Context; Landroid/util/AttributeSet; I I)V",
+          "full_path": "Lzendesk/ui/android/conversation/conversationextension/ConversationExtensionView;-><init>(Landroid/content/Context;)V --> Lzendesk/ui/android/conversation/conversationextension/ConversationExtensionView;-><init>(Landroid/content/Context; Landroid/util/AttributeSet; I I)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lzendesk/ui/android/conversation/articleviewer/articlecontent/ArticleContentView;-><init>(Landroid/content/Context; Landroid/util/AttributeSet; I I)V",
+          "full_path": "Lzendesk/ui/android/conversation/articleviewer/articlecontent/ArticleContentView;-><init>(Landroid/content/Context;)V --> Lzendesk/ui/android/conversation/articleviewer/articlecontent/ArticleContentView;-><init>(Landroid/content/Context; Landroid/util/AttributeSet; I I)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "LTqWVS/ZNeki;->SgBjNC()V",
+          "full_path": "Lcom/lexisnexisrisk/threatmetrix/TMXWebView;-><init>(Landroid/content/Context;)V --> LTqWVS/ZNeki;-><init>(Landroid/content/Context;)V --> LTqWVS/ZNeki;->SgBjNC()V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/identity/auth/facet/web/StepUrlFacet$$ExternalSyntheticLambda0;->invoke(Ljava/lang/Object;)Ljava/lang/Object;",
+          "full_path": "Lcom/booking/identity/auth/facet/web/StepUrlFacet;->StepUrlComposable(Lcom/booking/identity/auth/facet/web/StepUrlFacet$State; Landroidx/compose/runtime/Composer; I)V --> Lcom/booking/identity/auth/facet/web/StepUrlFacet$$ExternalSyntheticLambda0;->invoke(Ljava/lang/Object;)Ljava/lang/Object; --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/cruises/CruisesSearchResultsKt$$ExternalSyntheticLambda2;->invoke(Ljava/lang/Object;)Ljava/lang/Object;",
+          "full_path": "Lcom/booking/cruises/CruisesSearchResultsKt;->WebContent(Ljava/lang/String; Landroidx/compose/runtime/Composer; I)V --> Lcom/booking/cruises/CruisesSearchResultsKt$$ExternalSyntheticLambda2;->invoke(Ljava/lang/Object;)Ljava/lang/Object; --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/taxispresentation/marken/web/WebFacet$$ExternalSyntheticLambda0;->invoke(Ljava/lang/Object;)Ljava/lang/Object;",
+          "full_path": "Lcom/booking/taxispresentation/marken/web/WebFacet;-><init>(Lcom/booking/marken/Reference;)V --> Lcom/booking/taxispresentation/marken/web/WebFacet$$ExternalSyntheticLambda0;->invoke(Ljava/lang/Object;)Ljava/lang/Object; --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/commonui/web/interceptors/UrlInterceptorWebViewActivity;->setupWebSettings(Landroid/webkit/WebSettings;)V",
+          "full_path": "Lcom/booking/articles/ArticlesWebActivity;->setupWebSettings(Landroid/webkit/WebSettings;)V --> Lcom/booking/commonui/web/interceptors/UrlInterceptorWebViewActivity;->setupWebSettings(Landroid/webkit/WebSettings;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/payment/component/ui/screen/web/WebViewBaseActivity;->onCreate(Landroid/os/Bundle;)V",
+          "full_path": "Lcom/booking/payment/component/ui/screen/web/PaymentWebViewActivity;->onCreate(Landroid/os/Bundle;)V --> Lcom/booking/payment/component/ui/screen/web/WebViewBaseActivity;->onCreate(Landroid/os/Bundle;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/taxispresentation/ui/webview/webview/WebViewActivity;->onCreate(Landroid/os/Bundle;)V",
+          "full_path": "Lcom/booking/taxispresentation/ui/staticpages/StaticPagesActivity;->onCreate(Landroid/os/Bundle;)V --> Lcom/booking/taxispresentation/ui/webview/webview/WebViewActivity;->onCreate(Landroid/os/Bundle;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/flights/externalVerification/ExternalVerificationWebView$setupWebSettings$1;->onCreateWindow(Landroid/webkit/WebView; Z Z Landroid/os/Message;)Z",
+          "full_path": "Lcom/booking/flights/externalVerification/ExternalVerificationWebView$setupWebSettings$1;->onCreateWindow(Landroid/webkit/WebView; Z Z Landroid/os/Message;)Z --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/taxispresentation/ui/webview/staticpage/StaticPageFragment;->onViewCreated(Landroid/view/View; Landroid/os/Bundle;)V",
+          "full_path": "Lcom/booking/taxispresentation/ui/webview/staticpage/StaticPageFragment;->onViewCreated(Landroid/view/View; Landroid/os/Bundle;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/marketplacewebviewcomponents/webcontainer/MarketplaceWebView;->setupWebSettings(Landroid/webkit/WebSettings;)V",
+          "full_path": "Lcom/booking/marketplacewebviewcomponents/webcontainer/MarketplaceWebView;->setupWebSettings(Landroid/webkit/WebSettings;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/flights/components/navigator/FlightsLiveChatWebViewActivity;->setupWebSettings(Landroid/webkit/WebSettings;)V",
+          "full_path": "Lcom/booking/flights/components/navigator/FlightsLiveChatWebViewActivity;->setupWebSettings(Landroid/webkit/WebSettings;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/flights/externalVerification/ExternalVerificationWebView;->setupWebSettings(Landroid/webkit/WebSettings;)V",
+          "full_path": "Lcom/booking/flights/externalVerification/ExternalVerificationWebView;->setupWebSettings(Landroid/webkit/WebSettings;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/stripe/android/financialconnections/lite/FinancialConnectionsSheetLiteActivity;->onCreate(Landroid/os/Bundle;)V",
+          "full_path": "Lcom/stripe/android/financialconnections/lite/FinancialConnectionsSheetLiteActivity;->onCreate(Landroid/os/Bundle;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/contentdiscovery/recommendationspage/FeedbackWebView;->setupWebSettings(Landroid/webkit/WebSettings;)V",
+          "full_path": "Lcom/booking/contentdiscovery/recommendationspage/FeedbackWebView;->setupWebSettings(Landroid/webkit/WebSettings;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/flights/components/navigator/FlightsWebViewActivity;->setupWebSettings(Landroid/webkit/WebSettings;)V",
+          "full_path": "Lcom/booking/flights/components/navigator/FlightsWebViewActivity;->setupWebSettings(Landroid/webkit/WebSettings;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/cars/postbook/webview/presentation/CarsWebViewManageBookingActivity;->onCreate(Landroid/os/Bundle;)V",
+          "full_path": "Lcom/booking/cars/postbook/webview/presentation/CarsWebViewManageBookingActivity;->onCreate(Landroid/os/Bundle;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/ugc/presentation/reviews/ReviewPolicyWebActivity;->setupWebSettings(Landroid/webkit/WebSettings;)V",
+          "full_path": "Lcom/booking/ugc/presentation/reviews/ReviewPolicyWebActivity;->setupWebSettings(Landroid/webkit/WebSettings;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/bookingprocess/crashhandling/MdotBookingActivity;->setupWebSettings(Landroid/webkit/WebSettings;)V",
+          "full_path": "Lcom/booking/bookingprocess/crashhandling/MdotBookingActivity;->setupWebSettings(Landroid/webkit/WebSettings;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/android/payment/payin/standalone/WebViewStandaloneActivity;->onCreate(Landroid/os/Bundle;)V",
+          "full_path": "Lcom/booking/android/payment/payin/standalone/WebViewStandaloneActivity;->onCreate(Landroid/os/Bundle;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/bookingGo/web/RentalCarsWebActivityLite;->setupWebSettings(Landroid/webkit/WebSettings;)V",
+          "full_path": "Lcom/booking/bookingGo/web/RentalCarsWebActivityLite;->setupWebSettings(Landroid/webkit/WebSettings;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/flights/components/navigator/PDFWebView;->setupWebSettings(Landroid/webkit/WebSettings;)V",
+          "full_path": "Lcom/booking/flights/components/navigator/PDFWebView;->setupWebSettings(Landroid/webkit/WebSettings;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/guestsafety/ui/GuestSafetyWebActivity;->setupWebSettings(Landroid/webkit/WebSettings;)V",
+          "full_path": "Lcom/booking/guestsafety/ui/GuestSafetyWebActivity;->setupWebSettings(Landroid/webkit/WebSettings;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/survey/gizmo/GizmoWebViewActivity;->setupWebSettings(Landroid/webkit/WebSettings;)V",
+          "full_path": "Lcom/booking/survey/gizmo/GizmoWebViewActivity;->setupWebSettings(Landroid/webkit/WebSettings;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/revolut/revolutpay/ui/webview/WebViewConfirmationActivity;->onCreate(Landroid/os/Bundle;)V",
+          "full_path": "Lcom/revolut/revolutpay/ui/webview/WebViewConfirmationActivity;->onCreate(Landroid/os/Bundle;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/privacycomponents/TermsActivity;->setupWebSettings(Landroid/webkit/WebSettings;)V",
+          "full_path": "Lcom/booking/privacycomponents/TermsActivity;->setupWebSettings(Landroid/webkit/WebSettings;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/commonui/web/WebViewActivity;->setupWebSettings(Landroid/webkit/WebSettings;)V",
+          "full_path": "Lcom/booking/commonui/web/WebViewActivity;->setupWebSettings(Landroid/webkit/WebSettings;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/packages/PackagesWebView;->setupWebSettings(Landroid/webkit/WebSettings;)V",
+          "full_path": "Lcom/booking/packages/PackagesWebView;->setupWebSettings(Landroid/webkit/WebSettings;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/booking/damagepayment/ui/DDPaymentWebviewActivity;->onCreate(Landroid/os/Bundle;)V",
+          "full_path": "Lcom/booking/damagepayment/ui/DDPaymentWebviewActivity;->onCreate(Landroid/os/Bundle;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/google/android/gms/internal/ads/zzfmt;->zzo()V",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzfmt;->zzo()V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        }
+      ]
+    },
+    {
+      "id": "WebViewOverrideUrl",
+      "name": "WebView override url",
+      "description": "Android allows apps to display web content in a WebView, and control navigation across webpages via the `shouldOverrideUrlLoading` method in `WebViewClient`. The `shouldOverrideUrlLoading` method takes an instance of WebView and the page request as input and returns a boolean. If `true` is returned then the host application handles the request else if `false` is returned then the current WebView handles the request. If the app does not validate the page request in `shouldOverrideUrlLoading` before loading it in the WebView, any web page provided by the server will be loaded into WebView. By default `shouldOverrideUrlLoading` returns `false` all the time.",
+      "remediation": null,
+      "references": {
+        "text": "Further information can be found on the Android Developer Guide [[1]].",
+        "links": {
+          "1": "https://developer.android.com/reference/android/webkit/WebViewClient#shouldOverrideUrlLoading(android.webkit.WebView, android.webkit.WebResourceRequest)"
+        }
+      },
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Network",
+        "attack_complexity": "High",
+        "privileges_required": "Low",
+        "user_interaction": "Required",
+        "scope": "Unchanged",
+        "confidentiality_impact": "Low",
+        "integrity_impact": "Low",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "shouldOverrideUrlLoading not overridden, returns false by default",
+          "where": "LTqWVS/ESVACg;",
+          "full_path": "LTqWVS/ESVACg;"
+        },
+        {
+          "what": "shouldOverrideUrlLoading not overridden, returns false by default",
+          "where": "Landroidx/webkit/WebViewClientCompat;",
+          "full_path": "Landroidx/webkit/WebViewClientCompat;"
+        },
+        {
+          "what": "shouldOverrideUrlLoading not overridden, returns false by default",
+          "where": "Latd/at/getSDKTransactionID$getDeviceData;",
+          "full_path": "Latd/at/getSDKTransactionID$getDeviceData;"
+        },
+        {
+          "what": "shouldOverrideUrlLoading not overridden, returns false by default",
+          "where": "Lcom/booking/flights/externalVerification/ExternalVerificationWebView$setupWebSettings$1$onCreateWindow$fakeView$1$1;",
+          "full_path": "Lcom/booking/flights/externalVerification/ExternalVerificationWebView$setupWebSettings$1$onCreateWindow$fakeView$1$1;"
+        },
+        {
+          "what": "shouldOverrideUrlLoading not overridden, returns false by default",
+          "where": "Lcom/booking/identity/account/emailnotifications/AccountEmailNotificationsFacet$WebViewEventListener;",
+          "full_path": "Lcom/booking/identity/account/emailnotifications/AccountEmailNotificationsFacet$WebViewEventListener;"
+        },
+        {
+          "what": "shouldOverrideUrlLoading not overridden, returns false by default",
+          "where": "Lcom/booking/identity/auth/facet/common/WebViewFacet$WebViewEventListener;",
+          "full_path": "Lcom/booking/identity/auth/facet/common/WebViewFacet$WebViewEventListener;"
+        },
+        {
+          "what": "shouldOverrideUrlLoading not overridden, returns false by default",
+          "where": "Lcom/booking/identity/privacy/ui/webview/PrivacyWebViewInterface$onCreate$1$1$1;",
+          "full_path": "Lcom/booking/identity/privacy/ui/webview/PrivacyWebViewInterface$onCreate$1$1$1;"
+        },
+        {
+          "what": "shouldOverrideUrlLoading not overridden, returns false by default",
+          "where": "Lcom/booking/identity/webview/WebViewClientSession;",
+          "full_path": "Lcom/booking/identity/webview/WebViewClientSession;"
+        },
+        {
+          "what": "shouldOverrideUrlLoading(Landroid/webkit/WebView; Ljava/lang/String;)Z",
+          "where": "Lcom/booking/postbooking/confirmation/components/whatsnext/ConfirmationPrintWebClient;",
+          "full_path": "Lcom/booking/postbooking/confirmation/components/whatsnext/ConfirmationPrintWebClient;->shouldOverrideUrlLoading(Landroid/webkit/WebView; Ljava/lang/String;)Z"
+        },
+        {
+          "what": "shouldOverrideUrlLoading(Landroid/webkit/WebView; Ljava/lang/String;)Z",
+          "where": "Lcom/cardinalcommerce/shared/cs/userinterfaces/ChallengeHTMLView$2;",
+          "full_path": "Lcom/cardinalcommerce/shared/cs/userinterfaces/ChallengeHTMLView$2;->shouldOverrideUrlLoading(Landroid/webkit/WebView; Ljava/lang/String;)Z"
+        },
+        {
+          "what": "shouldOverrideUrlLoading not overridden, returns false by default",
+          "where": "Lcom/booking/taxispresentation/marken/web/WebFacet$FreeTaxiWebViewClient;",
+          "full_path": "Lcom/booking/taxispresentation/marken/web/WebFacet$FreeTaxiWebViewClient;"
+        },
+        {
+          "what": "shouldOverrideUrlLoading(Landroid/webkit/WebView; Ljava/lang/String;)Z",
+          "where": "Lcom/google/android/gms/ads/internal/zzo;",
+          "full_path": "Lcom/google/android/gms/ads/internal/zzo;->shouldOverrideUrlLoading(Landroid/webkit/WebView; Ljava/lang/String;)Z"
+        },
+        {
+          "what": "shouldOverrideUrlLoading(Landroid/webkit/WebView; Ljava/lang/String;)Z",
+          "where": "Lcom/google/android/gms/internal/ads/zzbky;",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzbky;->shouldOverrideUrlLoading(Landroid/webkit/WebView; Ljava/lang/String;)Z"
+        },
+        {
+          "what": "shouldOverrideUrlLoading not overridden, returns false by default",
+          "where": "Lcom/google/android/gms/internal/ads/zzfmr;",
+          "full_path": "Lcom/google/android/gms/internal/ads/zzfmr;"
+        },
+        {
+          "what": "shouldOverrideUrlLoading(Landroid/webkit/WebView; Landroid/webkit/WebResourceRequest;)Z",
+          "where": "Lcom/klarna/mobile/sdk/core/webview/clients/BaseWebViewClient;",
+          "full_path": "Lcom/klarna/mobile/sdk/core/webview/clients/BaseWebViewClient;->shouldOverrideUrlLoading(Landroid/webkit/WebView; Landroid/webkit/WebResourceRequest;)Z"
+        },
+        {
+          "what": "shouldOverrideUrlLoading(Landroid/webkit/WebView; Landroid/webkit/WebResourceRequest;)Z",
+          "where": "Lcom/revolut/revolutpay/ui/webview/WebViewConfirmationActivity$b;",
+          "full_path": "Lcom/revolut/revolutpay/ui/webview/WebViewConfirmationActivity$b;->shouldOverrideUrlLoading(Landroid/webkit/WebView; Landroid/webkit/WebResourceRequest;)Z"
+        },
+        {
+          "what": "shouldOverrideUrlLoading(Landroid/webkit/WebView; Landroid/webkit/WebResourceRequest;)Z",
+          "where": "Lcom/stripe/android/financialconnections/lite/FinancialConnectionsSheetLiteActivity$setupWebView$1$2;",
+          "full_path": "Lcom/stripe/android/financialconnections/lite/FinancialConnectionsSheetLiteActivity$setupWebView$1$2;->shouldOverrideUrlLoading(Landroid/webkit/WebView; Landroid/webkit/WebResourceRequest;)Z"
+        },
+        {
+          "what": "shouldOverrideUrlLoading(Landroid/webkit/WebView; Ljava/lang/String;)Z",
+          "where": "Lcom/booking/android/payment/payin/standalone/UrlInterceptingWebViewClient;",
+          "full_path": "Lcom/booking/android/payment/payin/standalone/UrlInterceptingWebViewClient;->shouldOverrideUrlLoading(Landroid/webkit/WebView; Ljava/lang/String;)Z"
+        }
+      ]
+    }
+  ],
+  "duration": "402.0 seconds"
+}

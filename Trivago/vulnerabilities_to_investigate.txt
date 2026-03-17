@@ -1,0 +1,138 @@
+# 1) Base64String
+
+- "name": "Base64 String Encryption",
+- "description": "This app contains Base64 encoded string(s). Please note that security is not the intent of the encoding step. Rather, the intent of the encoding is to encode non-HTTP-compatible characters that may be contained in usernames or passwords into characters that are HTTP-compatible.",
+- "remediation": "Please revise all the encoded strings and ensure a proper level of encryption if needed.",
+
+cvss": {
+
+- "attack_vector": "Local",
+- "attack_complexity": "Low",
+- "privileges_required": "None",
+- "user_interaction": "None",
+- "scope": "Unchanged",
+- "confidentiality_impact": "Low",
+- "integrity_impact": "None",
+- "availability_impact": "None"
+
+# 3) Crypto Small Iteration Count
+
+- ​      "name": "Small iteration count for key derivation",
+- ​      "description": "An iteration count smaller than 1000 passed to `PBEParameterSpec` and `PBEKeySpec` constructors is insecure.",
+- ​      "remediation": "A minimum of 1000 iterations is recommended according to RFC 2898. This will increase the cost of exhaustive search for passwords significantly, without a noticeable impact in the cost of deriving individual keys.",
+
+​      "cvss": {
+
+​        "attack_vector": "Local",
+
+​        "attack_complexity": "High",
+
+​        "privileges_required": "High",
+
+​        "user_interaction": "None",
+
+​        "scope": "Unchanged",
+
+​        "confidentiality_impact": "Low",
+
+​        "integrity_impact": "None",
+
+​        "availability_impact": "None"
+
+​      },
+
+# 4) DynamicCodeLoading",
+
+​      "name": "Dynamic Code Loading",
+
+​      "description": "This app contains code that dynamically loads classes from `.jar` and `.apk` files containing a `classes.dex` entry. This can be used to execute code not installed as part of an application. This behavior is a security hazard since malicious code could be loaded and executed in the context of the app.",
+
+​      "remediation": "We strongly suggest you to remove dynamic code loads unless necessary. If this is the case, we suggest to carefully revise all the code loaded and executed.",
+
+"cvss": {
+
+​        "attack_vector": "Local",
+
+​        "attack_complexity": "High",
+
+​        "privileges_required": "Low",
+
+​        "user_interaction": "None",
+
+​        "scope": "Unchanged",
+
+​        "confidentiality_impact": "High",
+
+​        "integrity_impact": "High",
+
+​        "availability_impact": "Low"
+
+​      }
+
+# 7)InsecureConnection
+
+- ​      "name": "SSL Connection Checking",
+- ​      "description": "The application contains URLs that are **NOT** under SSL. This is a security hazard since information exchanged with those URLs can be intercepted and altered by a malicious user.",
+- ​      "remediation": "Please carefully revise each URL and use SSL if possible. Make sure that **ALL** data displayed and sent through HTTP is not security-relevant, including Session Cookies.",
+
+"cvss": {
+
+​        "attack_vector": "Network",
+
+​        "attack_complexity": "High",
+
+​        "privileges_required": "None",
+
+​        "user_interaction": "None",
+
+​        "scope": "Unchanged",
+
+​        "confidentiality_impact": "High",
+
+​        "integrity_impact": "High",
+
+​        "availability_impact": "Low"
+
+​      }
+
+
+
+# 9) SqliteExecSq
+
+​      "name": "Potential SQL injection",
+
+​      "description": "Android allows apps to save data in a local database called SQLite. SQL queries are used to interact with the SQLite database. `execSQL()` method of SQLite allows developers to execute queries such as `INSERT/DELETE/UPDATE` which do not return any result. If an app uses inputs (e.g., user input via UI or data from web) to create a SQL statement to be executed via `execSQL()` method, then the app may be vulnerable to SQL injection attack.",
+
+​      "remediation": "Make sure to sanitize the inputs and use prepared statements if possible.",
+
+​      "references": {
+
+​        "text": "Further information on SQLite can be found in the official documentation [[1]].",
+
+​        "links": {
+
+​          "1": "https://developer.android.com/reference/android/database/sqlite/SQLiteDatabase#execSQL(java.lang.String)"
+
+​        }
+
+​      },
+
+​      "cvss": {
+
+​        "attack_vector": "Local",
+
+​        "attack_complexity": "High",
+
+​        "privileges_required": "Low",
+
+​        "user_interaction": "Required",
+
+​        "scope": "Unchanged",
+
+​        "confidentiality_impact": "High",
+
+​        "integrity_impact": "None",
+
+​        "availability_impact": "None"
+
+​      },

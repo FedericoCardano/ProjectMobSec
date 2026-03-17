@@ -1,0 +1,927 @@
+{
+  "platform": "Android",
+  "ascii_obfuscation_rate": 0.0,
+  "short_name_obfuscation_rate": 86.80016442539198,
+  "vulnerabilities": [
+    {
+      "id": "BackupEnabled",
+      "name": "AndroidManifest Adb Backup Checking",
+      "description": "ADB Backup is ENABLED for this app (default: ENABLED). ADB Backup is a good tool for backing up all of your files. If enabled, people with physical access to the device can copy all of the sensitive data of the app. The sensitive data may include lifetime access token, username or password etc.",
+      "remediation": "We suggest to set in the Android Manifest attribute `\"android:allowBackup\"` to \"false\" if the backup capability is not necessary.",
+      "references": {
+        "text": "Further information about this problem and possible countermeasures can be found in blog posts [[1]] and in the Android Reference Guide [[2]].",
+        "links": {
+          "1": "http://nelenkov.blogspot.co.uk/2012/06/unpacking-android-backups.html",
+          "2": "http://developer.android.com/guide/topics/manifest/application-element.html#allowbackup"
+        }
+      },
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Physical",
+        "attack_complexity": "Low",
+        "privileges_required": "Low",
+        "user_interaction": "Required",
+        "scope": "Unchanged",
+        "confidentiality_impact": "High",
+        "integrity_impact": "None",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "android:allowBackup=\"true\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        }
+      ]
+    },
+    {
+      "id": "Base64String",
+      "name": "Base64 String Encryption",
+      "description": "This app contains Base64 encoded string(s). Please note that security is not the intent of the encoding step. Rather, the intent of the encoding is to encode non-HTTP-compatible characters that may be contained in usernames or passwords into characters that are HTTP-compatible.",
+      "remediation": "Please revise all the encoded strings and ensure a proper level of encryption if needed.",
+      "references": {
+        "text": "Further information on security consequences of Base64 encoding can be found in the following paper [[1]].",
+        "links": {
+          "1": "https://www.rsaconference.com/writable/presentations/file_upload/das-203.pdf"
+        }
+      },
+      "owasp": [
+        "M2",
+        "M5",
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Local",
+        "attack_complexity": "Low",
+        "privileges_required": "None",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "Low",
+        "integrity_impact": "None",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "Original string: \"YXBpX2tleQ==\" Decoded string: \"api_key\"",
+          "where": "Lcom/salesforce/marketingcloud/analytics/piwama/a;->a(Lorg/json/JSONObject;)Lorg/json/JSONObject;",
+          "full_path": "Lcom/salesforce/marketingcloud/analytics/piwama/i;-><init>(Lcom/salesforce/marketingcloud/MarketingCloudConfig; Lcom/salesforce/marketingcloud/storage/h; Lcom/salesforce/marketingcloud/http/e; Lcom/salesforce/marketingcloud/internal/n;)V --> Lcom/salesforce/marketingcloud/analytics/piwama/a;->a(Lorg/json/JSONObject;)Lorg/json/JSONObject;"
+        },
+        {
+          "what": "Original string: \"InvalidMedia\" Decoded string: \"\"{ږ'Lyؚ\"",
+          "where": "Lcom/salesforce/marketingcloud/messages/iam/m;->b(Lorg/json/JSONObject;)Ljava/lang/String;",
+          "full_path": "Lcom/salesforce/marketingcloud/MarketingCloudSdk;->a(Ljava/lang/String; Lcom/salesforce/marketingcloud/MarketingCloudConfig; Z)Lcom/salesforce/marketingcloud/InitializationStatus; --> Lcom/salesforce/marketingcloud/messages/iam/InAppMessageComponent;->onSyncReceived(Lcom/salesforce/marketingcloud/k$e; Lorg/json/JSONObject;)V --> Lcom/salesforce/marketingcloud/messages/iam/m;->a(Lorg/json/JSONObject;)V --> Lcom/salesforce/marketingcloud/messages/iam/m;->b(Lorg/json/JSONObject;)Ljava/lang/String;"
+        },
+        {
+          "what": "Original string: \"eyJlcnJvciI6IlVOS05PV05fRVJST1IifQ==\" Decoded string: \"{\"error\":\"UNKNOWN_ERROR\"}\"",
+          "where": "Lcom/trivago/xF0;->d(Lcom/trivago/Gd1;)Lcom/trivago/xF0;",
+          "full_path": "Lcom/trivago/lG0;->b(Z)Lcom/google/android/gms/tasks/Task; --> Lcom/trivago/kG0;->then(Lcom/google/android/gms/tasks/Task;)Ljava/lang/Object; --> Lcom/trivago/lG0;->c(Lcom/trivago/lG0; Z Lcom/google/android/gms/tasks/Task;)Lcom/google/android/gms/tasks/Task; --> Lcom/trivago/xF0;->d(Lcom/trivago/Gd1;)Lcom/trivago/xF0;"
+        }
+      ]
+    },
+    {
+      "id": "CheckPermission",
+      "name": "CheckPermission call with app process PID or UID",
+      "description": "A component that uses checkPermission to verify access control at run-time will need to obtain the PID and UID of the calling component before calling checkPermission. The Binder API provides methods getCallingPID() and getCallingUID() to determine the calling component's PID and UID, respectively. However, these methods do not always return the calling PID and UID. When an application is started, the system creates a thread of execution called main. The system does not create a separate thread for each component instance. All components that run in the same process are instantiated in the main thread, and system calls to each component are dispatched from that thread. If Binder.getCallingPID() and Binder.getCallingPID() are called from the main thread, they do not return the PID and UID of the process in which the calling component is running. Instead, they return the PID and UID of the process in which the protected component is running. In such a scenario, if the process in which the protected component is running is granted permission, checkPermission will always be true. A malicious component can exploit this vulnerability to access the protected component.",
+      "remediation": "",
+      "references": {
+        "text": "Further information about this problem and possible countermeasures can be found in Android Reference Guide [[1]].",
+        "links": {
+          "1": "https://developer.android.com/reference/android/content/Context.html#checkPermission(java.lang.String,%20int,%20int)"
+        }
+      },
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Network",
+        "attack_complexity": "High",
+        "privileges_required": "High",
+        "user_interaction": "Required",
+        "scope": "Unchanged",
+        "confidentiality_impact": "Low",
+        "integrity_impact": "Low",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "Landroid/content/Context;->checkPermission(Ljava/lang/String; I I)I",
+          "where": "Lcom/trivago/oQ2;->a(Landroid/content/Context; Ljava/lang/String; I I Ljava/lang/String;)I",
+          "full_path": "Lcom/google/android/gms/internal/auth/zzdc;->zzb()Ljava/lang/Object; --> Lcom/google/android/gms/internal/auth/zzco;->zza(Landroid/content/Context;)Lcom/google/android/gms/internal/auth/zzco; --> Lcom/trivago/oQ2;->b(Landroid/content/Context; Ljava/lang/String;)I --> Lcom/trivago/oQ2;->a(Landroid/content/Context; Ljava/lang/String; I I Ljava/lang/String;)I --> Landroid/content/Context;->checkPermission(Ljava/lang/String; I I)I"
+        },
+        {
+          "what": "Landroid/content/Context;->checkPermission(Ljava/lang/String; I I)I",
+          "where": "Lcom/appsflyer/internal/AFj1iSDK;->getMediationNetwork(Landroid/content/Context; Ljava/lang/String;)Z",
+          "full_path": "Lcom/appsflyer/internal/AFj1rSDK;->getMonetizationNetwork(Ljava/lang/Runnable;)Lcom/appsflyer/internal/AFi1bSDK; --> Lcom/appsflyer/internal/AFi1bSDK;->getCurrencyIso4217Code(Landroid/content/Context;)V --> Lcom/appsflyer/internal/AFi1bSDK;->getRevenue(Landroid/content/Context;)Z --> Lcom/appsflyer/internal/AFj1iSDK;->getMediationNetwork(Landroid/content/Context; Ljava/lang/String;)Z --> Landroid/content/Context;->checkPermission(Ljava/lang/String; I I)I"
+        },
+        {
+          "what": "Landroid/content/Context;->checkPermission(Ljava/lang/String; I I)I",
+          "where": "Lcom/trivago/lk0;->checkSelfPermission(Landroid/content/Context; Ljava/lang/String;)I",
+          "full_path": "Lcom/trivago/Mx1;->o(Landroid/app/Application;)V --> Lcom/trivago/Mx1$a;->run()V --> Lcom/trivago/r11;->m(Landroid/content/Context;)Z --> Lcom/trivago/lk0;->checkSelfPermission(Landroid/content/Context; Ljava/lang/String;)I --> Landroid/content/Context;->checkPermission(Ljava/lang/String; I I)I"
+        }
+      ]
+    },
+    {
+      "id": "CryptoSmallIterationCount",
+      "name": "Small iteration count for key derivation",
+      "description": "An iteration count smaller than 1000 passed to `PBEParameterSpec` and `PBEKeySpec` constructors is insecure.",
+      "remediation": "A minimum of 1000 iterations is recommended according to RFC 2898. This will increase the cost of exhaustive search for passwords significantly, without a noticeable impact in the cost of deriving individual keys.",
+      "references": {
+        "text": "Further information can be found on the Android Developer Guide [[1]] and in paper [[2]].",
+        "links": {
+          "1": "https://developer.android.com/reference/javax/crypto/spec/PBEKeySpec.html",
+          "2": "https://dl.acm.org/doi/10.1145/2508859.2516693"
+        }
+      },
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Local",
+        "attack_complexity": "High",
+        "privileges_required": "High",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "Low",
+        "integrity_impact": "None",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "small number of iterations (500) passed to PBEKeySpec",
+          "where": "Lcom/salesforce/marketingcloud/tozny/AesCbcWithIntegrity;->generateKeyFromPassword(Ljava/lang/String; [B I)Lcom/salesforce/marketingcloud/tozny/AesCbcWithIntegrity$SecretKeys;",
+          "full_path": "Lcom/salesforce/marketingcloud/util/AesCrypto;-><init>(Landroid/content/Context; Ljava/lang/String; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/legacycrypto/OldSdkHash;)V --> Lcom/salesforce/marketingcloud/util/AesCrypto;-><init>(Landroid/content/Context; Ljava/lang/String; Ljava/lang/String; Ljava/lang/String; I Lcom/salesforce/marketingcloud/legacycrypto/OldSdkHash;)V --> Lcom/salesforce/marketingcloud/tozny/AesCbcWithIntegrity;->generateKeyFromPassword(Ljava/lang/String; Ljava/lang/String; I)Lcom/salesforce/marketingcloud/tozny/AesCbcWithIntegrity$SecretKeys; --> Lcom/salesforce/marketingcloud/tozny/AesCbcWithIntegrity;->generateKeyFromPassword(Ljava/lang/String; [B I)Lcom/salesforce/marketingcloud/tozny/AesCbcWithIntegrity$SecretKeys; --> Ljavax/crypto/spec/PBEKeySpec;-><init>([C [B I I)V"
+        }
+      ]
+    },
+    {
+      "id": "DynamicCodeLoading",
+      "name": "Dynamic Code Loading",
+      "description": "This app contains code that dynamically loads classes from `.jar` and `.apk` files containing a `classes.dex` entry. This can be used to execute code not installed as part of an application. This behavior is a security hazard since malicious code could be loaded and executed in the context of the app.",
+      "remediation": "We strongly suggest you to remove dynamic code loads unless necessary. If this is the case, we suggest to carefully revise all the code loaded and executed.",
+      "references": {
+        "text": "Further information on dynamic loading can be found in the official documentation [[1]].",
+        "links": {
+          "1": "https://developer.android.com/reference/dalvik/system/DexClassLoader.html"
+        }
+      },
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Local",
+        "attack_complexity": "High",
+        "privileges_required": "Low",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "High",
+        "integrity_impact": "High",
+        "availability_impact": "Low"
+      },
+      "code": [
+        {
+          "what": "Ldalvik/system/PathClassLoader;-><init>(Ljava/lang/String; Ljava/lang/ClassLoader;)V",
+          "where": "Lcom/trivago/HN4;-><init>(Ljava/lang/String; Ljava/lang/ClassLoader;)V",
+          "full_path": "Lcom/google/android/gms/dynamite/DynamiteModule;-><clinit>()V --> Lcom/google/android/gms/dynamite/a;->a(Landroid/content/Context; Ljava/lang/String; Z)I --> Lcom/google/android/gms/dynamite/DynamiteModule;->f(Landroid/content/Context; Ljava/lang/String; Z)I --> Lcom/trivago/HN4;-><init>(Ljava/lang/String; Ljava/lang/ClassLoader;)V --> Ldalvik/system/PathClassLoader;-><init>(Ljava/lang/String; Ljava/lang/ClassLoader;)V"
+        }
+      ]
+    },
+    {
+      "id": "ExportedComponent",
+      "name": "AndroidManifest Exported Components Checking",
+      "description": "Found \"exported\" components (except for Launcher) for receiving outside applications' actions (`AndroidManifest.xml`). These components can be initialized by other apps and used maliciously.",
+      "remediation": "Please modify the attribute in each of the exported component to `exported=\"false\"` or protect it with a custom permission with \"signature\" or higher protection level and specify it in \"android:permission\" attribute.",
+      "references": {
+        "text": "Further information on the exported attribute can be found on the Android Developer Guide [[1]].",
+        "links": {
+          "1": "http://developer.android.com/guide/topics/manifest/provider-element.html#exported"
+        }
+      },
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Adjacent",
+        "attack_complexity": "Low",
+        "privileges_required": "Low",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "Low",
+        "integrity_impact": "Low",
+        "availability_impact": "Low"
+      },
+      "code": [
+        {
+          "what": "exported activity \"com.trivago.ft.onboarding.frontend.OnboardingActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.trivago.ft.deeplink.frontend.DeepLinkActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.google.firebase.analytics.GoogleAnalyticsServerPreviewActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.google.firebase.auth.internal.GenericIdpActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"com.google.firebase.auth.internal.RecaptchaActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"androidx.compose.ui.tooling.PreviewActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported activity \"net.openid.appauth.RedirectUriReceiverActivity\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        },
+        {
+          "what": "exported receiver \"com.appsflyer.MultipleInstallBroadcastReceiver\"",
+          "where": "AndroidManifest.xml",
+          "full_path": "AndroidManifest.xml"
+        }
+      ]
+    },
+    {
+      "id": "ExternalStorage",
+      "name": "External Storage Accessing",
+      "description": "Found external storage access API. Please remember not to write security-critical files to external storage.",
+      "remediation": "Please revise all the external storage access in order to identify eventual leaks of critical information.",
+      "references": {
+        "text": "Further information on writing files can be found in the official documentation [[1]].",
+        "links": {
+          "1": "https://developer.android.com/training/basics/data-storage/files.html"
+        }
+      },
+      "owasp": [
+        "M2",
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Local",
+        "attack_complexity": "Low",
+        "privileges_required": "Low",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "Low",
+        "integrity_impact": "Low",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;",
+          "where": "Landroidx/core/content/FileProvider;->j(Landroid/content/Context; Ljava/lang/String; I)Landroidx/core/content/FileProvider$b;",
+          "full_path": "Landroidx/core/content/FileProvider;->getType(Landroid/net/Uri;)Ljava/lang/String; --> Landroidx/core/content/FileProvider;->f()Landroidx/core/content/FileProvider$b; --> Landroidx/core/content/FileProvider;->g(Landroid/content/Context; Ljava/lang/String; I)Landroidx/core/content/FileProvider$b; --> Landroidx/core/content/FileProvider;->j(Landroid/content/Context; Ljava/lang/String; I)Landroidx/core/content/FileProvider$b; --> Landroid/os/Environment;->getExternalStorageDirectory()Ljava/io/File;"
+        }
+      ]
+    },
+    {
+      "id": "InsecureConnection",
+      "name": "SSL Connection Checking",
+      "description": "The application contains URLs that are **NOT** under SSL. This is a security hazard since information exchanged with those URLs can be intercepted and altered by a malicious user.",
+      "remediation": "Please carefully revise each URL and use SSL if possible. Make sure that **ALL** data displayed and sent through HTTP is not security-relevant, including Session Cookies.",
+      "references": {
+        "text": "For further information on using Android with HTTPS and SSL please refer to the official guide [[1]].",
+        "links": {
+          "1": "https://developer.android.com/training/articles/security-ssl.html"
+        }
+      },
+      "owasp": [
+        "M3"
+      ],
+      "cvss": {
+        "attack_vector": "Network",
+        "attack_complexity": "High",
+        "privileges_required": "None",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "High",
+        "integrity_impact": "High",
+        "availability_impact": "Low"
+      },
+      "code": [
+        {
+          "what": "http://salesforce-marketingcloud.github.io/MarketingCloudSDK-Android",
+          "where": "Lcom/salesforce/marketingcloud/MarketingCloudConfig$Builder;->build(Landroid/content/Context;)Lcom/salesforce/marketingcloud/MarketingCloudConfig;",
+          "full_path": "Lcom/trivago/app/TrivagoApplication;->onCreate()V --> Lcom/trivago/St3;->f()V --> Lcom/salesforce/marketingcloud/MarketingCloudConfig$Builder;->build(Landroid/content/Context;)Lcom/salesforce/marketingcloud/MarketingCloudConfig;"
+        }
+      ]
+    },
+    {
+      "id": "RuntimeCommand",
+      "name": "Runtime Command Checking",
+      "description": "This app is using critical function `Runtime.getRuntime().exec(\"...\")`. Please confirm that the following code sections are not harmful.",
+      "remediation": null,
+      "references": null,
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Local",
+        "attack_complexity": "High",
+        "privileges_required": "High",
+        "user_interaction": "None",
+        "scope": "Unchanged",
+        "confidentiality_impact": "High",
+        "integrity_impact": "Low",
+        "availability_impact": "Low"
+      },
+      "code": [
+        {
+          "what": "Ljava/lang/Runtime;->exec(Ljava/lang/String;)Ljava/lang/Process;",
+          "where": "Lcom/trivago/r11;->g()Ljava/lang/String;",
+          "full_path": "Lcom/trivago/Mx1$a;->run()V --> Lcom/trivago/Mx1;->n(Lcom/trivago/Mx1;)Ljava/lang/String; --> Lcom/trivago/Mx1;->b()Ljava/lang/String; --> Lcom/trivago/r11;->g()Ljava/lang/String; --> Ljava/lang/Runtime;->exec(Ljava/lang/String;)Ljava/lang/Process;"
+        },
+        {
+          "what": "Ljava/lang/Runtime;->exec(Ljava/lang/String;)Ljava/lang/Process;",
+          "where": "Lcom/trivago/cU0;->o(Ljava/lang/String;)Z",
+          "full_path": "Lcom/trivago/cU0;->t()V --> Lcom/trivago/cU0$b;->run()V --> Lcom/trivago/cU0;->e(Lcom/trivago/cU0; Ljava/lang/String;)Z --> Lcom/trivago/cU0;->o(Ljava/lang/String;)Z --> Ljava/lang/Runtime;->exec(Ljava/lang/String;)Ljava/lang/Process;"
+        },
+        {
+          "what": "Ljava/lang/Runtime;->exec(Ljava/lang/String;)Ljava/lang/Process;",
+          "where": "Lcom/trivago/Pz4;->a(Ljava/lang/String;)Ljava/lang/String;",
+          "full_path": "Lcom/trivago/Pz4;->qemuProperties()Ljava/lang/String; --> Lcom/trivago/Pz4;->a(Ljava/lang/String;)Ljava/lang/String; --> Ljava/lang/Runtime;->exec(Ljava/lang/String;)Ljava/lang/Process;"
+        }
+      ]
+    },
+    {
+      "id": "SqliteExecSql",
+      "name": "Potential SQL injection",
+      "description": "Android allows apps to save data in a local database called SQLite. SQL queries are used to interact with the SQLite database. `execSQL()` method of SQLite allows developers to execute queries such as `INSERT/DELETE/UPDATE` which do not return any result. If an app uses inputs (e.g., user input via UI or data from web) to create a SQL statement to be executed via `execSQL()` method, then the app may be vulnerable to SQL injection attack.",
+      "remediation": "Make sure to sanitize the inputs and use prepared statements if possible.",
+      "references": {
+        "text": "Further information on SQLite can be found in the official documentation [[1]].",
+        "links": {
+          "1": "https://developer.android.com/reference/android/database/sqlite/SQLiteDatabase#execSQL(java.lang.String)"
+        }
+      },
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Local",
+        "attack_complexity": "High",
+        "privileges_required": "Low",
+        "user_interaction": "Required",
+        "scope": "Unchanged",
+        "confidentiality_impact": "High",
+        "integrity_impact": "None",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/d;->a(Landroid/database/sqlite/SQLiteDatabase; Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/d;->b(Landroid/database/sqlite/SQLiteDatabase; Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/d;->a(Landroid/database/sqlite/SQLiteDatabase; Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/b;->a(Ljava/lang/String; Ljava/lang/String; [Ljava/lang/String; Ljava/util/Set;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/b;->a(Landroid/database/sqlite/SQLiteDatabase; Lcom/salesforce/marketingcloud/util/Crypto; Lcom/salesforce/marketingcloud/util/Crypto;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/b;->a(Lcom/salesforce/marketingcloud/storage/db/upgrades/b; Ljava/lang/String; Ljava/lang/String; [Ljava/lang/String; Ljava/util/Set; I Ljava/lang/Object;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/b;->a(Ljava/lang/String; Ljava/lang/String; [Ljava/lang/String; Ljava/util/Set;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/l;->a(Landroid/database/sqlite/SQLiteDatabase; Lcom/salesforce/marketingcloud/util/Crypto;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/l;->b(Landroid/database/sqlite/SQLiteDatabase; Lcom/salesforce/marketingcloud/util/Crypto;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/l;->a(Landroid/database/sqlite/SQLiteDatabase; Lcom/salesforce/marketingcloud/util/Crypto;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/a;->a(Landroid/database/sqlite/SQLiteDatabase; Lcom/salesforce/marketingcloud/util/Crypto;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/a;->b(Landroid/database/sqlite/SQLiteDatabase; Lcom/salesforce/marketingcloud/util/Crypto;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/a;->a(Landroid/database/sqlite/SQLiteDatabase; Lcom/salesforce/marketingcloud/util/Crypto;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/d;->a(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/d;->b(Landroid/database/sqlite/SQLiteDatabase; Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/d;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/d;->b(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/d;->b(Landroid/database/sqlite/SQLiteDatabase; Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/d;->b(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/d;->e(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/d;->b(Landroid/database/sqlite/SQLiteDatabase; Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/d;->e(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/d;->c(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/d;->b(Landroid/database/sqlite/SQLiteDatabase; Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/d;->c(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/d;->d(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/d;->b(Landroid/database/sqlite/SQLiteDatabase; Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/d;->d(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/b;->a()V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/b;->a(Landroid/database/sqlite/SQLiteDatabase; Lcom/salesforce/marketingcloud/util/Crypto; Lcom/salesforce/marketingcloud/util/Crypto;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/b;->a()V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/l;->a(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/l;->b(Landroid/database/sqlite/SQLiteDatabase; Lcom/salesforce/marketingcloud/util/Crypto;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/l;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/l;->c(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/l;->b(Landroid/database/sqlite/SQLiteDatabase; Lcom/salesforce/marketingcloud/util/Crypto;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/l;->c(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/l;->b(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/l;->b(Landroid/database/sqlite/SQLiteDatabase; Lcom/salesforce/marketingcloud/util/Crypto;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/l;->b(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/c;->b(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/c;->c(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/c;->b(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/c;->a(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/c;->c(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/c;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/e;->c(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/e;->f(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/e;->c(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/e;->d(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/e;->f(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/e;->d(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/k;->a(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/k;->b(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/k;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/h;->a(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/h;->b(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/h;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/i;->a(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/i;->b(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/i;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/e;->e(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/e;->f(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/e;->e(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/g;->a(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/g;->b(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/g;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/e;->b(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/e;->f(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/e;->b(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/f;->a(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/f;->c(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/f;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/e;->a(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/e;->f(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/e;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/upgrades/f;->b(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/f;->c(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/upgrades/f;->b(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/a;->b(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/a;->b(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/k;->b(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/k;->b(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/g;->b(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/g;->b(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/e;->b(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/e;->b(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/m;->b(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/m;->b(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/i;->b(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/i;->b(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/h;->b(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/l;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/h;->b(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/e;->a(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/l;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/e;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/k;->a(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/l;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/k;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/f;->e(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/l;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/f;->e(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/m;->a(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/l;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/m;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/g;->a(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/l;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/g;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/j;->c(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/l;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/j;->c(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/a;->a(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/l;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/a;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/i;->a(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/l;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/i;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/h;->a(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Lcom/salesforce/marketingcloud/storage/db/l;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/h;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/b;->b(Ljava/lang/String; Ljava/util/Collection;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/f;->a(Ljava/util/Collection; Lcom/salesforce/marketingcloud/util/Crypto;)Lcom/salesforce/marketingcloud/messages/iam/InAppMessage; --> Lcom/salesforce/marketingcloud/storage/db/b;->b(Ljava/lang/String; Ljava/util/Collection;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/j;->g(Landroid/database/sqlite/SQLiteDatabase;)Z",
+          "full_path": "Lcom/salesforce/marketingcloud/MarketingCloudSdk;->a(Ljava/lang/String; Lcom/salesforce/marketingcloud/MarketingCloudConfig; Z)Lcom/salesforce/marketingcloud/InitializationStatus; --> Lcom/salesforce/marketingcloud/storage/h;->a(Lcom/salesforce/marketingcloud/InitializationStatus$a;)V --> Lcom/salesforce/marketingcloud/storage/db/l;->c()V --> Lcom/salesforce/marketingcloud/storage/db/j;->g(Landroid/database/sqlite/SQLiteDatabase;)Z --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/f;->m(Landroid/database/sqlite/SQLiteDatabase;)Z",
+          "full_path": "Lcom/salesforce/marketingcloud/MarketingCloudSdk;->a(Ljava/lang/String; Lcom/salesforce/marketingcloud/MarketingCloudConfig; Z)Lcom/salesforce/marketingcloud/InitializationStatus; --> Lcom/salesforce/marketingcloud/storage/h;->a(Lcom/salesforce/marketingcloud/InitializationStatus$a;)V --> Lcom/salesforce/marketingcloud/storage/db/l;->c()V --> Lcom/salesforce/marketingcloud/storage/db/f;->m(Landroid/database/sqlite/SQLiteDatabase;)Z --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/b;->h(Ljava/lang/String;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/f;->a(Ljava/util/Collection; Lcom/salesforce/marketingcloud/util/Crypto;)Lcom/salesforce/marketingcloud/messages/iam/InAppMessage; --> Lcom/salesforce/marketingcloud/storage/db/b;->h(Ljava/lang/String;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/j;->a(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->b()V --> Lcom/salesforce/marketingcloud/storage/db/l;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/j;->d(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/j;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/j;->b(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->b()V --> Lcom/salesforce/marketingcloud/storage/db/l;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/j;->d(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/j;->b(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/f;->d(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->b()V --> Lcom/salesforce/marketingcloud/storage/db/l;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/f;->i(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/f;->d(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/f;->b(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->b()V --> Lcom/salesforce/marketingcloud/storage/db/l;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/f;->i(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/f;->b(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/f;->a(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->b()V --> Lcom/salesforce/marketingcloud/storage/db/l;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/f;->i(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/f;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/f;->c(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->b()V --> Lcom/salesforce/marketingcloud/storage/db/l;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/f;->i(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/f;->c(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/f;->f(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->b()V --> Lcom/salesforce/marketingcloud/storage/db/l;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/f;->e(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/f;->f(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/f;->h(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->b()V --> Lcom/salesforce/marketingcloud/storage/db/l;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/f;->e(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/f;->h(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/f;->g(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->b()V --> Lcom/salesforce/marketingcloud/storage/db/l;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/f;->e(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/salesforce/marketingcloud/storage/db/f;->g(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/l;->b()V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/h;-><init>(Landroid/content/Context; Lcom/salesforce/marketingcloud/util/Crypto; Ljava/lang/String; Ljava/lang/String; Lcom/salesforce/marketingcloud/internal/n; Lcom/salesforce/marketingcloud/util/Crypto; Z)V --> Lcom/salesforce/marketingcloud/storage/db/l;->b()V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/trivago/jL4;->w(Ljava/lang/Long;)V",
+          "full_path": "Lcom/trivago/qT4;->run()V --> Lcom/trivago/tT4;->C2(Lcom/trivago/FY4; Lcom/trivago/pJ4;)V --> Lcom/trivago/VX4;->r0(Ljava/lang/String; Lcom/trivago/pJ4;)V --> Lcom/trivago/jL4;->w(Ljava/lang/Long;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/trivago/oL4;->a(Lcom/trivago/ER4; Landroid/database/sqlite/SQLiteDatabase; Ljava/lang/String; Ljava/lang/String; Ljava/lang/String; [Ljava/lang/String;)V",
+          "full_path": "Lcom/trivago/jL4;-><init>(Lcom/trivago/VX4;)V --> Lcom/trivago/dL4;->onOpen(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/trivago/oL4;->a(Lcom/trivago/ER4; Landroid/database/sqlite/SQLiteDatabase; Ljava/lang/String; Ljava/lang/String; Ljava/lang/String; [Ljava/lang/String;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/trivago/jL4;->v(Ljava/util/List;)V",
+          "full_path": "Lcom/trivago/xX4;->a(Ljava/lang/String; I Ljava/lang/Throwable; [B Ljava/util/Map;)V --> Lcom/trivago/VX4;->A(Z I Ljava/lang/Throwable; [B Ljava/lang/String; Ljava/util/List;)V --> Lcom/trivago/jL4;->v(Ljava/util/List;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/google/android/recaptcha/internal/zzei;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/google/android/recaptcha/internal/zzes;-><init>(Landroid/content/Context; Lcom/google/android/recaptcha/internal/zzet; Lcom/trivago/in0;)V --> Lcom/google/android/recaptcha/internal/zzei;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/trivago/Gy3;->F(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/trivago/Gy3;-><clinit>()V --> Lcom/trivago/Cy3;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/trivago/Gy3;->F(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/google/android/gms/internal/gtm/zzbj;->onOpen(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/google/android/gms/internal/gtm/zzbk;-><init>(Lcom/google/android/gms/internal/gtm/zzby; Landroid/content/Context;)V --> Lcom/google/android/gms/internal/gtm/zzbj;->onOpen(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/trivago/Gy3;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V",
+          "full_path": "Lcom/trivago/Hy3;->c(Landroid/content/Context; Ljava/lang/String; I)Lcom/trivago/Gy3; --> Lcom/trivago/Gy3;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/trivago/Nk1;->E(Ljava/lang/String;)V",
+          "full_path": "Lcom/trivago/Pk1$c$c;->a(Lcom/trivago/Pk1$b; Landroid/database/sqlite/SQLiteDatabase;)Lcom/trivago/Nk1; --> Lcom/trivago/Nk1;->E(Ljava/lang/String;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/trivago/Gy3;->j(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/trivago/By3;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/trivago/Gy3;->j(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/trivago/Gy3;->o(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/trivago/Ey3;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/trivago/Gy3;->o(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/trivago/Gy3;->c(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/trivago/zy3;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/trivago/Gy3;->c(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/trivago/Gy3;->q(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/trivago/Ay3;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/trivago/Gy3;->q(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/trivago/Gy3;->g(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/trivago/Fy3;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/trivago/Gy3;->g(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/trivago/Gy3;->k(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/trivago/Dy3;->a(Landroid/database/sqlite/SQLiteDatabase;)V --> Lcom/trivago/Gy3;->k(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/google/android/recaptcha/internal/zzei;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V",
+          "full_path": "Lcom/google/android/recaptcha/internal/zzei;->onDowngrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/google/android/recaptcha/internal/zzei;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V",
+          "full_path": "Lcom/google/android/recaptcha/internal/zzei;->onUpgrade(Landroid/database/sqlite/SQLiteDatabase; I I)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V",
+          "where": "Lcom/salesforce/marketingcloud/storage/db/l;->onOpen(Landroid/database/sqlite/SQLiteDatabase;)V",
+          "full_path": "Lcom/salesforce/marketingcloud/storage/db/l;->onOpen(Landroid/database/sqlite/SQLiteDatabase;)V --> Landroid/database/sqlite/SQLiteDatabase;->execSQL(Ljava/lang/String;)V"
+        }
+      ]
+    },
+    {
+      "id": "WebViewAddJavaScriptInterface",
+      "name": "Checking Java code execution from WebView",
+      "description": "`\"addJavascriptInterface\"` method was found in the code. Use of this method in a WebView containing untrusted content could allow an attacker to manipulate the host application in unintended ways, executing Java code with the permissions of the host application.",
+      "remediation": "Use extreme care when using `\"addJavascriptInterface\"` method in a WebView which could contain untrusted content.",
+      "references": {
+        "text": "Further information can be found on the Android Developer Guide [[1]].",
+        "links": {
+          "1": "https://developer.android.com/reference/android/webkit/WebView.html#addJavascriptInterface(java.lang.Object, java.lang.String)"
+        }
+      },
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Network",
+        "attack_complexity": "High",
+        "privileges_required": "Low",
+        "user_interaction": "Required",
+        "scope": "Unchanged",
+        "confidentiality_impact": "High",
+        "integrity_impact": "None",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V",
+          "where": "Lcom/google/android/recaptcha/internal/zzil;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;",
+          "full_path": "Lcom/google/android/recaptcha/internal/zzja;->zzx(Lcom/trivago/il0;)Ljava/lang/Object; --> Lcom/google/android/recaptcha/internal/zzil;->invoke(Ljava/lang/Object; Ljava/lang/Object;)Ljava/lang/Object; --> Lcom/google/android/recaptcha/internal/zzil;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object; --> Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V"
+        },
+        {
+          "what": "Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V",
+          "where": "Lcom/cyberfend/cyfsecurity/CYFWebViewService;->y()V",
+          "full_path": "Lcom/cyberfend/cyfsecurity/CYFWebViewService;->onStartCommand(Landroid/content/Intent; I I)I --> Lcom/cyberfend/cyfsecurity/CYFWebViewService$c;->run()V --> Lcom/cyberfend/cyfsecurity/CYFWebViewService;->y()V --> Landroid/webkit/WebView;->addJavascriptInterface(Ljava/lang/Object; Ljava/lang/String;)V"
+        }
+      ]
+    },
+    {
+      "id": "WebViewInterceptRequest",
+      "name": "WebView intercept request",
+      "description": "Android allows apps to load resources (e.g, JavaScript, CSS files etc.) in a web page in a WebView, and control the resources being loaded in a webpage via the `shouldInterceptRequest` method in `WebViewClient`. The `shouldInterceptRequest` method takes an instance of WebView and the resource request as input and returns a response object. If the response object returned is `null` then the WebView is loaded with the web page containing the resource that was requested. But if a non-`null` response is returned then the WebView is loaded with the web page containing the non-`null` response. If the app does not validate the resource in `shouldInterceptRequest` method of `WebViewClient`, any resource can be loaded into WebView.",
+      "remediation": null,
+      "references": {
+        "text": "Further information can be found on the Android Developer Guide [[1]].",
+        "links": {
+          "1": "https://developer.android.com/reference/android/webkit/WebViewClient#shouldInterceptRequest(android.webkit.WebView, android.webkit.WebResourceRequest)"
+        }
+      },
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Network",
+        "attack_complexity": "High",
+        "privileges_required": "Low",
+        "user_interaction": "Required",
+        "scope": "Unchanged",
+        "confidentiality_impact": "Low",
+        "integrity_impact": "Low",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "Lcom/cyberfend/cyfsecurity/CYFWebViewService$e;",
+          "full_path": "Lcom/cyberfend/cyfsecurity/CYFWebViewService$e;"
+        },
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "Lcom/trivago/xt0;",
+          "full_path": "Lcom/trivago/xt0;"
+        },
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "Lcom/trivago/rC$a;",
+          "full_path": "Lcom/trivago/rC$a;"
+        },
+        {
+          "what": "shouldInterceptRequest not overridden, any resource can be loaded",
+          "where": "Lcom/trivago/rC;",
+          "full_path": "Lcom/trivago/rC;"
+        }
+      ]
+    },
+    {
+      "id": "WebViewJavaScriptEnabled",
+      "name": "WebView Potential XSS Attacks Checking",
+      "description": "Found `\"setJavaScriptEnabled(true)\"` in WebView. Enabling JavaScript exposes to malicious injection of code that would be executed with the same permissions (XSS attacks).",
+      "remediation": "If JavaScript is not necessary for your web page, please disable it (`\"setJavaScriptEnabled(false)\"`). Otherwise, in order to minimize the risk of XSS attacks, carefully review the web page code and sanitize the output presented in the WebView.",
+      "references": {
+        "text": "Further information on XSS attacks can be found in the OWASP documentation [[1]], while a guide for building secure web apps in Android can be found in the official documentation [[2]].",
+        "links": {
+          "1": "https://www.owasp.org/index.php/Cross-site_Scripting_(XSS)",
+          "2": "https://developer.android.com/guide/webapps/webview.html"
+        }
+      },
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Network",
+        "attack_complexity": "High",
+        "privileges_required": "Low",
+        "user_interaction": "Required",
+        "scope": "Unchanged",
+        "confidentiality_impact": "High",
+        "integrity_impact": "Low",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/google/android/recaptcha/internal/zzil;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;",
+          "full_path": "Lcom/google/android/recaptcha/internal/zzja;->zzx(Lcom/trivago/il0;)Ljava/lang/Object; --> Lcom/google/android/recaptcha/internal/zzil;->invoke(Ljava/lang/Object; Ljava/lang/Object;)Ljava/lang/Object; --> Lcom/google/android/recaptcha/internal/zzil;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object; --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/trivago/common/android/webview/BaseWebBrowserActivity;->onCreate(Landroid/os/Bundle;)V",
+          "full_path": "Lcom/trivago/ft/webbrowser/frontend/WebBrowserActivity;->onCreate(Landroid/os/Bundle;)V --> Lcom/trivago/ft/webbrowser/frontend/Hilt_WebBrowserActivity;->onCreate(Landroid/os/Bundle;)V --> Lcom/trivago/common/android/webview/BaseWebBrowserActivity;->onCreate(Landroid/os/Bundle;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/cyberfend/cyfsecurity/CYFWebViewService;->y()V",
+          "full_path": "Lcom/cyberfend/cyfsecurity/CYFWebViewService;->onStartCommand(Landroid/content/Intent; I I)I --> Lcom/cyberfend/cyfsecurity/CYFWebViewService$c;->run()V --> Lcom/cyberfend/cyfsecurity/CYFWebViewService;->y()V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        },
+        {
+          "what": "Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V",
+          "where": "Lcom/trivago/zA4;->b(Landroid/webkit/WebView;)V",
+          "full_path": "Lcom/trivago/ft/customtab/clickout/frontend/CustomTabActivity;->onCreate(Landroid/os/Bundle;)V --> Lcom/trivago/zA4;->b(Landroid/webkit/WebView;)V --> Landroid/webkit/WebSettings;->setJavaScriptEnabled(Z)V"
+        }
+      ]
+    },
+    {
+      "id": "WebViewOverrideUrl",
+      "name": "WebView override url",
+      "description": "Android allows apps to display web content in a WebView, and control navigation across webpages via the `shouldOverrideUrlLoading` method in `WebViewClient`. The `shouldOverrideUrlLoading` method takes an instance of WebView and the page request as input and returns a boolean. If `true` is returned then the host application handles the request else if `false` is returned then the current WebView handles the request. If the app does not validate the page request in `shouldOverrideUrlLoading` before loading it in the WebView, any web page provided by the server will be loaded into WebView. By default `shouldOverrideUrlLoading` returns `false` all the time.",
+      "remediation": null,
+      "references": {
+        "text": "Further information can be found on the Android Developer Guide [[1]].",
+        "links": {
+          "1": "https://developer.android.com/reference/android/webkit/WebViewClient#shouldOverrideUrlLoading(android.webkit.WebView, android.webkit.WebResourceRequest)"
+        }
+      },
+      "owasp": [
+        "M7"
+      ],
+      "cvss": {
+        "attack_vector": "Network",
+        "attack_complexity": "High",
+        "privileges_required": "Low",
+        "user_interaction": "Required",
+        "scope": "Unchanged",
+        "confidentiality_impact": "Low",
+        "integrity_impact": "Low",
+        "availability_impact": "None"
+      },
+      "code": [
+        {
+          "what": "shouldOverrideUrlLoading not overridden, returns false by default",
+          "where": "Lcom/cyberfend/cyfsecurity/CYFWebViewService$e;",
+          "full_path": "Lcom/cyberfend/cyfsecurity/CYFWebViewService$e;"
+        },
+        {
+          "what": "shouldOverrideUrlLoading not overridden, returns false by default",
+          "where": "Lcom/google/android/recaptcha/internal/zzik;",
+          "full_path": "Lcom/google/android/recaptcha/internal/zzik;"
+        },
+        {
+          "what": "shouldOverrideUrlLoading not overridden, returns false by default",
+          "where": "Lcom/trivago/rC$a;",
+          "full_path": "Lcom/trivago/rC$a;"
+        }
+      ]
+    }
+  ],
+  "duration": "51.7 seconds"
+}
