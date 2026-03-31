@@ -1,0 +1,45 @@
+[COMPILE STATEMENT]
+SQL: INSERT OR REPLACE INTO `region_search_remote_cache` (`page`,`url`,`key`,`value`,`locale`,`timestamp`) VALUES (?,?,?,?,?,?)
+[BIND LONG] 1 = 0
+[BIND STRING] 2 = RegionSearchData(destination=Concept(id=359166/100,
+ title=Th Sea Spray Resort,
+ locationInformation=Sarasota,
+ description=,
+ latLng=LatLng(latitude=27.270000457763672,
+ longitude=-82.55770874023438),
+ images=null,
+ isCurrentLocation=null,
+ destinationType=null),
+ searchDates=SearchDates(stayPeriod=StayPeriod(checkIn=Wed Apr 22 00:00:00 GMT+02:00 2026,
+ checkOut=Thu Apr 23 00:00:00 GMT+02:00 2026),
+ type=USER_SELECTED),
+ rooms=[Room(adults=2,
+ childrenAges=[])],
+ filters=[],
+ page=0,
+ currency=USD,
+ sortingOption=SORT_BY_POPULARITY,
+ minUserPrice=null,
+ minUserPriceEuroCent=null,
+ maxUserPrice=null,
+ maxUserPriceEuroCent=null,
+ distance=null,
+ shouldRequestNextPage=false,
+ boundlessMap=null,
+ resultLimit=null,
+ resultOffset=null,
+ alternativeDealsLimit=3,
+ includeUnavailableAccommodations=null,
+ shouldRequestRewardRates=false,
+ ghaDealRequestData=null,
+ consistentDealSearchParameter=null,
+ searchSource=HomeScreen,
+ priceFilterType=PricePerNight)
+[BIND STRING] 3 = 
+[BIND STRING] 4 = [...] => "big chunk-us.json"
+[BIND STRING] 5 = en-US
+[BIND LONG] 6 = 1774950416999
+[EXECUTE PREPARED STATEMENT]
+
+
+

@@ -1,0 +1,204 @@
+[DUMP TRIGGERED]
+DB Path: /data/user/0/com.trivago/databases/mcsdk_574c08af-49ff-4a70-8d0f-57c2babff30f.db
+
+[DUMP QUERY]: SELECT * FROM sqlite_master
+
+Row #1: type=table | name=android_metadata | tbl_name=android_metadata | rootpage=3 | sql=CREATE TABLE android_metadata (locale TEXT)
+
+Row #2: type=table | name=registration | tbl_name=registration | rootpage=4 | sql=CREATE TABLE registration (id INTEGER PRIMARY KEY AUTOINCREMENT, platform VARCHAR, subscriber_key VARCHAR, et_app_id VARCHAR, timezone INTEGER, dst SMALLINT, tags VARCHAR, attributes VARCHAR, platform_version VARCHAR, push_enabled SMALLINT, location_enabled SMALLINT, proximity_enabled SMALLINT, hwid VARCHAR, system_token VARCHAR, device_id VARCHAR, app_version VARCHAR, sdk_version VARCHAR, signed_string VARCHAR, locale VARCHAR, uuid VARCHAR )
+
+Row #3: type=table | name=sqlite_sequence | tbl_name=sqlite_sequence | rootpage=5 | sql=CREATE TABLE sqlite_sequence(name,seq)
+
+Row #4: type=table | name=inbox_messages | tbl_name=inbox_messages | rootpage=6 | sql=CREATE TABLE inbox_messages(id TEXT PRIMARY KEY, start_date INTEGER DEFAULT NULL, end_date INTEGER DEFAULT NULL, is_deleted INTEGER DEFAULT 0, is_read INTEGER DEFAULT 0, is_dirty INTEGER DEFAULT 0, message_type INTEGER DEFAULT 0, message_hash TEXT DEFAULT NULL, notification_message_json TEXT DEFAULT NULL, message_json TEXT)
+
+Row #5: type=index | name=sqlite_autoindex_inbox_messages_1 | tbl_name=inbox_messages | rootpage=7 | sql=NULL
+
+Row #6: type=table | name=analytic_item | tbl_name=analytic_item | rootpage=8 | sql=CREATE TABLE analytic_item (id INTEGER PRIMARY KEY AUTOINCREMENT, event_date VARCHAR, analytic_product_type INTEGER, analytic_type INTEGER, value INTEGER, ready_to_send SMALLINT, object_ids VARCHAR, enc_json_pi_payload VARCHAR, enc_json_et_payload VARCHAR, predictive_intelligence_identifier VARCHAR DEFAULT NULL)
+
+Row #7: type=table | name=regions | tbl_name=regions | rootpage=9 | sql=CREATE TABLE regions(id TEXT PRIMARY KEY, latitude TEXT, longitude TEXT, radius INTEGER, beacon_guid TEXT, beacon_major INTEGER, beacon_minor INTEGER, description TEXT, name TEXT, location_type INTEGER, is_inside SMALLINT)
+
+Row #8: type=index | name=sqlite_autoindex_regions_1 | tbl_name=regions | rootpage=10 | sql=NULL
+
+Row #9: type=table | name=region_messages | tbl_name=region_messages | rootpage=11 | sql=CREATE TABLE region_messages (region_id TEXT,  message_id TEXT, FOREIGN KEY (region_id) REFERENCES regions(id) ON DELETE CASCADE, PRIMARY KEY (region_id, message_id))
+
+Row #10: type=index | name=sqlite_autoindex_region_messages_1 | tbl_name=region_messages | rootpage=12 | sql=NULL
+
+Row #11: type=table | name=messages | tbl_name=messages | rootpage=13 | sql=CREATE TABLE messages (id VARCHAR PRIMARY KEY, title VARCHAR, alert VARCHAR, sound VARCHAR, mediaUrl VARCHAR, mediaAlt VARCHAR, open_direct VARCHAR, start_date VARCHAR, end_date VARCHAR, message_type INTEGER, content_type INTEGER, url VARCHAR, custom VARCHAR, keys VARCHAR, period_show_count INTEGER, last_shown_date VARCHAR, next_allowed_show VARCHAR, show_count INTEGER, message_limit INTEGER, rolling_period SMALLINT, period_type INTEGER, number_of_periods INTEGER, messages_per_period INTEGER, proximity INTEGER, notify_id INTEGER )
+
+Row #12: type=index | name=sqlite_autoindex_messages_1 | tbl_name=messages | rootpage=14 | sql=NULL
+
+Row #13: type=table | name=location_table | tbl_name=location_table | rootpage=15 | sql=CREATE TABLE location_table (id INTEGER PRIMARY KEY CHECK (id = 0), latitude VARCHAR, longitude VARCHAR )
+
+Row #14: type=table | name=in_app_messages | tbl_name=in_app_messages | rootpage=16 | sql=CREATE TABLE in_app_messages(id TEXT PRIMARY KEY, priority INTEGER DEFAULT 999, start_date INTEGER DEFAULT NULL, end_date INTEGER DEFAULT NULL, modified_date INTEGER DEFAULT NULL, display_limit INTEGER DEFAULT 1, media_url TEXT DEFAULT NULL, message_json TEXT)
+
+Row #15: type=index | name=sqlite_autoindex_in_app_messages_1 | tbl_name=in_app_messages | rootpage=17 | sql=NULL
+
+Row #16: type=table | name=iam_state | tbl_name=iam_state | rootpage=18 | sql=CREATE TABLE iam_state(id TEXT PRIMARY KEY, display_count integer default 0, FOREIGN KEY (id) REFERENCES in_app_messages(id) ON DELETE CASCADE)
+
+Row #17: type=index | name=sqlite_autoindex_iam_state_1 | tbl_name=iam_state | rootpage=19 | sql=NULL
+
+Row #18: type=trigger | name=iam_state_init | tbl_name=in_app_messages | rootpage=0 | sql=CREATE TRIGGER iam_state_init AFTER INSERT ON in_app_messages BEGIN INSERT INTO iam_state (id) VALUES (NEW.id); END
+
+Row #19: type=view | name=iam_view | tbl_name=iam_view | rootpage=0 | sql=CREATE VIEW iam_view AS SELECT in_app_messages.id,in_app_messages.priority,in_app_messages.start_date,in_app_messages.end_date,in_app_messages.modified_date,in_app_messages.display_limit,in_app_messages.message_json,iam_state.display_count FROM in_app_messages INNER JOIN iam_state ON iam_state.id = in_app_messages.id
+
+Row #20: type=table | name=triggers | tbl_name=triggers | rootpage=20 | sql=CREATE TABLE triggers(id TEXT PRIMARY KEY, _key TEXT, start_date INTEGER DEFAULT NULL, _trigger TEXT, app_open_count INTEGER DEFAULT 0)
+
+Row #21: type=index | name=sqlite_autoindex_triggers_1 | tbl_name=triggers | rootpage=21 | sql=NULL
+
+Row #22: type=table | name=device_stats | tbl_name=device_stats | rootpage=22 | sql=CREATE TABLE device_stats(id INTEGER PRIMARY KEY, type INTEGER, date INTEGER, event_data TEXT, in_transit INTEGER DEFAULT 0, ready_to_send INTEGER DEFAULT 0)
+
+
+[QUERY] SELECT * FROM registration
+id=204 | platform=Android | subscriber_key=n3Wvoc2ErYVMZt8i7pr6sFDaW01G3HBMGJbi1HqQhVjDczrq0AK83KqN/X5rqj2UIA4ohvIC | et_app_id=pPtSODMMOzje+PuQy+UNn9zw3WbCqTdjKXd776qB3yqdeTTPnBM3EKUpwEzKh1etSrCWvm03Bof8Q74o4tpZQA== | timezone=3600 | dst=0 | tags=O2Hf6CVpKSX+WEUhDDaBfAeVm1txwSEQ3WnepeLqWb/5su94WD5gC8uiGGo= | attributes=cBvFAacY2Mve4q8pchgo5t2AfMy+qMpWVnMvqfOkSO1j0lHsDUdROS2JEzIOS2Mj6GiQcdcpDdB0je8ySJRDrIm6RBvtHsdU8ucYXYjAq6lFnwB8q5Ti52mMBJm/orhb/ZtcRXTOAB0O7O1GWx2joUS7njoiQHuskxnR9u5RG3yjinHlVaMBfy1q8kGANzC/qi7gkEwKK3Mdto+NTJfcTsvp | platform_version=13 | push_enabled=0 | location_enabled=0 | proximity_enabled=0 | hwid=Google sdk_gphone64_arm64 | system_token=LDGAFpgbDmd/ZgEx9mqBCv6hfnORGmajeyjLBNKaHuJPU6gqFWnibNyR7uQd5opxCRbADirBJ9fgvO+DA5NXjkbCDOIsaObIoQt/OTpj1/HUOFgRlf3glFPcCFixENG+67wnwF3azyvVli0Hn4gWlrpKVNp5ZbbTfaj2Wnb++in4Xqzusr2JvEKseJFKgEQLvhNOiAXZvG3aPgdTOdul2WWk+Y5CLaxy2/8= | device_id=8d7a172e-1de5-4af3-a433-f792cff0f173 | app_version=6.46.0 : 2025100801 | sdk_version=9.0.3 | signed_string=null | locale=en_US | uuid=a5a5faf5-79d2-4444-947c-cdfde349cbcd | 
+
+[QUERY] SELECT * FROM messages
+(empty)
+
+[QUERY] SELECT * FROM inbox_messages
+(empty)
+
+[QUERY] SELECT * FROM analytic_item
+id=1 | event_date=2026-03-18T09:42:56.317Z | analytic_product_type=0 | analytic_type=4 | value=0 | ready_to_send=0 | object_ids=[] | enc_json_pi_payload=null | enc_json_et_payload=9mO0qCyMYDxaGOZxNlC1m7SkaFJdYOZqktGeD82prl/XKkf3OCJESKlaBUHboTmbaTdnDXx12J41r9+gGydbVurNd5baoUd+dkj7 | predictive_intelligence_identifier=null | 
+id=2 | event_date=2026-03-18T09:42:56.317Z | analytic_product_type=1 | analytic_type=5 | value=0 | ready_to_send=0 | object_ids=[] | enc_json_pi_payload=YGN1lDrRBrnRFW4zz6XhgP/KCi2H9YsZlCiGs1hT6z80bfVWEE9ettqjO2nJVIiGDhl0bWT6hD0yxcys3XPv7yorXUZCr3v6jsboO0P5a1cIW/xa/GKimFUbgyQC8u+GBtJnev9u+Ro+KqBNYe1HQKuunyRMwLoZ18AUchm4fWHjdFw4AC6/PL/OlSNl2kEzcEtFHyT7F29HOWBBo+l9FiVhGN2ikvwbT3ZCKG8= | enc_json_et_payload=null | predictive_intelligence_identifier=null | 
+
+[QUERY] SELECT * FROM regions
+(empty)
+
+
+
+
+[CIPHER INIT]
+Mode: 1 (Encryption)
+Key: 2b265e126a18cc64ccee223af68896d63e56758373de9e61b3bad50f6ac4c396
+IV: fd4594a771400e82acf7ab38
+[ENCRYPT]
+IN (plaintext): {"uuid":"98afdc8a-6f93-4998-a749-c11d7fd59618","deviceID":"8d7a172e-1de5-4af3-a433-f792cff0f173","device_Token":"dJ2yRubTQqqFSs_KBy2CUk:APA91bHo3zDXnBgglr9AvaENFV9RH0R-RVOTKW9tWhUMWlhLAPSRHg11Oj1z_T4Nce_hMA6RdhNTuzJkTvNxryMDs3CiCFo2JDMHxs1XquhfpkCiMaQwD34","sdk_Version":"9.0.3","app_Version":"6.46.0 : 2025100801","dST":false,"location_Enabled":false,"proximity_Enabled":false,"platform_Version":"13","push_Enabled":false,"timeZone":"3600","subscriberKey":"158932c9bc369a455f99625596","platform":"Android","hwid":"Google sdk_gphone64_arm64","etAppId":"574c08af-49ff-4a70-8d0f-57c2babff30f","locale":"en_US","tags":["ALL","Android"],"attributes":[{"key":"trivagoDeviceLanguage","value":"en-US"},{"key":"trivagoPlatform","value":"en-US"},{"key":"trivagoPlatformCode","value":"us"},{"key":"trivagoTrackingID","value":"158932c9bc369a455f99625596"}]}
+OUT (cipher): *hidden*
+
+
+
+
+[COMPILE STATEMENT]
+SQL: INSERT OR REPLACE INTO `geolocation_remote_cache_table_name` (`id`,`key`,`value`,`locale`,`timestamp`) VALUES (?,?,?,?,?)
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 
+[BIND STRING] 3 = {"a":{"d":"26307/200","e":"Genoa","g":"Liguria, Italy","h":{"d":44.407100677490234,"e":8.934000015258789}},"b":[{"d":"25073/200","e":"Liguria","g":"Italy","k":"REGION"},{"d":"83/200","e":"Italy","g":"Europe","k":"COUNTRY"},{"d":"4/200","e":"Europe","g":"","k":"CONTINENT"},{"d":"439374/200","e":"World","g":""}],"c":false}
+[BIND STRING] 4 = en-US
+[BIND LONG] 5 = 1774630540814
+[EXECUTE PREPARED STATEMENT]
+
+
+
+
+[DUMP TRIGGERED]
+DB Path: /data/user/0/com.trivago/databases/com.google.android.datatransport.events
+
+[DUMP QUERY]: SELECT * FROM sqlite_master
+
+Row #1: type=table | name=android_metadata | tbl_name=android_metadata | rootpage=3 | sql=CREATE TABLE android_metadata (locale TEXT)
+
+Row #2: type=table | name=events | tbl_name=events | rootpage=4 | sql=CREATE TABLE events (_id INTEGER PRIMARY KEY, context_id INTEGER NOT NULL, transport_name TEXT NOT NULL, timestamp_ms INTEGER NOT NULL, uptime_ms INTEGER NOT NULL, payload BLOB NOT NULL, code INTEGER, num_attempts INTEGER NOT NULL, payload_encoding TEXT, inline BOOLEAN NOT NULL DEFAULT 1, product_id INTEGER, pseudonymous_id TEXT, experiment_ids_clear_blob BLOB, experiment_ids_encrypted_blob BLOB,FOREIGN KEY (context_id) REFERENCES transport_contexts(_id) ON DELETE CASCADE)
+
+Row #3: type=table | name=event_metadata | tbl_name=event_metadata | rootpage=5 | sql=CREATE TABLE event_metadata (_id INTEGER PRIMARY KEY, event_id INTEGER NOT NULL, name TEXT NOT NULL, value TEXT NOT NULL,FOREIGN KEY (event_id) REFERENCES events(_id) ON DELETE CASCADE)
+
+Row #4: type=table | name=transport_contexts | tbl_name=transport_contexts | rootpage=6 | sql=CREATE TABLE transport_contexts (_id INTEGER PRIMARY KEY, backend_name TEXT NOT NULL, priority INTEGER NOT NULL, next_request_ms INTEGER NOT NULL, extras BLOB)
+
+Row #5: type=index | name=events_backend_id | tbl_name=events | rootpage=7 | sql=CREATE INDEX events_backend_id on events(context_id)
+
+Row #6: type=index | name=contexts_backend_priority_extras | tbl_name=transport_contexts | rootpage=8 | sql=CREATE UNIQUE INDEX contexts_backend_priority_extras on transport_contexts(backend_name, priority, extras)
+
+Row #7: type=table | name=event_payloads | tbl_name=event_payloads | rootpage=9 | sql=CREATE TABLE event_payloads (sequence_num INTEGER NOT NULL, event_id INTEGER NOT NULL, bytes BLOB NOT NULL,FOREIGN KEY (event_id) REFERENCES events(_id) ON DELETE CASCADE,PRIMARY KEY (sequence_num, event_id))
+
+Row #8: type=index | name=sqlite_autoindex_event_payloads_1 | tbl_name=event_payloads | rootpage=10 | sql=NULL
+
+Row #9: type=table | name=log_event_dropped | tbl_name=log_event_dropped | rootpage=11 | sql=CREATE TABLE log_event_dropped (log_source VARCHAR(45) NOT NULL,reason INTEGER NOT NULL,events_dropped_count BIGINT NOT NULL,PRIMARY KEY(log_source, reason))
+
+Row #10: type=index | name=sqlite_autoindex_log_event_dropped_1 | tbl_name=log_event_dropped | rootpage=12 | sql=NULL
+
+Row #11: type=table | name=global_log_event_state | tbl_name=global_log_event_state | rootpage=13 | sql=CREATE TABLE global_log_event_state (last_metrics_upload_ms BIGINT PRIMARY KEY)
+
+Row #12: type=index | name=sqlite_autoindex_global_log_event_state_1 | tbl_name=global_log_event_state | rootpage=14 | sql=NULL
+
+
+
+
+[DUMP TRIGGERED]
+DB Path: /data/user/0/com.trivago/databases/remote_cache
+
+[DUMP QUERY]: SELECT * FROM sqlite_master
+
+Row #1: type=table | name=android_metadata | tbl_name=android_metadata | rootpage=3 | sql=CREATE TABLE android_metadata (locale TEXT)
+
+Row #2: type=table | name=region_search_remote_cache | tbl_name=region_search_remote_cache | rootpage=4 | sql=CREATE TABLE `region_search_remote_cache` (`page` INTEGER NOT NULL, `url` TEXT NOT NULL, `key` TEXT NOT NULL, `value` TEXT NOT NULL, `locale` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`page`))
+
+Row #3: type=table | name=destination_nsp_remote_cache | tbl_name=destination_nsp_remote_cache | rootpage=5 | sql=CREATE TABLE `destination_nsp_remote_cache` (`id` INTEGER NOT NULL, `key` TEXT NOT NULL, `value` TEXT NOT NULL, `locale` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`id`))
+
+Row #4: type=table | name=concept_search_nsp_remote_cache | tbl_name=concept_search_nsp_remote_cache | rootpage=6 | sql=CREATE TABLE `concept_search_nsp_remote_cache` (`id` INTEGER NOT NULL, `key` TEXT NOT NULL, `value` TEXT NOT NULL, `locale` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`id`))
+
+Row #5: type=table | name=currency_remote_cache | tbl_name=currency_remote_cache | rootpage=7 | sql=CREATE TABLE `currency_remote_cache` (`id` INTEGER NOT NULL, `key` TEXT NOT NULL, `value` TEXT NOT NULL, `locale` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`id`))
+
+Row #6: type=table | name=deals_remote_cache | tbl_name=deals_remote_cache | rootpage=8 | sql=CREATE TABLE `deals_remote_cache` (`id` INTEGER NOT NULL, `key` TEXT NOT NULL, `value` TEXT NOT NULL, `locale` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`id`))
+
+Row #7: type=table | name=poi_remote_cache | tbl_name=poi_remote_cache | rootpage=9 | sql=CREATE TABLE `poi_remote_cache` (`id` INTEGER NOT NULL, `key` TEXT NOT NULL, `value` TEXT NOT NULL, `locale` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`id`))
+
+Row #8: type=table | name=share_data_remote_cache | tbl_name=share_data_remote_cache | rootpage=10 | sql=CREATE TABLE `share_data_remote_cache` (`id` INTEGER NOT NULL, `key` TEXT NOT NULL, `value` TEXT NOT NULL, `locale` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`id`))
+
+Row #9: type=table | name=top_concepts_nsp_remote_cache | tbl_name=top_concepts_nsp_remote_cache | rootpage=11 | sql=CREATE TABLE `top_concepts_nsp_remote_cache` (`id` INTEGER NOT NULL, `key` TEXT NOT NULL, `value` TEXT NOT NULL, `locale` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`id`))
+
+Row #10: type=table | name=top_destination_nsp_remote_cache | tbl_name=top_destination_nsp_remote_cache | rootpage=12 | sql=CREATE TABLE `top_destination_nsp_remote_cache` (`id` INTEGER NOT NULL, `key` TEXT NOT NULL, `value` TEXT NOT NULL, `locale` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`id`))
+
+Row #11: type=table | name=accommodation_details_remote_cache | tbl_name=accommodation_details_remote_cache | rootpage=13 | sql=CREATE TABLE `accommodation_details_remote_cache` (`id` INTEGER NOT NULL, `key` TEXT NOT NULL, `value` TEXT NOT NULL, `locale` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`id`))
+
+Row #12: type=table | name=accommodation_details_amenities_remote_cache | tbl_name=accommodation_details_amenities_remote_cache | rootpage=14 | sql=CREATE TABLE `accommodation_details_amenities_remote_cache` (`id` INTEGER NOT NULL, `key` TEXT NOT NULL, `value` TEXT NOT NULL, `locale` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`id`))
+
+Row #13: type=table | name=geolocation_remote_cache_table_name | tbl_name=geolocation_remote_cache_table_name | rootpage=15 | sql=CREATE TABLE `geolocation_remote_cache_table_name` (`id` INTEGER NOT NULL, `key` TEXT NOT NULL, `value` TEXT NOT NULL, `locale` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`id`))
+
+Row #14: type=table | name=app_configuration_remote_cache | tbl_name=app_configuration_remote_cache | rootpage=16 | sql=CREATE TABLE `app_configuration_remote_cache` (`id` INTEGER NOT NULL, `key` TEXT NOT NULL, `value` TEXT NOT NULL, `locale` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`id`))
+
+Row #15: type=table | name=advertisers_remote_cache_table_name | tbl_name=advertisers_remote_cache_table_name | rootpage=17 | sql=CREATE TABLE `advertisers_remote_cache_table_name` (`id` INTEGER NOT NULL, `key` TEXT NOT NULL, `value` TEXT NOT NULL, `locale` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`id`))
+
+Row #16: type=table | name=accommodation_list_deals_remote_cache | tbl_name=accommodation_list_deals_remote_cache | rootpage=18 | sql=CREATE TABLE `accommodation_list_deals_remote_cache` (`id` INTEGER NOT NULL, `key` TEXT NOT NULL, `value` TEXT NOT NULL, `locale` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`id`))
+
+Row #17: type=table | name=active_advertisers_remote_cache_table_name | tbl_name=active_advertisers_remote_cache_table_name | rootpage=19 | sql=CREATE TABLE `active_advertisers_remote_cache_table_name` (`id` INTEGER NOT NULL, `key` TEXT NOT NULL, `value` TEXT NOT NULL, `locale` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`id`))
+
+Row #18: type=table | name=destination_details_remote_cache | tbl_name=destination_details_remote_cache | rootpage=20 | sql=CREATE TABLE `destination_details_remote_cache` (`id` INTEGER NOT NULL, `key` TEXT NOT NULL, `value` TEXT NOT NULL, `locale` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`id`))
+
+Row #19: type=table | name=room_master_table | tbl_name=room_master_table | rootpage=21 | sql=CREATE TABLE room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)
+
+
+
+
+[DUMP TRIGGERED]
+DB Path: /data/user/0/com.trivago/databases/TRIVAGO_DATABASE
+
+[DUMP QUERY]: SELECT * FROM sqlite_master
+
+Row #1: type=table | name=android_metadata | tbl_name=android_metadata | rootpage=3 | sql=CREATE TABLE android_metadata (locale TEXT)
+
+Row #2: type=table | name=search_history_nsp | tbl_name=search_history_nsp | rootpage=4 | sql=CREATE TABLE `search_history_nsp` (`id` TEXT NOT NULL, `startDate` INTEGER NOT NULL, `endDate` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `isCurrentLocationSearch` INTEGER NOT NULL, `filters` TEXT, `destination_concept_id` TEXT NOT NULL, `destination_title` TEXT NOT NULL, `destination_locationInformation` TEXT, `destination_description` TEXT NOT NULL, `destination_destination_type` INTEGER, `destination_isCurrentLocation` INTEGER, `destination_latitute` REAL, `destination_longitude` REAL, `destination_concept_mediumSmall` TEXT, `destination_concept_mediumSquareCropped` TEXT, `destination_concept_medium` TEXT, `destination_concept_largeSquareCropped` TEXT, `destination_concept_large` TEXT, `destination_concept_largeSpecial` TEXT, `destination_concept_extraLargeSquareCropped` TEXT, `destination_concept_extraLarge` TEXT, `destination_concept_xRetina` TEXT, `destination_concept_yRetina` TEXT, `search_concept_id` TEXT NOT NULL, `search_title` TEXT NOT NULL, `search_locationInformation` TEXT, `search_description` TEXT NOT NULL, `search_destination_type` INTEGER, `search_isCurrentLocation` INTEGER, `search_latitute` REAL, `search_longitude` REAL, `search_concept_mediumSmall` TEXT, `search_concept_mediumSquareCropped` TEXT, `search_concept_medium` TEXT, `search_concept_largeSquareCropped` TEXT, `search_concept_large` TEXT, `search_concept_largeSpecial` TEXT, `search_concept_extraLargeSquareCropped` TEXT, `search_concept_extraLarge` TEXT, `search_concept_xRetina` TEXT, `search_concept_yRetina` TEXT, `rooms` TEXT NOT NULL, `mediumSmall` TEXT, `mediumSquareCropped` TEXT, `medium` TEXT, `largeSquareCropped` TEXT, `large` TEXT, `largeSpecial` TEXT, `extraLargeSquareCropped` TEXT, `extraLarge` TEXT, `xRetina` TEXT, `yRetina` TEXT, PRIMARY KEY(`id`))
+
+Row #3: type=index | name=sqlite_autoindex_search_history_nsp_1 | tbl_name=search_history_nsp | rootpage=5 | sql=NULL
+
+Row #4: type=table | name=favorite | tbl_name=favorite | rootpage=6 | sql=CREATE TABLE `favorite` (`id` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))
+
+Row #5: type=table | name=viewed_item | tbl_name=viewed_item | rootpage=7 | sql=CREATE TABLE `viewed_item` (`id` INTEGER NOT NULL, `rooms` TEXT NOT NULL, `startDate` INTEGER NOT NULL, `endDate` INTEGER NOT NULL, `roomType` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `searchHistoryId` TEXT NOT NULL, `hotelId` INTEGER NOT NULL, `hotelOverallLiking` INTEGER NOT NULL, `hotelOverallLikingIndex` INTEGER NOT NULL, `hotelNumberOfReviews` INTEGER NOT NULL, `profileScores` TEXT NOT NULL, `hotelName` TEXT NOT NULL, `hotelLocation` TEXT NOT NULL, `hotelStars` INTEGER NOT NULL, `hotelDistanceToCenter` REAL NOT NULL, `isAlternative` INTEGER NOT NULL, `accommodationTypeId` INTEGER, `accommodationTypeName` TEXT, `isUsAllInPrices` INTEGER, `destinationHierarchy` TEXT NOT NULL, `mediumSmall` TEXT, `mediumSquareCropped` TEXT, `medium` TEXT, `largeSquareCropped` TEXT, `large` TEXT, `largeSpecial` TEXT, `extraLargeSquareCropped` TEXT, `extraLarge` TEXT, `xRetina` TEXT, `yRetina` TEXT, `latitute` REAL, `longitude` REAL, `name` TEXT, `logoUrl` TEXT, `description` TEXT, `pricePerNight` TEXT, `hotelPriceEuroCent` INTEGER, `originalPricePerNight` TEXT, `rateAttributes` TEXT, `bookingLink` TEXT, `isChampionDeal` INTEGER, `groupId` INTEGER, `partnerId` INTEGER, `businessStudio_subscriptionStatus` TEXT, `businessStudio_activeOffer_title` TEXT, `businessStudio_activeOffer_description` TEXT, `businessStudio_activeOffer_expirationDate` TEXT, PRIMARY KEY(`id`))
+
+Row #6: type=table | name=room_master_table | tbl_name=room_master_table | rootpage=8 | sql=CREATE TABLE room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)
+
+
+
+
+[DUMP TRIGGERED]
+DB Path: /data/user/0/com.trivago/databases/ue3.db
+
+[DUMP QUERY]: SELECT * FROM sqlite_master
+
+Row #1: type=table | name=android_metadata | tbl_name=android_metadata | rootpage=3 | sql=CREATE TABLE android_metadata (locale TEXT)
+
+Row #2: type=table | name=userevent3_table | tbl_name=userevent3_table | rootpage=4 | sql=CREATE TABLE userevent3_table(_id integer primary key autoincrement, user_account_id text not null, ue3 blob not null, timestamp bigint not null)
+
+Row #3: type=table | name=sqlite_sequence | tbl_name=sqlite_sequence | rootpage=5 | sql=CREATE TABLE sqlite_sequence(name,seq)
+
+Row #4: type=index | name=account_timestamp_idx | tbl_name=userevent3_table | rootpage=6 | sql=CREATE INDEX account_timestamp_idx on userevent3_table(user_account_id, timestamp)
+
+
