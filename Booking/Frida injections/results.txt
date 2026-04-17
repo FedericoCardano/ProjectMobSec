@@ -1,0 +1,230 @@
+[DUMP TRIGGERED]
+DB Path: /data/user/0/com.booking/databases/com.google.android.datatransport.events
+
+[DUMP QUERY]: SELECT * FROM sqlite_master
+
+Row #1: type=table | name=android_metadata | tbl_name=android_metadata | rootpage=3 | sql=CREATE TABLE android_metadata (locale TEXT)
+
+Row #2: type=table | name=events | tbl_name=events | rootpage=4 | sql=CREATE TABLE events (_id INTEGER PRIMARY KEY, context_id INTEGER NOT NULL, transport_name TEXT NOT NULL, timestamp_ms INTEGER NOT NULL, uptime_ms INTEGER NOT NULL, payload BLOB NOT NULL, code INTEGER, num_attempts INTEGER NOT NULL, payload_encoding TEXT, inline BOOLEAN NOT NULL DEFAULT 1, product_id INTEGER, pseudonymous_id TEXT, experiment_ids_clear_blob BLOB, experiment_ids_encrypted_blob BLOB,FOREIGN KEY (context_id) REFERENCES transport_contexts(_id) ON DELETE CASCADE)
+
+Row #3: type=table | name=event_metadata | tbl_name=event_metadata | rootpage=5 | sql=CREATE TABLE event_metadata (_id INTEGER PRIMARY KEY, event_id INTEGER NOT NULL, name TEXT NOT NULL, value TEXT NOT NULL,FOREIGN KEY (event_id) REFERENCES events(_id) ON DELETE CASCADE)
+
+Row #4: type=table | name=transport_contexts | tbl_name=transport_contexts | rootpage=6 | sql=CREATE TABLE transport_contexts (_id INTEGER PRIMARY KEY, backend_name TEXT NOT NULL, priority INTEGER NOT NULL, next_request_ms INTEGER NOT NULL, extras BLOB)
+
+Row #5: type=index | name=events_backend_id | tbl_name=events | rootpage=7 | sql=CREATE INDEX events_backend_id on events(context_id)
+
+Row #6: type=index | name=contexts_backend_priority_extras | tbl_name=transport_contexts | rootpage=8 | sql=CREATE UNIQUE INDEX contexts_backend_priority_extras on transport_contexts(backend_name, priority, extras)
+
+Row #7: type=table | name=event_payloads | tbl_name=event_payloads | rootpage=9 | sql=CREATE TABLE event_payloads (sequence_num INTEGER NOT NULL, event_id INTEGER NOT NULL, bytes BLOB NOT NULL,FOREIGN KEY (event_id) REFERENCES events(_id) ON DELETE CASCADE,PRIMARY KEY (sequence_num, event_id))
+
+Row #8: type=index | name=sqlite_autoindex_event_payloads_1 | tbl_name=event_payloads | rootpage=10 | sql=NULL
+
+Row #9: type=table | name=log_event_dropped | tbl_name=log_event_dropped | rootpage=11 | sql=CREATE TABLE log_event_dropped (log_source VARCHAR(45) NOT NULL,reason INTEGER NOT NULL,events_dropped_count BIGINT NOT NULL,PRIMARY KEY(log_source, reason))
+
+Row #10: type=index | name=sqlite_autoindex_log_event_dropped_1 | tbl_name=log_event_dropped | rootpage=12 | sql=NULL
+
+Row #11: type=table | name=global_log_event_state | tbl_name=global_log_event_state | rootpage=13 | sql=CREATE TABLE global_log_event_state (last_metrics_upload_ms BIGINT PRIMARY KEY)
+
+Row #12: type=index | name=sqlite_autoindex_global_log_event_state_1 | tbl_name=global_log_event_state | rootpage=14 | sql=NULL
+
+
+
+
+[DUMP TRIGGERED]
+DB Path: /data/user/0/com.booking/no_backup/androidx.work.workdb
+[RAW QUERY]: SELECT * FROM sqlite_master
+
+[DUMP QUERY]: SELECT * FROM sqlite_master
+
+Row #1: type=table | name=android_metadata | tbl_name=android_metadata | rootpage=3 | sql=CREATE TABLE android_metadata (locale TEXT)
+
+Row #2: type=table | name=Dependency | tbl_name=Dependency | rootpage=4 | sql=CREATE TABLE `Dependency` (`work_spec_id` TEXT NOT NULL, `prerequisite_id` TEXT NOT NULL, PRIMARY KEY(`work_spec_id`, `prerequisite_id`), FOREIGN KEY(`work_spec_id`) REFERENCES `WorkSpec`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`prerequisite_id`) REFERENCES `WorkSpec`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )
+
+Row #3: type=index | name=sqlite_autoindex_Dependency_1 | tbl_name=Dependency | rootpage=5 | sql=NULL
+
+Row #4: type=index | name=index_Dependency_work_spec_id | tbl_name=Dependency | rootpage=6 | sql=CREATE INDEX `index_Dependency_work_spec_id` ON `Dependency` (`work_spec_id`)
+
+Row #5: type=index | name=index_Dependency_prerequisite_id | tbl_name=Dependency | rootpage=7 | sql=CREATE INDEX `index_Dependency_prerequisite_id` ON `Dependency` (`prerequisite_id`)
+
+Row #6: type=table | name=WorkSpec | tbl_name=WorkSpec | rootpage=8 | sql=CREATE TABLE `WorkSpec` (`id` TEXT NOT NULL, `state` INTEGER NOT NULL, `worker_class_name` TEXT NOT NULL, `input_merger_class_name` TEXT, `input` BLOB NOT NULL, `output` BLOB NOT NULL, `initial_delay` INTEGER NOT NULL, `interval_duration` INTEGER NOT NULL, `flex_duration` INTEGER NOT NULL, `run_attempt_count` INTEGER NOT NULL, `backoff_policy` INTEGER NOT NULL, `backoff_delay_duration` INTEGER NOT NULL, `last_enqueue_time` INTEGER NOT NULL, `minimum_retention_duration` INTEGER NOT NULL, `schedule_requested_at` INTEGER NOT NULL, `run_in_foreground` INTEGER NOT NULL, `out_of_quota_policy` INTEGER NOT NULL, `period_count` INTEGER NOT NULL DEFAULT 0, `generation` INTEGER NOT NULL DEFAULT 0, `required_network_type` INTEGER NOT NULL, `requires_charging` INTEGER NOT NULL, `requires_device_idle` INTEGER NOT NULL, `requires_battery_not_low` INTEGER NOT NULL, `requires_storage_not_low` INTEGER NOT NULL, `trigger_content_update_delay` INTEGER NOT NULL, `trigger_max_content_delay` INTEGER NOT NULL, `content_uri_triggers` BLOB NOT NULL, PRIMARY KEY(`id`))
+
+Row #7: type=index | name=sqlite_autoindex_WorkSpec_1 | tbl_name=WorkSpec | rootpage=9 | sql=NULL
+
+Row #8: type=index | name=index_WorkSpec_schedule_requested_at | tbl_name=WorkSpec | rootpage=10 | sql=CREATE INDEX `index_WorkSpec_schedule_requested_at` ON `WorkSpec` (`schedule_requested_at`)
+
+Row #9: type=index | name=index_WorkSpec_last_enqueue_time | tbl_name=WorkSpec | rootpage=11 | sql=CREATE INDEX `index_WorkSpec_last_enqueue_time` ON `WorkSpec` (`last_enqueue_time`)
+
+Row #10: type=table | name=WorkTag | tbl_name=WorkTag | rootpage=12 | sql=CREATE TABLE `WorkTag` (`tag` TEXT NOT NULL, `work_spec_id` TEXT NOT NULL, PRIMARY KEY(`tag`, `work_spec_id`), FOREIGN KEY(`work_spec_id`) REFERENCES `WorkSpec`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )
+
+Row #11: type=index | name=sqlite_autoindex_WorkTag_1 | tbl_name=WorkTag | rootpage=13 | sql=NULL
+
+Row #12: type=index | name=index_WorkTag_work_spec_id | tbl_name=WorkTag | rootpage=14 | sql=CREATE INDEX `index_WorkTag_work_spec_id` ON `WorkTag` (`work_spec_id`)
+
+Row #13: type=table | name=SystemIdInfo | tbl_name=SystemIdInfo | rootpage=15 | sql=CREATE TABLE `SystemIdInfo` (`work_spec_id` TEXT NOT NULL, `generation` INTEGER NOT NULL DEFAULT 0, `system_id` INTEGER NOT NULL, PRIMARY KEY(`work_spec_id`, `generation`), FOREIGN KEY(`work_spec_id`) REFERENCES `WorkSpec`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )
+
+Row #14: type=index | name=sqlite_autoindex_SystemIdInfo_1 | tbl_name=SystemIdInfo | rootpage=16 | sql=NULL
+
+Row #15: type=table | name=WorkName | tbl_name=WorkName | rootpage=17 | sql=CREATE TABLE `WorkName` (`name` TEXT NOT NULL, `work_spec_id` TEXT NOT NULL, PRIMARY KEY(`name`, `work_spec_id`), FOREIGN KEY(`work_spec_id`) REFERENCES `WorkSpec`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )
+
+Row #16: type=index | name=sqlite_autoindex_WorkName_1 | tbl_name=WorkName | rootpage=18 | sql=NULL
+
+Row #17: type=index | name=index_WorkName_work_spec_id | tbl_name=WorkName | rootpage=19 | sql=CREATE INDEX `index_WorkName_work_spec_id` ON `WorkName` (`work_spec_id`)
+
+Row #18: type=table | name=WorkProgress | tbl_name=WorkProgress | rootpage=20 | sql=CREATE TABLE `WorkProgress` (`work_spec_id` TEXT NOT NULL, `progress` BLOB NOT NULL, PRIMARY KEY(`work_spec_id`), FOREIGN KEY(`work_spec_id`) REFERENCES `WorkSpec`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )
+
+Row #19: type=index | name=sqlite_autoindex_WorkProgress_1 | tbl_name=WorkProgress | rootpage=21 | sql=NULL
+
+Row #20: type=table | name=Preference | tbl_name=Preference | rootpage=22 | sql=CREATE TABLE `Preference` (`key` TEXT NOT NULL, `long_value` INTEGER, PRIMARY KEY(`key`))
+
+Row #21: type=index | name=sqlite_autoindex_Preference_1 | tbl_name=Preference | rootpage=23 | sql=NULL
+
+Row #22: type=table | name=room_master_table | tbl_name=room_master_table | rootpage=24 | sql=CREATE TABLE room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)
+
+
+
+
+[DUMP TRIGGERED]
+DB Path: /data/user/0/com.booking/no_backup/androidx.work.workdb
+[RAW QUERY]: SELECT * FROM SystemIdInfo
+
+[DUMP QUERY]: SELECT * FROM SystemIdInfo
+
+Row #1: work_spec_id=fbb85eff-69e8-4af2-bb08-af937929955b | generation=0 | system_id=0
+
+Row #2: work_spec_id=cae1f69b-ce5e-4e77-ad5c-a46dd1666f8a | generation=0 | system_id=2
+
+Row #3: work_spec_id=c1404d93-00a2-4765-8f78-2b35fa00e616 | generation=0 | system_id=3
+
+Row #4: work_spec_id=42006236-bc51-4c3c-bf8c-7d7557d69c6c | generation=0 | system_id=10
+
+
+
+
+[DUMP QUERY]: SELECT * FROM sqLite_master
+
+Row #1: type=table | name=android_metadata | tbl_name=android_metadata | rootpage=3 | sql=CREATE TABLE android_metadata (locale TEXT)
+
+Row #2: type=table | name=uvis | tbl_name=uvis | rootpage=4 | sql=CREATE TABLE uvis (
+  id INTEGER PRIMARY KEY NOT NULL,
+  type TEXT NON NULL,
+  uvi TEXT UNIQUE NOT NULL,
+  UNIQUE(type, uvi)
+)
+
+Row #3: type=index | name=sqlite_autoindex_uvis_1 | tbl_name=uvis | rootpage=5 | sql=NULL
+
+Row #4: type=index | name=sqlite_autoindex_uvis_2 | tbl_name=uvis | rootpage=6 | sql=NULL
+
+Row #5: type=table | name=exp_track_events | tbl_name=exp_track_events | rootpage=7 | sql=CREATE TABLE exp_track_events (
+  _id INTEGER PRIMARY KEY NOT NULL,
+  run_id TEXT NOT NULL,
+  exp_name TEXT NOT NULL,
+  uvi_type TEXT NOT NULL,
+  uvi TEXT NOT NULL,
+  slot INTEGER NOT NULL,
+  variant INTEGER NOT NULL,
+  epoch_millis INTEGER NOT NULL,
+  count INTEGER NOT NULL,
+  track_type INTEGER NOT NULL
+)
+
+Row #6: type=trigger | name=exp_track_events_insert_exp_track_events_slot_positive | tbl_name=exp_track_events | rootpage=0 | sql=CREATE TRIGGER exp_track_events_insert_exp_track_events_slot_positive
+BEFORE insert ON exp_track_events 
+FOR EACH ROW
+WHEN (NEW.slot < 0)
+BEGIN
+  SELECT RAISE(ABORT, 'slot not positive');
+END
+
+Row #7: type=trigger | name=exp_track_events_update_exp_track_events_slot_positive | tbl_name=exp_track_events | rootpage=0 | sql=CREATE TRIGGER exp_track_events_update_exp_track_events_slot_positive
+BEFORE update ON exp_track_events 
+FOR EACH ROW
+WHEN (NEW.slot < 0)
+BEGIN
+  SELECT RAISE(ABORT, 'slot not positive');
+END
+
+Row #8: type=trigger | name=exp_track_events_insert_exp_track_events_epoch_millis_positive | tbl_name=exp_track_events | rootpage=0 | sql=CREATE TRIGGER exp_track_events_insert_exp_track_events_epoch_millis_positive
+BEFORE insert ON exp_track_events 
+FOR EACH ROW
+WHEN (NEW.epoch_millis < 0)
+BEGIN
+  SELECT RAISE(ABORT, 'epoch_millis not positive');
+END
+
+Row #9: type=trigger | name=exp_track_events_update_exp_track_events_epoch_millis_positive | tbl_name=exp_track_events | rootpage=0 | sql=CREATE TRIGGER exp_track_events_update_exp_track_events_epoch_millis_positive
+BEFORE update ON exp_track_events 
+FOR EACH ROW
+WHEN (NEW.epoch_millis < 0)
+BEGIN
+  SELECT RAISE(ABORT, 'epoch_millis not positive');
+END
+
+Row #10: type=table | name=exp_runs | tbl_name=exp_runs | rootpage=8 | sql=CREATE TABLE exp_runs (
+  uvi_id  INT NOT NULL,
+  exp_name  STRING NOT NULL,
+  et_id  STRING NOT NULL,
+  variant  INTEGER NOT NULL,
+  should_track  BOOLEAN NOT NULL,
+   PRIMARY KEY (exp_name, uvi_id)  ON CONFLICT  REPLACE 
+)
+
+Row #11: type=index | name=sqlite_autoindex_exp_runs_1 | tbl_name=exp_runs | rootpage=9 | sql=NULL
+
+Row #12: type=trigger | name=exp_runs_insert_variant_positive | tbl_name=exp_runs | rootpage=0 | sql=CREATE TRIGGER exp_runs_insert_variant_positive
+BEFORE insert ON exp_runs 
+FOR EACH ROW
+WHEN (NEW.variant < 0)
+BEGIN
+  SELECT RAISE(ABORT, 'variant not positive');
+END
+
+Row #13: type=trigger | name=exp_runs_update_variant_positive | tbl_name=exp_runs | rootpage=0 | sql=CREATE TRIGGER exp_runs_update_variant_positive
+BEFORE update ON exp_runs 
+FOR EACH ROW
+WHEN (NEW.variant < 0)
+BEGIN
+  SELECT RAISE(ABORT, 'variant not positive');
+END
+
+Row #14: type=trigger | name=exp_runs_insert_no_et_id_but_should_track_set | tbl_name=exp_runs | rootpage=0 | sql=CREATE TRIGGER exp_runs_insert_no_et_id_but_should_track_set
+BEFORE insert ON exp_runs 
+FOR EACH ROW
+WHEN (NEW.et_id == '0' AND NEW.should_track <> 0)
+BEGIN
+  SELECT RAISE(ABORT, 'et_id not set but track is enabled');
+END
+
+Row #15: type=trigger | name=exp_runs_update_no_et_id_but_should_track_set | tbl_name=exp_runs | rootpage=0 | sql=CREATE TRIGGER exp_runs_update_no_et_id_but_should_track_set
+BEFORE update ON exp_runs 
+FOR EACH ROW
+WHEN (NEW.et_id == '0' AND NEW.should_track <> 0)
+BEGIN
+  SELECT RAISE(ABORT, 'et_id not set but track is enabled');
+END
+
+Row #16: type=table | name=goal_with_values_tracks | tbl_name=goal_with_values_tracks | rootpage=10 | sql=CREATE TABLE goal_with_values_tracks (
+  _id INTEGER PRIMARY KEY NOT NULL,
+  goal_id TEXT NON NULL,
+  goal_value TEXT NOT NULL,
+  seen_millis TEXT NOT NULL,
+  visitor_ids TEXT NOT NULL
+)
+
+Row #17: type=trigger | name=avoid_duplicate_binomial | tbl_name=goal_with_values_tracks | rootpage=0 | sql=CREATE TRIGGER avoid_duplicate_binomial BEFORE INSERT ON goal_with_values_tracks    BEGIN SELECT CASE       WHEN           new.goal_value="" AND ((SELECT COUNT(*) FROM goal_with_values_tracks g WHERE g.goal_id=new.goal_id and g.goal_value="" and g.visitor_ids=new.visitor_ids) > 0)       THEN RAISE(IGNORE)    END;END
+
+
+
+
+
+[DUMP TRIGGERED]
+DB Path: /data/user/0/com.booking/databases/copy_experiments
+
+
+[DUMP QUERY]: SELECT * FROM sqLite_master
+
+Row #1: type=table | name=android_metadata | tbl_name=android_metadata | rootpage=3 | sql=CREATE TABLE android_metadata (locale TEXT)
+
+Row #2: type=table | name=copy | tbl_name=copy | rootpage=4 | sql=CREATE TABLE copy (tag TEXT NOT NULL,exp_name TEXT NOT NULL,language TEXT NOT NULL,value TEXT NOT NULL)
+
+

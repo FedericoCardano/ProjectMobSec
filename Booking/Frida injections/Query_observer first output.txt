@@ -1,0 +1,1773 @@
+                                                                                
+┌──(alfo3du㉿Kali)-[~/Mobile Security/Course project/Trivago/Frida injections]
+└─$ frida -U -f com.booking -l ./Query_observer.js 
+     ____
+    / _  |   Frida 17.8.2 - A world-class dynamic instrumentation toolkit
+   | (_| |
+    > _  |   Commands:
+   /_/ |_|       help      -> Displays the help system
+   . . . .       object?   -> Display information about 'object'
+   . . . .       exit/quit -> Exit
+   . . . .
+   . . . .   More info at https://frida.re/docs/home/
+   . . . .
+   . . . .   Connected to Android Emulator 5554 (id=emulator-5554)
+Spawned `com.booking`. Resuming main thread!                            
+[Android Emulator 5554::com.booking ]->
+[RAW QUERY] PRAGMA busy_timeout=0;
+[STACK TRACE]
+java.lang.Exception
+	at android.database.sqlite.SQLiteDatabase.rawQuery(Native Method)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SchemaManager.onConfigure(SchemaManager.java:9)
+	at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java:387)
+        at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java:316)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SQLiteEventStore.getDb(SQLiteEventStore.java:12)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SQLiteEventStore.runCriticalSection(SQLiteEventStore.java:1)
+	at com.google.android.datatransport.runtime.scheduling.jobscheduling.WorkInitializer$$ExternalSyntheticLambda0.run(R8$$SyntheticClass:13)
+	at com.google.android.datatransport.runtime.SafeLoggingExecutor$SafeLoggingRunnable.run(SafeLoggingExecutor.java:3)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1137)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:637)
+	at java.lang.Thread.run(Thread.java:1012)
+
+--> Rows: 1
+===> timeout=0
+
+[COMPILE STATEMENT]
+SQL: PRAGMA user_version;
+
+[EXEC SQL] CREATE TABLE events (_id INTEGER PRIMARY KEY, context_id INTEGER NOT NULL, transport_name TEXT NOT NULL, timestamp_ms INTEGER NOT NULL, uptime_ms INTEGER NOT NULL, payload BLOB NOT NULL, code INTEGER, num_attempts INTEGER NOT NULL,FOREIGN KEY (context_id) REFERENCES transport_contexts(_id) ON DELETE CASCADE)
+
+[EXEC SQL] CREATE TABLE event_metadata (_id INTEGER PRIMARY KEY, event_id INTEGER NOT NULL, name TEXT NOT NULL, value TEXT NOT NULL,FOREIGN KEY (event_id) REFERENCES events(_id) ON DELETE CASCADE)
+
+[EXEC SQL] CREATE TABLE transport_contexts (_id INTEGER PRIMARY KEY, backend_name TEXT NOT NULL, priority INTEGER NOT NULL, next_request_ms INTEGER NOT NULL)
+
+[EXEC SQL] CREATE INDEX events_backend_id on events(context_id)
+
+[EXEC SQL] CREATE UNIQUE INDEX contexts_backend_priority on transport_contexts(backend_name, priority)
+
+[EXEC SQL] ALTER TABLE transport_contexts ADD COLUMN extras BLOB
+
+[EXEC SQL] CREATE UNIQUE INDEX contexts_backend_priority_extras on transport_contexts(backend_name, priority, extras)
+
+[EXEC SQL] DROP INDEX contexts_backend_priority
+
+[EXEC SQL] ALTER TABLE events ADD COLUMN payload_encoding TEXT
+
+[EXEC SQL] ALTER TABLE events ADD COLUMN inline BOOLEAN NOT NULL DEFAULT 1
+
+[EXEC SQL] DROP TABLE IF EXISTS event_payloads
+
+[EXEC SQL] CREATE TABLE event_payloads (sequence_num INTEGER NOT NULL, event_id INTEGER NOT NULL, bytes BLOB NOT NULL,FOREIGN KEY (event_id) REFERENCES events(_id) ON DELETE CASCADE,PRIMARY KEY (sequence_num, event_id))
+
+[EXEC SQL] DROP TABLE IF EXISTS log_event_dropped
+
+[EXEC SQL] DROP TABLE IF EXISTS global_log_event_state
+
+[EXEC SQL] CREATE TABLE log_event_dropped (log_source VARCHAR(45) NOT NULL,reason INTEGER NOT NULL,events_dropped_count BIGINT NOT NULL,PRIMARY KEY(log_source, reason))
+
+[EXEC SQL] CREATE TABLE global_log_event_state (last_metrics_upload_ms BIGINT PRIMARY KEY)
+
+[EXEC SQL] INSERT INTO global_log_event_state VALUES (1775048175089)
+
+[EXEC SQL] ALTER TABLE events ADD COLUMN product_id INTEGER
+
+[EXEC SQL] ALTER TABLE events ADD COLUMN pseudonymous_id TEXT
+
+[EXEC SQL] ALTER TABLE events ADD COLUMN experiment_ids_clear_blob BLOB
+
+[EXEC SQL] ALTER TABLE events ADD COLUMN experiment_ids_encrypted_blob BLOB
+
+[EXEC SQL] PRAGMA user_version = 7
+
+[RAW QUERY] SELECT distinct t._id, t.backend_name, t.priority, t.extras FROM transport_contexts AS t, events AS e WHERE e.context_id = t._id
+[STACK TRACE]
+java.lang.Exception
+	at android.database.sqlite.SQLiteDatabase.rawQuery(Native Method)
+	at com.booking.assistant.intercommessaging.rx.RxRestartableDelays$$ExternalSyntheticLambda5.apply(R8$$SyntheticClass:8)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SQLiteEventStore.inTransaction(SQLiteEventStore.java:8)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SQLiteEventStore.loadActiveContexts(SQLiteEventStore.java:6)
+	at com.google.android.datatransport.runtime.scheduling.jobscheduling.WorkInitializer$$ExternalSyntheticLambda1.execute(R8$$SyntheticClass:5)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SQLiteEventStore.runCriticalSection(SQLiteEventStore.java:14)
+	at com.google.android.datatransport.runtime.scheduling.jobscheduling.WorkInitializer$$ExternalSyntheticLambda0.run(R8$$SyntheticClass:13)
+	at com.google.android.datatransport.runtime.SafeLoggingExecutor$SafeLoggingRunnable.run(SafeLoggingExecutor.java:3)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1137)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:637)
+	at java.lang.Thread.run(Thread.java:1012)
+
+--> Rows: 0
+
+[COMPILE STATEMENT]
+SQL: PRAGMA user_version;
+
+[EXEC SQL] CREATE TABLE IF NOT EXISTS uvis (
+  id INTEGER PRIMARY KEY NOT NULL,
+  type TEXT NON NULL,
+  uvi TEXT UNIQUE NOT NULL,
+  UNIQUE(type, uvi)
+);
+
+
+[INSERT] Table: uvis
+Values: {"uvi":"<instance: java.lang.Object, $className: java.lang.String>","type":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[EXEC SQL] CREATE TABLE IF NOT EXISTS exp_track_events (
+  _id INTEGER PRIMARY KEY NOT NULL,
+  run_id TEXT NOT NULL,
+  exp_name TEXT NOT NULL,
+  uvi_type TEXT NOT NULL,
+  uvi TEXT NOT NULL,
+  slot INTEGER NOT NULL,
+  variant INTEGER NOT NULL,
+  epoch_millis INTEGER NOT NULL,
+  count INTEGER NOT NULL,
+  track_type INTEGER NOT NULL
+);
+
+
+[EXEC SQL] CREATE TRIGGER exp_track_events_insert_exp_track_events_slot_positive
+BEFORE insert ON exp_track_events 
+FOR EACH ROW
+WHEN (NEW.slot < 0)
+BEGIN
+  SELECT RAISE(ABORT, 'slot not positive');
+END;
+
+
+[EXEC SQL] CREATE TRIGGER exp_track_events_update_exp_track_events_slot_positive
+BEFORE update ON exp_track_events 
+FOR EACH ROW
+WHEN (NEW.slot < 0)
+BEGIN
+  SELECT RAISE(ABORT, 'slot not positive');
+END;
+
+
+[EXEC SQL] CREATE TRIGGER exp_track_events_insert_exp_track_events_epoch_millis_positive
+BEFORE insert ON exp_track_events 
+FOR EACH ROW
+WHEN (NEW.epoch_millis < 0)
+BEGIN
+  SELECT RAISE(ABORT, 'epoch_millis not positive');
+END;
+
+
+[EXEC SQL] CREATE TRIGGER exp_track_events_update_exp_track_events_epoch_millis_positive
+BEFORE update ON exp_track_events 
+FOR EACH ROW
+WHEN (NEW.epoch_millis < 0)
+BEGIN
+  SELECT RAISE(ABORT, 'epoch_millis not positive');
+END;
+
+
+[EXEC SQL] CREATE TABLE IF NOT EXISTS exp_runs (
+  uvi_id  INT NOT NULL,
+  exp_name  STRING NOT NULL,
+  et_id  STRING NOT NULL,
+  variant  INTEGER NOT NULL,
+  should_track  BOOLEAN NOT NULL,
+   PRIMARY KEY (exp_name, uvi_id)  ON CONFLICT  REPLACE 
+);
+
+
+[EXEC SQL] CREATE TRIGGER exp_runs_insert_variant_positive
+BEFORE insert ON exp_runs 
+FOR EACH ROW
+WHEN (NEW.variant < 0)
+BEGIN
+  SELECT RAISE(ABORT, 'variant not positive');
+END;
+
+
+[EXEC SQL] CREATE TRIGGER exp_runs_update_variant_positive
+BEFORE update ON exp_runs 
+FOR EACH ROW
+WHEN (NEW.variant < 0)
+BEGIN
+  SELECT RAISE(ABORT, 'variant not positive');
+END;
+
+
+[EXEC SQL] CREATE TRIGGER exp_runs_insert_no_et_id_but_should_track_set
+BEFORE insert ON exp_runs 
+FOR EACH ROW
+WHEN (NEW.et_id == '0' AND NEW.should_track <> 0)
+BEGIN
+  SELECT RAISE(ABORT, 'et_id not set but track is enabled');
+END;
+
+
+[EXEC SQL] CREATE TRIGGER exp_runs_update_no_et_id_but_should_track_set
+BEFORE update ON exp_runs 
+FOR EACH ROW
+WHEN (NEW.et_id == '0' AND NEW.should_track <> 0)
+BEGIN
+  SELECT RAISE(ABORT, 'et_id not set but track is enabled');
+END;
+
+
+[EXEC SQL] CREATE TABLE IF NOT EXISTS goal_with_values_tracks (
+  _id INTEGER PRIMARY KEY NOT NULL,
+  goal_id TEXT NON NULL,
+  goal_value TEXT NOT NULL,
+  seen_millis TEXT NOT NULL,
+  visitor_ids TEXT NOT NULL
+);
+
+
+[EXEC SQL] CREATE TRIGGER avoid_duplicate_binomial BEFORE INSERT ON goal_with_values_tracks    BEGIN SELECT CASE       WHEN           new.goal_value="" AND ((SELECT COUNT(*) FROM goal_with_values_tracks g WHERE g.goal_id=new.goal_id and g.goal_value="" and g.visitor_ids=new.visitor_ids) > 0)       THEN RAISE(IGNORE)    END;END;
+
+[EXEC SQL] PRAGMA user_version = 6
+
+[EXEC SQL] PRAGMA foreign_keys = ON
+
+[RAW QUERY] SELECT max(id) from uvis where type='device_id'
+[STACK TRACE]
+java.lang.Exception
+	at android.database.sqlite.SQLiteDatabase.rawQuery(Native Method)
+	at com.booking.core.exps3.SqliteVisitorRepository.<init>(SqliteVisitorRepository.java:9)
+	at com.booking.core.exps3.ReposFactory.getVisitorRepo(ReposFactory.kt:7)
+	at com.booking.core.exps3.EtApi.<init>(EtApi.java:9)
+	at com.booking.core.exps3.EtApi.<init>(EtApi.java:1)
+	at com.booking.core.exps3.EtApi$Builder.build(EtApi.java:101)
+	at com.booking.startup.appinitialization.initializables.EtInitializable.initialize(EtInitializable.kt:232)
+	at com.booking.BookingApplication.onCreate(BookingApplication.java:871)
+	at android.app.Instrumentation.callApplicationOnCreate(Instrumentation.java:1277)
+	at android.app.ActivityThread.handleBindApplication(ActivityThread.java:6811)
+	at android.app.ActivityThread.handleBindApplication(Native Method)
+	at android.app.ActivityThread.-$$Nest$mhandleBindApplication(Unknown Source:0)
+	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2133)
+	at android.os.Handler.dispatchMessage(Handler.java:106)
+	at android.os.Looper.loopOnce(Looper.java:201)
+	at android.os.Looper.loop(Looper.java:288)
+	at android.app.ActivityThread.main(ActivityThread.java:7924)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:548)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:936)
+
+--> Rows: 1
+===> max(id)=1
+
+[QUERY API]
+Table: uvis
+Columns: null
+Where: 1=1
+Args: 
+
+[QUERY API]
+Table: exp_track_events
+Columns: null
+Where: null
+Args: null
+
+[QUERY API]
+Table: goal_with_values_tracks
+Columns: null
+Where: 1=1
+Args: 
+
+[COMPILE STATEMENT]
+SQL: PRAGMA user_version;
+
+[EXEC SQL] CREATE TABLE copy (tag TEXT NOT NULL,exp_name TEXT NOT NULL,language TEXT NOT NULL,value TEXT NOT NULL)
+
+[EXEC SQL] PRAGMA user_version = 1
+
+[QUERY API]
+Table: copy
+Columns: exp_name,tag,value
+Where: language=? AND tag NOT LIKE ?  AND tag NOT LIKE ? 
+Args: en-us,language_exception_%,plurals_%
+[BIND STRING] 3 = plurals_%
+[BIND STRING] 2 = language_exception_%
+[BIND STRING] 1 = en-us
+
+[QUERY API]
+Table: copy
+Columns: exp_name,tag,value
+Where: language=? AND (tag LIKE ? OR tag LIKE ?)
+Args: en-us,language_exception_%,plurals_%
+[BIND STRING] 3 = plurals_%
+[BIND STRING] 2 = language_exception_%
+[BIND STRING] 1 = en-us
+
+[COMPILE STATEMENT]
+SQL: PRAGMA user_version;
+
+[EXEC SQL] CREATE TABLE IF NOT EXISTS `Dependency` (`work_spec_id` TEXT NOT NULL, `prerequisite_id` TEXT NOT NULL, PRIMARY KEY(`work_spec_id`, `prerequisite_id`), FOREIGN KEY(`work_spec_id`) REFERENCES `WorkSpec`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`prerequisite_id`) REFERENCES `WorkSpec`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )
+
+[EXEC SQL] CREATE INDEX IF NOT EXISTS `index_Dependency_work_spec_id` ON `Dependency` (`work_spec_id`)
+
+[EXEC SQL] CREATE INDEX IF NOT EXISTS `index_Dependency_prerequisite_id` ON `Dependency` (`prerequisite_id`)
+
+[EXEC SQL] CREATE TABLE IF NOT EXISTS `WorkSpec` (`id` TEXT NOT NULL, `state` INTEGER NOT NULL, `worker_class_name` TEXT NOT NULL, `input_merger_class_name` TEXT, `input` BLOB NOT NULL, `output` BLOB NOT NULL, `initial_delay` INTEGER NOT NULL, `interval_duration` INTEGER NOT NULL, `flex_duration` INTEGER NOT NULL, `run_attempt_count` INTEGER NOT NULL, `backoff_policy` INTEGER NOT NULL, `backoff_delay_duration` INTEGER NOT NULL, `last_enqueue_time` INTEGER NOT NULL, `minimum_retention_duration` INTEGER NOT NULL, `schedule_requested_at` INTEGER NOT NULL, `run_in_foreground` INTEGER NOT NULL, `out_of_quota_policy` INTEGER NOT NULL, `period_count` INTEGER NOT NULL DEFAULT 0, `generation` INTEGER NOT NULL DEFAULT 0, `required_network_type` INTEGER NOT NULL, `requires_charging` INTEGER NOT NULL, `requires_device_idle` INTEGER NOT NULL, `requires_battery_not_low` INTEGER NOT NULL, `requires_storage_not_low` INTEGER NOT NULL, `trigger_content_update_delay` INTEGER NOT NULL, `trigger_max_content_delay` INTEGER NOT NULL, `content_uri_triggers` BLOB NOT NULL, PRIMARY KEY(`id`))
+
+[EXEC SQL] CREATE INDEX IF NOT EXISTS `index_WorkSpec_schedule_requested_at` ON `WorkSpec` (`schedule_requested_at`)
+
+[EXEC SQL] CREATE INDEX IF NOT EXISTS `index_WorkSpec_last_enqueue_time` ON `WorkSpec` (`last_enqueue_time`)
+
+[EXEC SQL] CREATE TABLE IF NOT EXISTS `WorkTag` (`tag` TEXT NOT NULL, `work_spec_id` TEXT NOT NULL, PRIMARY KEY(`tag`, `work_spec_id`), FOREIGN KEY(`work_spec_id`) REFERENCES `WorkSpec`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )
+
+[EXEC SQL] CREATE INDEX IF NOT EXISTS `index_WorkTag_work_spec_id` ON `WorkTag` (`work_spec_id`)
+
+[EXEC SQL] CREATE TABLE IF NOT EXISTS `SystemIdInfo` (`work_spec_id` TEXT NOT NULL, `generation` INTEGER NOT NULL DEFAULT 0, `system_id` INTEGER NOT NULL, PRIMARY KEY(`work_spec_id`, `generation`), FOREIGN KEY(`work_spec_id`) REFERENCES `WorkSpec`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )
+
+[EXEC SQL] CREATE TABLE IF NOT EXISTS `WorkName` (`name` TEXT NOT NULL, `work_spec_id` TEXT NOT NULL, PRIMARY KEY(`name`, `work_spec_id`), FOREIGN KEY(`work_spec_id`) REFERENCES `WorkSpec`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )
+
+[EXEC SQL] CREATE INDEX IF NOT EXISTS `index_WorkName_work_spec_id` ON `WorkName` (`work_spec_id`)
+
+[EXEC SQL] CREATE TABLE IF NOT EXISTS `WorkProgress` (`work_spec_id` TEXT NOT NULL, `progress` BLOB NOT NULL, PRIMARY KEY(`work_spec_id`), FOREIGN KEY(`work_spec_id`) REFERENCES `WorkSpec`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )
+
+[EXEC SQL] CREATE TABLE IF NOT EXISTS `Preference` (`key` TEXT NOT NULL, `long_value` INTEGER, PRIMARY KEY(`key`))
+
+[EXEC SQL] CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)
+
+[EXEC SQL] INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5181942b9ebc31ce68dacb56c16fd79f')
+
+[EXEC SQL] CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)
+
+[EXEC SQL] INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5181942b9ebc31ce68dacb56c16fd79f')
+
+[EXEC SQL] PRAGMA user_version = 16
+
+[EXEC SQL] PRAGMA foreign_keys = ON
+
+[EXEC SQL] PRAGMA temp_store = MEMORY;
+
+[EXEC SQL] PRAGMA recursive_triggers='ON';
+
+[EXEC SQL] CREATE TEMP TABLE room_table_modification_log (table_id INTEGER PRIMARY KEY, invalidated INTEGER NOT NULL DEFAULT 0)
+
+[COMPILE STATEMENT]
+SQL: UPDATE room_table_modification_log SET invalidated = 0 WHERE invalidated = 1
+
+[EXEC SQL] DELETE FROM workspec WHERE state IN (2, 3, 5) AND (last_enqueue_time + minimum_retention_duration) < 1774961775340 AND (SELECT COUNT(*)=0 FROM dependency WHERE     prerequisite_id=id AND     work_spec_id NOT IN         (SELECT id FROM workspec WHERE state IN (2, 3, 5)))
+
+[COMPILE STATEMENT]
+SQL: DELETE FROM WorkProgress
+[BIND STRING] 1 = reschedule_needed
+[BIND STRING] 1 = PeriodicEventLogWorker
+[BIND LONG] 1 = 20
+[BIND LONG] 1 = 200
+[BIND STRING] 1 = com.booking.appupdatepresentation.appupdate.AppUpdateWorker
+[BIND LONG] 1 = 20
+[BIND LONG] 1 = 200
+
+[COMPILE STATEMENT]
+SQL: PRAGMA page_count
+
+[COMPILE STATEMENT]
+SQL: PRAGMA page_size
+
+[QUERY API]
+Table: transport_contexts
+Columns: _id
+Where: backend_name = ? and priority = ? and extras = ?
+Args: cct,1,MSRodHRwczovL2ZpcmViYXNlbG9nZ2luZy5nb29nbGVhcGlzLmNvbS92MGNjL2xvZy9iYXRjaD9m
+b3JtYXQ9anNvbl9wcm90bzNc
+
+[BIND STRING] 3 = MSRodHRwczovL2ZpcmViYXNlbG9nZ2luZy5nb29nbGVhcGlzLmNvbS92MGNjL2xvZy9iYXRjaD9m
+b3JtYXQ9anNvbl9wcm90bzNc
+
+[BIND STRING] 2 = 1
+[BIND STRING] 1 = cct
+
+[INSERT] Table: transport_contexts
+Values: {"extras":"<instance: java.lang.Object, $className: java.lang.String>","priority":"<instance: java.lang.Object, $className: java.lang.Integer>","backend_name":"<instance: java.lang.Object, $className: java.lang.String>","next_request_ms":"<instance: java.lang.Object, $className: java.lang.Integer>"}
+
+[INSERT] Table: events
+Values: {"num_attempts":"<instance: java.lang.Object, $className: java.lang.Integer>","pseudonymous_id":null,"payload_encoding":"<instance: java.lang.Object, $className: java.lang.String>","inline":"<instance: java.lang.Object, $className: java.lang.Boolean>","payload":"<instance: java.lang.Object, $className: [B>","uptime_ms":"<instance: java.lang.Object, $className: java.lang.Long>","code":null,"context_id":"<instance: java.lang.Object, $className: java.lang.Long>","experiment_ids_clear_blob":null,"experiment_ids_encrypted_blob":null,"timestamp_ms":"<instance: java.lang.Object, $className: java.lang.Long>","product_id":null,"transport_name":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[RAW QUERY] SELECT next_request_ms FROM transport_contexts WHERE backend_name = ? and priority = ?
+[STACK TRACE]
+java.lang.Exception
+	at android.database.sqlite.SQLiteDatabase.rawQuery(Native Method)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SQLiteEventStore.getNextCallTime(SQLiteEventStore.java:27)
+	at com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoScheduler.schedule(JobInfoScheduler.java:20)
+	at com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoScheduler.schedule(JobInfoScheduler.java:1)
+	at com.google.android.datatransport.runtime.scheduling.DefaultScheduler$$ExternalSyntheticLambda1.execute(R8$$SyntheticClass:15)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SQLiteEventStore.runCriticalSection(SQLiteEventStore.java:14)
+	at com.google.android.datatransport.runtime.scheduling.DefaultScheduler$$ExternalSyntheticLambda0.run(R8$$SyntheticClass:68)
+	at com.google.android.datatransport.runtime.SafeLoggingExecutor$SafeLoggingRunnable.run(SafeLoggingExecutor.java:3)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1137)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:637)
+	at java.lang.Thread.run(Thread.java:1012)
+
+[BIND STRING] 2 = 1
+[BIND STRING] 1 = cct
+--> Rows: 1
+===> next_request_ms=0
+
+[COMPILE STATEMENT]
+SQL: PRAGMA page_count
+
+[COMPILE STATEMENT]
+SQL: PRAGMA page_size
+
+[QUERY API]
+Table: transport_contexts
+Columns: _id
+Where: backend_name = ? and priority = ? and extras = ?
+Args: cct,1,MSRodHRwczovL2ZpcmViYXNlbG9nZ2luZy5nb29nbGVhcGlzLmNvbS92MGNjL2xvZy9iYXRjaD9m
+b3JtYXQ9anNvbl9wcm90bzNc
+
+[BIND STRING] 3 = MSRodHRwczovL2ZpcmViYXNlbG9nZ2luZy5nb29nbGVhcGlzLmNvbS92MGNjL2xvZy9iYXRjaD9m
+b3JtYXQ9anNvbl9wcm90bzNc
+
+[BIND STRING] 2 = 1
+[BIND STRING] 1 = cct
+
+[INSERT] Table: events
+Values: {"num_attempts":"<instance: java.lang.Object, $className: java.lang.Integer>","pseudonymous_id":null,"payload_encoding":"<instance: java.lang.Object, $className: java.lang.String>","inline":"<instance: java.lang.Object, $className: java.lang.Boolean>","payload":"<instance: java.lang.Object, $className: [B>","uptime_ms":"<instance: java.lang.Object, $className: java.lang.Long>","code":null,"context_id":"<instance: java.lang.Object, $className: java.lang.Long>","experiment_ids_clear_blob":null,"experiment_ids_encrypted_blob":null,"timestamp_ms":"<instance: java.lang.Object, $className: java.lang.Long>","product_id":null,"transport_name":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[COMPILE STATEMENT]
+SQL: PRAGMA page_count
+
+[COMPILE STATEMENT]
+SQL: PRAGMA page_size
+
+[QUERY API]
+Table: transport_contexts
+Columns: _id
+Where: backend_name = ? and priority = ? and extras = ?
+Args: cct,0,MSRodHRwczovL2ZpcmViYXNlbG9nZ2luZy1wYS5nb29nbGVhcGlzLmNvbS92MS9maXJlbG9nL2xl
+Z2FjeS9iYXRjaGxvZ1xBSXphU3lDY2traUg4aTJaQVJ3T3MxTEV6RktsZDE1YU9HOG96S28=
+
+[BIND STRING] 3 = MSRodHRwczovL2ZpcmViYXNlbG9nZ2luZy1wYS5nb29nbGVhcGlzLmNvbS92MS9maXJlbG9nL2xl
+Z2FjeS9iYXRjaGxvZ1xBSXphU3lDY2traUg4aTJaQVJ3T3MxTEV6RktsZDE1YU9HOG96S28=
+
+[BIND STRING] 2 = 0
+[BIND STRING] 1 = cct
+
+[INSERT] Table: transport_contexts
+Values: {"extras":"<instance: java.lang.Object, $className: java.lang.String>","priority":"<instance: java.lang.Object, $className: java.lang.Integer>","backend_name":"<instance: java.lang.Object, $className: java.lang.String>","next_request_ms":"<instance: java.lang.Object, $className: java.lang.Integer>"}
+
+[INSERT] Table: events
+Values: {"num_attempts":"<instance: java.lang.Object, $className: java.lang.Integer>","pseudonymous_id":null,"payload_encoding":"<instance: java.lang.Object, $className: java.lang.String>","inline":"<instance: java.lang.Object, $className: java.lang.Boolean>","payload":"<instance: java.lang.Object, $className: [B>","uptime_ms":"<instance: java.lang.Object, $className: java.lang.Long>","code":null,"context_id":"<instance: java.lang.Object, $className: java.lang.Long>","experiment_ids_clear_blob":null,"experiment_ids_encrypted_blob":null,"timestamp_ms":"<instance: java.lang.Object, $className: java.lang.Long>","product_id":null,"transport_name":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[RAW QUERY] SELECT next_request_ms FROM transport_contexts WHERE backend_name = ? and priority = ?
+[STACK TRACE]
+java.lang.Exception
+	at android.database.sqlite.SQLiteDatabase.rawQuery(Native Method)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SQLiteEventStore.getNextCallTime(SQLiteEventStore.java:27)
+	at com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoScheduler.schedule(JobInfoScheduler.java:20)
+	at com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoScheduler.schedule(JobInfoScheduler.java:1)
+	at com.google.android.datatransport.runtime.scheduling.DefaultScheduler$$ExternalSyntheticLambda1.execute(R8$$SyntheticClass:15)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SQLiteEventStore.runCriticalSection(SQLiteEventStore.java:14)
+	at com.google.android.datatransport.runtime.scheduling.DefaultScheduler$$ExternalSyntheticLambda0.run(R8$$SyntheticClass:68)
+	at com.google.android.datatransport.runtime.SafeLoggingExecutor$SafeLoggingRunnable.run(SafeLoggingExecutor.java:3)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1137)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:637)
+	at java.lang.Thread.run(Thread.java:1012)
+
+[BIND STRING] 2 = 0
+[BIND STRING] 1 = cct
+--> Rows: 1
+===> next_request_ms=0
+
+[DELETE] Table: copy
+Where: exp_name=? AND tag=?
+Args: android_copy_covid_prepend_bp_property_terms_consent_2,android_bp_legal_property_terms_conditions_consent
+
+[INSERT] Table: copy
+Values: {"exp_name":"<instance: java.lang.Object, $className: java.lang.String>","language":"<instance: java.lang.Object, $className: java.lang.String>","tag":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[DELETE] Table: copy
+Where: exp_name=? AND tag=?
+Args: copy_change_taxes_charges_may_vary_android,android_ppd_taxes_charges_may_vary
+
+[INSERT] Table: copy
+Values: {"exp_name":"<instance: java.lang.Object, $className: java.lang.String>","language":"<instance: java.lang.Object, $className: java.lang.String>","tag":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[DELETE] Table: copy
+Where: exp_name=? AND tag=?
+Args: copy_android_wallet_bp_you_will_pay_now,android_bwallet_bp_you_will_pay_now
+
+[INSERT] Table: copy
+Values: {"exp_name":"<instance: java.lang.Object, $className: java.lang.String>","language":"<instance: java.lang.Object, $className: java.lang.String>","tag":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[DELETE] Table: copy
+Where: exp_name=? AND tag=?
+Args: copy_android_taxis_search_results_usp_flight_tracking,android_taxis_search_meet_and_greet
+
+[INSERT] Table: copy
+Values: {"exp_name":"<instance: java.lang.Object, $className: java.lang.String>","language":"<instance: java.lang.Object, $className: java.lang.String>","tag":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[DELETE] Table: copy
+Where: exp_name=? AND tag=?
+Args: android_flights_bp_loading_v2_copy,android_flights_loading_before_checkout
+
+[INSERT] Table: copy
+Values: {"exp_name":"<instance: java.lang.Object, $className: java.lang.String>","language":"<instance: java.lang.Object, $className: java.lang.String>","tag":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[DELETE] Table: copy
+Where: exp_name=? AND tag=?
+Args: copy_glg_bs2_checkbox_maybe_has_discount_android,identity_bs2_sign_in_checkbox_has_discount_almost_there
+
+[INSERT] Table: copy
+Values: {"exp_name":"<instance: java.lang.Object, $className: java.lang.String>","language":"<instance: java.lang.Object, $className: java.lang.String>","tag":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[DELETE] Table: copy
+Where: exp_name=? AND tag=?
+Args: copy_glg_bs2_checkbox_maybe_has_discount_android,identity_bs2_sign_in_checkbox_has_discount_title
+
+[INSERT] Table: copy
+Values: {"exp_name":"<instance: java.lang.Object, $className: java.lang.String>","language":"<instance: java.lang.Object, $className: java.lang.String>","tag":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[DELETE] Table: copy
+Where: exp_name=? AND tag=?
+Args: copy_glg_bs2_checkbox_maybe_has_discount_android,identity_bs2_sign_in_checkbox_has_discount_subtitle_fomo
+
+[INSERT] Table: copy
+Values: {"exp_name":"<instance: java.lang.Object, $className: java.lang.String>","language":"<instance: java.lang.Object, $className: java.lang.String>","tag":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[DELETE] Table: copy
+Where: exp_name=? AND tag=?
+Args: glg_login_prompt_app_onboarding_android,iam_account_settings_social_signin_headline2
+
+[INSERT] Table: copy
+Values: {"exp_name":"<instance: java.lang.Object, $className: java.lang.String>","language":"<instance: java.lang.Object, $className: java.lang.String>","tag":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[DELETE] Table: copy
+Where: exp_name=? AND tag=?
+Args: gmsg_android_fee_waiver_request_remove_fee_reduction,android_pb_ss_cxl_req_cxl_request_to_waive_fees_text2
+
+[INSERT] Table: copy
+Values: {"exp_name":"<instance: java.lang.Object, $className: java.lang.String>","language":"<instance: java.lang.Object, $className: java.lang.String>","tag":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[DELETE] Table: copy
+Where: exp_name=? AND tag=?
+Args: android_flights_copy_filters_rename_bounds,android_flights_filters_times_return
+
+[INSERT] Table: copy
+Values: {"exp_name":"<instance: java.lang.Object, $className: java.lang.String>","language":"<instance: java.lang.Object, $className: java.lang.String>","tag":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[DELETE] Table: copy
+Where: exp_name=? AND tag=?
+Args: android_flights_copy_filters_rename_bounds,android_flights_filters_times_outbound
+
+[INSERT] Table: copy
+Values: {"exp_name":"<instance: java.lang.Object, $className: java.lang.String>","language":"<instance: java.lang.Object, $className: java.lang.String>","tag":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[DELETE] Table: copy
+Where: exp_name=? AND tag=?
+Args: copy_android_taxis_search_cta_return,android_taxis_pb_search_outbound_returns_button
+
+[INSERT] Table: copy
+Values: {"exp_name":"<instance: java.lang.Object, $className: java.lang.String>","language":"<instance: java.lang.Object, $className: java.lang.String>","tag":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[DELETE] Table: copy
+Where: exp_name=? AND tag=?
+Args: copy_android_taxis_search_cta_return,android_taxis_pb_search_inbound_returns_button
+
+[INSERT] Table: copy
+Values: {"exp_name":"<instance: java.lang.Object, $className: java.lang.String>","language":"<instance: java.lang.Object, $className: java.lang.String>","tag":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[DELETE] Table: copy
+Where: exp_name=? AND tag=?
+Args: android_trip_engage_bookings_headers,android_trips_header
+
+[INSERT] Table: copy
+Values: {"exp_name":"<instance: java.lang.Object, $className: java.lang.String>","language":"<instance: java.lang.Object, $className: java.lang.String>","tag":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[DELETE] Table: copy
+Where: exp_name=? AND tag=?
+Args: android_taxis_pb_sr_free_canc_copy,android_pbt_free_cancellation
+
+[INSERT] Table: copy
+Values: {"exp_name":"<instance: java.lang.Object, $className: java.lang.String>","language":"<instance: java.lang.Object, $className: java.lang.String>","tag":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[DELETE] Table: copy
+Where: exp_name=? AND tag=?
+Args: copy_android_taxis_index_cta_check_prices,android_taxis_sf_pb_home_search
+
+[INSERT] Table: copy
+Values: {"exp_name":"<instance: java.lang.Object, $className: java.lang.String>","language":"<instance: java.lang.Object, $className: java.lang.String>","tag":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[DELETE] Table: copy
+Where: exp_name=? AND tag=?
+Args: copy_android_room_list_select_cta,android_rl_select_rooms_button_empty
+
+[INSERT] Table: copy
+Values: {"exp_name":"<instance: java.lang.Object, $className: java.lang.String>","language":"<instance: java.lang.Object, $className: java.lang.String>","tag":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[COMPILE STATEMENT]
+SQL: INSERT OR REPLACE INTO exp_runs
+(uvi_id, exp_name, et_id, variant, should_track)
+VALUES (?,?,?,?,?)
+
+[COMPILE STATEMENT]
+SQL: UPDATE exp_runs
+SET uvi_id = ?, 
+et_id = ?, 
+variant = ?, 
+should_track = ?
+WHERE exp_name=?
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 0
+[BIND LONG] 3 = 1
+[BIND LONG] 4 = 0
+[BIND STRING] 5 = android_copy_covid_prepend_bp_property_terms_consent_2
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 0
+[BIND LONG] 3 = 1
+[BIND LONG] 4 = 0
+[BIND STRING] 5 = copy_change_taxes_charges_may_vary_android
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 0
+[BIND LONG] 3 = 1
+[BIND LONG] 4 = 0
+[BIND STRING] 5 = copy_android_wallet_bp_you_will_pay_now
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 0
+[BIND LONG] 3 = 1
+[BIND LONG] 4 = 0
+[BIND STRING] 5 = copy_android_taxis_search_results_usp_flight_tracking
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 0
+[BIND LONG] 3 = 1
+[BIND LONG] 4 = 0
+[BIND STRING] 5 = android_flights_bp_loading_v2_copy
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 0
+[BIND LONG] 3 = 1
+[BIND LONG] 4 = 0
+[BIND STRING] 5 = copy_glg_bs2_checkbox_maybe_has_discount_android
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 0
+[BIND LONG] 3 = 1
+[BIND LONG] 4 = 0
+[BIND STRING] 5 = copy_glg_bs2_checkbox_maybe_has_discount_android
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 0
+[BIND LONG] 3 = 1
+[BIND LONG] 4 = 0
+[BIND STRING] 5 = copy_glg_bs2_checkbox_maybe_has_discount_android
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 0
+[BIND LONG] 3 = 1
+[BIND LONG] 4 = 0
+[BIND STRING] 5 = glg_login_prompt_app_onboarding_android
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 0
+[BIND LONG] 3 = 1
+[BIND LONG] 4 = 0
+[BIND STRING] 5 = gmsg_android_fee_waiver_request_remove_fee_reduction
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 0
+[BIND LONG] 3 = 1
+[BIND LONG] 4 = 0
+[BIND STRING] 5 = android_flights_copy_filters_rename_bounds
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 0
+[BIND LONG] 3 = 1
+[BIND LONG] 4 = 0
+[BIND STRING] 5 = android_flights_copy_filters_rename_bounds
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 0
+[BIND LONG] 3 = 1
+[BIND LONG] 4 = 0
+[BIND STRING] 5 = copy_android_taxis_search_cta_return
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 0
+[BIND LONG] 3 = 1
+[BIND LONG] 4 = 0
+[BIND STRING] 5 = copy_android_taxis_search_cta_return
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 0
+[BIND LONG] 3 = 1
+[BIND LONG] 4 = 0
+[BIND STRING] 5 = android_trip_engage_bookings_headers
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 0
+[BIND LONG] 3 = 1
+[BIND LONG] 4 = 0
+[BIND STRING] 5 = android_taxis_pb_sr_free_canc_copy
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 0
+[BIND LONG] 3 = 1
+[BIND LONG] 4 = 0
+[BIND STRING] 5 = copy_android_taxis_index_cta_check_prices
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 0
+[BIND LONG] 3 = 1
+[BIND LONG] 4 = 0
+[BIND STRING] 5 = copy_android_room_list_select_cta
+[EXECUTE PREPARED STATEMENT]
+
+[QUERY API]
+Table: copy
+Columns: exp_name,tag,value
+Where: language=? AND tag NOT LIKE ?  AND tag NOT LIKE ? 
+Args: en-us,language_exception_%,plurals_%
+[BIND STRING] 3 = plurals_%
+[BIND STRING] 2 = language_exception_%
+[BIND STRING] 1 = en-us
+
+[QUERY API]
+Table: copy
+Columns: exp_name,tag,value
+Where: language=? AND (tag LIKE ? OR tag LIKE ?)
+Args: en-us,language_exception_%,plurals_%
+[BIND STRING] 3 = plurals_%
+[BIND STRING] 2 = language_exception_%
+[BIND STRING] 1 = en-us
+
+[COMPILE STATEMENT]
+SQL: INSERT OR REPLACE INTO exp_runs
+(uvi_id, exp_name, et_id, variant, should_track)
+VALUES (?,?,?,?,?)
+
+[COMPILE STATEMENT]
+SQL: UPDATE exp_runs
+SET uvi_id = ?, 
+et_id = ?, 
+variant = ?, 
+should_track = ?
+WHERE exp_name=?
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = srx_apps_upgrade_app_banner_before_dml
+[BIND STRING] 3 = 2509570
+[BIND LONG] 4 = 1
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = intent_ctm_exp2_apps_attraction_supply_deal_pill
+[BIND STRING] 3 = 2497550
+[BIND LONG] 4 = 1
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = intent_ctm_apps_city_image_on_demand
+[BIND STRING] 3 = 2448930
+[BIND LONG] 4 = 1
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = android_saba_enable_scoped_presentation
+[BIND STRING] 3 = 2513350
+[BIND LONG] 4 = 0
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = ctm_homescreen_rvp_recp_ios
+[BIND STRING] 3 = 2497410
+[BIND LONG] 4 = 1
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = lxa_android_cars_landings_aa
+[BIND STRING] 3 = 1796520
+[BIND LONG] 4 = 0
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = mvte_apps_android_tbu_pickup_where_you_left_off
+[BIND STRING] 3 = 2401070
+[BIND LONG] 4 = 1
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = sr_contextualised_traveler_features_solo_android
+[BIND STRING] 3 = 2484340
+[BIND LONG] 4 = 0
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = mpsintent_ios_aa_searchbox_token_distribution
+[BIND STRING] 3 = 2514720
+[BIND LONG] 4 = 0
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = location_apps_sr_location_filters_consolidation
+[BIND STRING] 3 = 2482000
+[BIND LONG] 4 = 1
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = ugcd_ios_search_results_cards_change_reviews_score_position
+[BIND STRING] 3 = 2518380
+[BIND LONG] 4 = 1
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = gc_apps_credits_voucher_terminology
+[BIND STRING] 3 = 2470580
+[BIND LONG] 4 = 1
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = srx_apps_families_destinations_aa
+[BIND STRING] 3 = 2495120
+[BIND LONG] 4 = 0
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = ctm_usp_cruise_vertical
+[BIND STRING] 3 = 2474980
+[BIND LONG] 4 = 1
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = apps_flights_lve_index_genius_airlines_banner
+[BIND STRING] 3 = 2510150
+[BIND LONG] 4 = 0
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = attractions_apps_uf_homescreen_genius
+[BIND STRING] 3 = 2492110
+[BIND LONG] 4 = 1
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = mpsae_attraction_carousel_sr_apps
+[BIND STRING] 3 = 2486020
+[BIND LONG] 4 = 0
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = android_saba_centralize_dependency_init
+[BIND STRING] 3 = 2508830
+[BIND LONG] 4 = 0
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = ctb_value_tiered_car_discount_apps_ml
+[BIND STRING] 3 = 2505280
+[BIND LONG] 4 = 5
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = aitp_android_linkable_itineraries_bottom_sheet
+[BIND STRING] 3 = 2476420
+[BIND LONG] 4 = 1
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = mvte_xsell_apps_attraction_buttons_cheapest_prices
+[BIND STRING] 3 = 2477670
+[BIND LONG] 4 = 0
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = bp_bs0_android_aa_marketing_abu_tech_strategy
+[BIND STRING] 3 = 2510130
+[BIND LONG] 4 = 0
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = ctm2_ios_fix_xsell_data_source
+[BIND STRING] 3 = 2503870
+[BIND LONG] 4 = 1
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = ctm_homescreen_rvp_recp_android
+[BIND STRING] 3 = 2497400
+[BIND LONG] 4 = 0
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = android_saba_enable_et_scope_isolation
+[BIND STRING] 3 = 2499530
+[BIND LONG] 4 = 1
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = ctme_ios_usp_carousel_on_cruises
+[BIND STRING] 3 = 2505990
+[BIND LONG] 4 = 0
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = gato_ios_pp_reviews_companion
+[BIND STRING] 3 = 2467730
+[BIND LONG] 4 = 1
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = ctm2_saba_conf_sheet_accesssibility
+[BIND STRING] 3 = 2473130
+[BIND LONG] 4 = 1
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = mpsae_traveller_experience_filter_android
+[BIND STRING] 3 = 2516660
+[BIND LONG] 4 = 1
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = smartav_migrate_region_to_mercator_search_results_app
+[BIND STRING] 3 = 2504420
+[BIND LONG] 4 = 0
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = mvte_xsell_transport_apps_back_to_airport
+[BIND STRING] 3 = 2506300
+[BIND LONG] 4 = 0
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = srx_apps_singles_destinations_aa
+[BIND STRING] 3 = 2495030
+[BIND LONG] 4 = 0
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = intent_ctme2_apps_transport_price_on_the_right
+[BIND STRING] 3 = 2482420
+[BIND LONG] 4 = 0
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = mm_push_ad_all_spring_deals_lout
+[BIND STRING] 3 = 2507080
+[BIND LONG] 4 = 1
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = ctsd_sr_smart_filters_world_expansion_apps
+[BIND STRING] 3 = 2451830
+[BIND LONG] 4 = 0
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = srx_apps_adult_groups_destinations_aa
+[BIND STRING] 3 = 2495090
+[BIND LONG] 4 = 0
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = intent_ctm2_android_migrate_click_handler_to_saba_flow
+[BIND STRING] 3 = 2447570
+[BIND LONG] 4 = 1
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = srx_apps_couples_destinations_aa
+[BIND STRING] 3 = 2495060
+[BIND LONG] 4 = 0
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = ahs_android_saba_regions_components_ranking
+[BIND STRING] 3 = 2503740
+[BIND LONG] 4 = 1
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = aitp_ios_linkable_itineraries_bottom_sheet
+[BIND STRING] 3 = 2476040
+[BIND LONG] 4 = 1
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = intent_ctm2_apps_hygiene_fix_shelf_spacing
+[BIND STRING] 3 = 2507730
+[BIND LONG] 4 = 1
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = intent_ctm2_apps_badges_coupon_refactor
+[BIND STRING] 3 = 2503970
+[BIND LONG] 4 = 0
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = lxe_saba_android_aa_cars_landing
+[BIND STRING] 3 = 2515210
+[BIND LONG] 4 = 0
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = mm_push_us_monthly_190326_lout
+[BIND STRING] 3 = 2503320
+[BIND LONG] 4 = 1
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = intent_ctme2_apps_attractions_multi_leg_trip
+[BIND STRING] 3 = 2504810
+[BIND LONG] 4 = 0
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = ahs_ios_saba_regions_components_proxy_rewards
+[BIND STRING] 3 = 2510070
+[BIND LONG] 4 = 1
+[BIND LONG] 5 = 1
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 0
+[BIND LONG] 3 = 0
+[BIND LONG] 4 = 0
+[BIND STRING] 5 = android_dm_marketing_messaging_subscriptions_aa
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 0
+[BIND LONG] 3 = 0
+[BIND LONG] 4 = 0
+[BIND STRING] 5 = mvte_xsell_ios_attraction_carousel_wishlist_component
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 0
+[BIND LONG] 3 = 0
+[BIND LONG] 4 = 0
+[BIND STRING] 5 = mvte_xsell_android_attraction_carousel_wishlist_component
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 0
+[BIND LONG] 3 = 0
+[BIND LONG] 4 = 0
+[BIND STRING] 5 = aiva_nion_intent_detection
+[EXECUTE PREPARED STATEMENT]
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = 0
+[BIND LONG] 3 = 0
+[BIND LONG] 4 = 0
+[BIND STRING] 5 = android_pd_reward_credit_voucher_sr_hp_rl_bp
+[EXECUTE PREPARED STATEMENT]
+
+[COMPILE STATEMENT]
+SQL: PRAGMA page_count
+
+[COMPILE STATEMENT]
+SQL: PRAGMA page_size
+
+[QUERY API]
+Table: transport_contexts
+Columns: _id
+Where: backend_name = ? and priority = ? and extras = ?
+Args: cct,1,MSRodHRwczovL2ZpcmViYXNlbG9nZ2luZy5nb29nbGVhcGlzLmNvbS92MGNjL2xvZy9iYXRjaD9m
+b3JtYXQ9anNvbl9wcm90bzNc
+
+[BIND STRING] 3 = MSRodHRwczovL2ZpcmViYXNlbG9nZ2luZy5nb29nbGVhcGlzLmNvbS92MGNjL2xvZy9iYXRjaD9m
+b3JtYXQ9anNvbl9wcm90bzNc
+
+[BIND STRING] 2 = 1
+[BIND STRING] 1 = cct
+
+[INSERT] Table: events
+Values: {"num_attempts":"<instance: java.lang.Object, $className: java.lang.Integer>","pseudonymous_id":null,"payload_encoding":"<instance: java.lang.Object, $className: java.lang.String>","inline":"<instance: java.lang.Object, $className: java.lang.Boolean>","payload":"<instance: java.lang.Object, $className: [B>","uptime_ms":"<instance: java.lang.Object, $className: java.lang.Long>","code":null,"context_id":"<instance: java.lang.Object, $className: java.lang.Long>","experiment_ids_clear_blob":null,"experiment_ids_encrypted_blob":null,"timestamp_ms":"<instance: java.lang.Object, $className: java.lang.Long>","product_id":null,"transport_name":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[COMPILE STATEMENT]
+SQL: PRAGMA page_count
+
+[COMPILE STATEMENT]
+SQL: PRAGMA page_size
+
+[QUERY API]
+Table: transport_contexts
+Columns: _id
+Where: backend_name = ? and priority = ? and extras = ?
+Args: cct,1,MSRodHRwczovL2ZpcmViYXNlbG9nZ2luZy5nb29nbGVhcGlzLmNvbS92MGNjL2xvZy9iYXRjaD9m
+b3JtYXQ9anNvbl9wcm90bzNc
+
+[BIND STRING] 3 = MSRodHRwczovL2ZpcmViYXNlbG9nZ2luZy5nb29nbGVhcGlzLmNvbS92MGNjL2xvZy9iYXRjaD9m
+b3JtYXQ9anNvbl9wcm90bzNc
+
+[BIND STRING] 2 = 1
+[BIND STRING] 1 = cct
+
+[INSERT] Table: events
+Values: {"num_attempts":"<instance: java.lang.Object, $className: java.lang.Integer>","pseudonymous_id":null,"payload_encoding":"<instance: java.lang.Object, $className: java.lang.String>","inline":"<instance: java.lang.Object, $className: java.lang.Boolean>","payload":"<instance: java.lang.Object, $className: [B>","uptime_ms":"<instance: java.lang.Object, $className: java.lang.Long>","code":null,"context_id":"<instance: java.lang.Object, $className: java.lang.Long>","experiment_ids_clear_blob":null,"experiment_ids_encrypted_blob":null,"timestamp_ms":"<instance: java.lang.Object, $className: java.lang.Long>","product_id":null,"transport_name":"<instance: java.lang.Object, $className: java.lang.String>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[INSERT] Table: event_metadata
+Values: {"name":"<instance: java.lang.Object, $className: java.lang.String>","value":"<instance: java.lang.Object, $className: java.lang.String>","event_id":"<instance: java.lang.Object, $className: java.lang.Long>"}
+
+[COMPILE STATEMENT]
+SQL: INSERT OR REPLACE INTO exp_runs
+(uvi_id, exp_name, et_id, variant, should_track)
+VALUES (?,?,?,?,?)
+
+[COMPILE STATEMENT]
+SQL: UPDATE exp_runs
+SET uvi_id = ?, 
+et_id = ?, 
+variant = ?, 
+should_track = ?
+WHERE exp_name=?
+
+[COMPILE STATEMENT]
+SQL: INSERT OR IGNORE INTO `WorkSpec` (`id`,`state`,`worker_class_name`,`input_merger_class_name`,`input`,`output`,`initial_delay`,`interval_duration`,`flex_duration`,`run_attempt_count`,`backoff_policy`,`backoff_delay_duration`,`last_enqueue_time`,`minimum_retention_duration`,`schedule_requested_at`,`run_in_foreground`,`out_of_quota_policy`,`period_count`,`generation`,`required_network_type`,`requires_charging`,`requires_device_idle`,`requires_battery_not_low`,`requires_storage_not_low`,`trigger_content_update_delay`,`trigger_max_content_delay`,`content_uri_triggers`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+[BIND STRING] 1 = fbb85eff-69e8-4af2-bb08-af937929955b
+[BIND LONG] 2 = 0
+[BIND STRING] 3 = com.onetrust.otpublishers.headless.Internal.Network.ConsentUploadWorker
+[BIND STRING] 4 = androidx.work.OverwritingInputMerger
+[BIND LONG] 7 = 0
+[BIND LONG] 8 = 0
+[BIND LONG] 9 = 0
+[BIND LONG] 10 = 0
+[BIND LONG] 11 = 0
+[BIND LONG] 12 = 10000
+[BIND LONG] 13 = 1775048193414
+[BIND LONG] 14 = 0
+[BIND LONG] 15 = -1
+[BIND LONG] 16 = 0
+[BIND LONG] 17 = 0
+[BIND LONG] 18 = 0
+[BIND LONG] 19 = 0
+[BIND LONG] 20 = 1
+[BIND LONG] 21 = 0
+[BIND LONG] 22 = 0
+[BIND LONG] 23 = 0
+[BIND LONG] 24 = 0
+[BIND LONG] 25 = -1
+[BIND LONG] 26 = -1
+
+[COMPILE STATEMENT]
+SQL: INSERT OR IGNORE INTO `WorkTag` (`tag`,`work_spec_id`) VALUES (?,?)
+[BIND STRING] 1 = com.onetrust.otpublishers.headless.Internal.Network.ConsentUploadWorker
+[BIND STRING] 2 = fbb85eff-69e8-4af2-bb08-af937929955b
+[BIND LONG] 1 = 20
+[BIND LONG] 1 = 200
+
+[COMPILE STATEMENT]
+SQL: UPDATE workspec SET schedule_requested_at=? WHERE id=?
+[BIND LONG] 1 = 1775048193422
+[BIND STRING] 2 = fbb85eff-69e8-4af2-bb08-af937929955b
+[BIND STRING] 1 = fbb85eff-69e8-4af2-bb08-af937929955b
+[BIND STRING] 1 = fbb85eff-69e8-4af2-bb08-af937929955b
+[BIND LONG] 2 = 0
+[BIND STRING] 1 = next_job_scheduler_id
+
+[COMPILE STATEMENT]
+SQL: INSERT OR REPLACE INTO `Preference` (`key`,`long_value`) VALUES (?,?)
+[BIND STRING] 1 = next_job_scheduler_id
+[BIND LONG] 2 = 1
+
+[COMPILE STATEMENT]
+SQL: INSERT OR REPLACE INTO `SystemIdInfo` (`work_spec_id`,`generation`,`system_id`) VALUES (?,?,?)
+[BIND STRING] 1 = fbb85eff-69e8-4af2-bb08-af937929955b
+[BIND LONG] 2 = 0
+[BIND LONG] 3 = 0
+[BIND STRING] 1 = Booking::Privacy::PcsSyncWorker::unique_name
+[BIND STRING] 1 = ef9d9337-b80a-4bbb-9357-c4fe41d40bb8
+[BIND LONG] 2 = 0
+[BIND STRING] 3 = com.booking.identity.privacy.pcs.PcsSyncWorker
+[BIND STRING] 4 = androidx.work.OverwritingInputMerger
+[BIND LONG] 7 = 0
+[BIND LONG] 8 = 0
+[BIND LONG] 9 = 0
+[BIND LONG] 10 = 0
+[BIND LONG] 11 = 1
+[BIND LONG] 12 = 10000
+[BIND LONG] 13 = 1775048193460
+[BIND LONG] 14 = 0
+[BIND LONG] 15 = -1
+[BIND LONG] 16 = 0
+[BIND LONG] 17 = 0
+[BIND LONG] 18 = 0
+[BIND LONG] 19 = 0
+[BIND LONG] 20 = 1
+[BIND LONG] 21 = 0
+[BIND LONG] 22 = 0
+[BIND LONG] 23 = 0
+[BIND LONG] 24 = 0
+[BIND LONG] 25 = -1
+[BIND LONG] 26 = -1
+[BIND STRING] 1 = com.booking.identity.privacy.pcs.PcsSyncWorker
+[BIND STRING] 2 = ef9d9337-b80a-4bbb-9357-c4fe41d40bb8
+[BIND STRING] 1 = Booking::Privacy::PcsSyncWorker
+[BIND STRING] 2 = ef9d9337-b80a-4bbb-9357-c4fe41d40bb8
+
+[COMPILE STATEMENT]
+SQL: INSERT OR IGNORE INTO `WorkName` (`name`,`work_spec_id`) VALUES (?,?)
+[BIND STRING] 1 = Booking::Privacy::PcsSyncWorker::unique_name
+[BIND STRING] 2 = ef9d9337-b80a-4bbb-9357-c4fe41d40bb8
+[BIND LONG] 1 = 20
+[BIND LONG] 1 = 200
+[BIND LONG] 1 = 1775048193472
+[BIND STRING] 2 = ef9d9337-b80a-4bbb-9357-c4fe41d40bb8
+[BIND STRING] 1 = ef9d9337-b80a-4bbb-9357-c4fe41d40bb8
+[BIND STRING] 1 = ef9d9337-b80a-4bbb-9357-c4fe41d40bb8
+[BIND LONG] 2 = 0
+[BIND STRING] 1 = next_job_scheduler_id
+[BIND STRING] 1 = next_job_scheduler_id
+[BIND LONG] 2 = 2
+[BIND STRING] 1 = ef9d9337-b80a-4bbb-9357-c4fe41d40bb8
+[BIND LONG] 2 = 0
+[BIND LONG] 3 = 1
+[BIND STRING] 1 = fbb85eff-69e8-4af2-bb08-af937929955b
+[BIND STRING] 1 = fbb85eff-69e8-4af2-bb08-af937929955b
+[BIND STRING] 1 = fbb85eff-69e8-4af2-bb08-af937929955b
+[BIND STRING] 1 = fbb85eff-69e8-4af2-bb08-af937929955b
+[BIND STRING] 1 = ef9d9337-b80a-4bbb-9357-c4fe41d40bb8
+[BIND STRING] 1 = ef9d9337-b80a-4bbb-9357-c4fe41d40bb8
+[BIND STRING] 1 = ef9d9337-b80a-4bbb-9357-c4fe41d40bb8
+[BIND STRING] 1 = ef9d9337-b80a-4bbb-9357-c4fe41d40bb8
+[BIND STRING] 1 = fbb85eff-69e8-4af2-bb08-af937929955b
+[BIND STRING] 1 = fbb85eff-69e8-4af2-bb08-af937929955b
+
+[COMPILE STATEMENT]
+SQL: UPDATE workspec SET state=? WHERE id=?
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = fbb85eff-69e8-4af2-bb08-af937929955b
+
+[COMPILE STATEMENT]
+SQL: UPDATE workspec SET run_attempt_count=run_attempt_count+1 WHERE id=?
+[BIND STRING] 1 = fbb85eff-69e8-4af2-bb08-af937929955b
+[BIND STRING] 1 = ef9d9337-b80a-4bbb-9357-c4fe41d40bb8
+[BIND STRING] 1 = ef9d9337-b80a-4bbb-9357-c4fe41d40bb8
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = ef9d9337-b80a-4bbb-9357-c4fe41d40bb8
+[BIND STRING] 1 = ef9d9337-b80a-4bbb-9357-c4fe41d40bb8
+[BIND STRING] 1 = attribution_refresh_worker
+[BIND STRING] 1 = cae1f69b-ce5e-4e77-ad5c-a46dd1666f8a
+[BIND LONG] 2 = 0
+[BIND STRING] 3 = com.booking.attributionservices.worker.AttributionRefreshWorker
+[BIND STRING] 4 = androidx.work.OverwritingInputMerger
+[BIND LONG] 7 = 31535984428
+[BIND LONG] 8 = 0
+[BIND LONG] 9 = 0
+[BIND LONG] 10 = 0
+[BIND LONG] 11 = 0
+[BIND LONG] 12 = 30000
+[BIND LONG] 13 = 1775048193573
+[BIND LONG] 14 = 0
+[BIND LONG] 15 = -1
+[BIND LONG] 16 = 0
+[BIND LONG] 17 = 0
+[BIND LONG] 18 = 0
+[BIND LONG] 19 = 0
+[BIND LONG] 20 = 0
+[BIND LONG] 21 = 0
+[BIND LONG] 22 = 0
+[BIND LONG] 23 = 0
+[BIND LONG] 24 = 0
+[BIND LONG] 25 = -1
+[BIND LONG] 26 = -1
+[BIND STRING] 1 = com.booking.attributionservices.worker.AttributionRefreshWorker
+[BIND STRING] 2 = cae1f69b-ce5e-4e77-ad5c-a46dd1666f8a
+[BIND STRING] 1 = attribution_refresh_worker
+[BIND STRING] 2 = cae1f69b-ce5e-4e77-ad5c-a46dd1666f8a
+[BIND LONG] 1 = 20
+[BIND LONG] 1 = 200
+[BIND LONG] 1 = 1775048193581
+[BIND STRING] 2 = cae1f69b-ce5e-4e77-ad5c-a46dd1666f8a
+[BIND STRING] 1 = cae1f69b-ce5e-4e77-ad5c-a46dd1666f8a
+[BIND STRING] 1 = cae1f69b-ce5e-4e77-ad5c-a46dd1666f8a
+[BIND LONG] 2 = 0
+[BIND STRING] 1 = next_job_scheduler_id
+[BIND STRING] 1 = next_job_scheduler_id
+[BIND LONG] 2 = 3
+[BIND STRING] 1 = cae1f69b-ce5e-4e77-ad5c-a46dd1666f8a
+[BIND LONG] 2 = 0
+[BIND LONG] 3 = 2
+[BIND STRING] 1 = fbb85eff-69e8-4af2-bb08-af937929955b
+
+[COMPILE STATEMENT]
+SQL: DELETE from WorkProgress where work_spec_id=?
+[BIND STRING] 1 = fbb85eff-69e8-4af2-bb08-af937929955b
+[BIND LONG] 1 = 2
+[BIND STRING] 2 = fbb85eff-69e8-4af2-bb08-af937929955b
+
+[COMPILE STATEMENT]
+SQL: UPDATE workspec SET output=? WHERE id=?
+[BIND STRING] 2 = fbb85eff-69e8-4af2-bb08-af937929955b
+[BIND STRING] 1 = fbb85eff-69e8-4af2-bb08-af937929955b
+[BIND LONG] 1 = 20
+[BIND LONG] 1 = 200
+[BIND STRING] 1 = ef9d9337-b80a-4bbb-9357-c4fe41d40bb8
+[BIND STRING] 1 = ef9d9337-b80a-4bbb-9357-c4fe41d40bb8
+[BIND LONG] 1 = 2
+[BIND STRING] 2 = ef9d9337-b80a-4bbb-9357-c4fe41d40bb8
+[BIND STRING] 2 = ef9d9337-b80a-4bbb-9357-c4fe41d40bb8
+[BIND STRING] 1 = ef9d9337-b80a-4bbb-9357-c4fe41d40bb8
+
+[COMPILE STATEMENT]
+SQL: DELETE FROM SystemIdInfo where work_spec_id=?
+[BIND STRING] 1 = ef9d9337-b80a-4bbb-9357-c4fe41d40bb8
+[BIND LONG] 1 = 20
+[BIND LONG] 1 = 200
+
+[RAW QUERY] SELECT COUNT(*), transport_name FROM events WHERE timestamp_ms < ? GROUP BY transport_name
+[STACK TRACE]
+java.lang.Exception
+	at android.database.sqlite.SQLiteDatabase.rawQuery(Native Method)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SQLiteEventStore.cleanUp(SQLiteEventStore.java:31)
+	at com.google.android.datatransport.runtime.scheduling.jobscheduling.Uploader$$ExternalSyntheticLambda1.execute(R8$$SyntheticClass:3)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SQLiteEventStore.runCriticalSection(SQLiteEventStore.java:14)
+	at com.google.android.datatransport.runtime.scheduling.jobscheduling.Uploader$$ExternalSyntheticLambda0.run(R8$$SyntheticClass:21)
+	at com.google.android.datatransport.runtime.SafeLoggingExecutor$SafeLoggingRunnable.run(SafeLoggingExecutor.java:3)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1137)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:637)
+	at java.lang.Thread.run(Thread.java:1012)
+
+[BIND STRING] 1 = 1774443437804
+--> Rows: 0
+
+[DELETE] Table: events
+Where: timestamp_ms < ?
+Args: 1774443437804
+
+[QUERY API]
+Table: transport_contexts
+Columns: _id
+Where: backend_name = ? and priority = ? and extras = ?
+Args: cct,0,MSRodHRwczovL2ZpcmViYXNlbG9nZ2luZy1wYS5nb29nbGVhcGlzLmNvbS92MS9maXJlbG9nL2xl
+Z2FjeS9iYXRjaGxvZ1xBSXphU3lDY2traUg4aTJaQVJ3T3MxTEV6RktsZDE1YU9HOG96S28=
+
+[BIND STRING] 3 = MSRodHRwczovL2ZpcmViYXNlbG9nZ2luZy1wYS5nb29nbGVhcGlzLmNvbS92MS9maXJlbG9nL2xl
+Z2FjeS9iYXRjaGxvZ1xBSXphU3lDY2traUg4aTJaQVJ3T3MxTEV6RktsZDE1YU9HOG96S28=
+
+[BIND STRING] 2 = 0
+[BIND STRING] 1 = cct
+
+[RAW QUERY] SELECT 1 FROM events WHERE context_id = ? LIMIT 1
+[STACK TRACE]
+java.lang.Exception
+	at android.database.sqlite.SQLiteDatabase.rawQuery(Native Method)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SQLiteEventStore.hasPendingEventsFor(SQLiteEventStore.java:31)
+	at com.google.android.datatransport.runtime.scheduling.jobscheduling.Uploader$$ExternalSyntheticLambda3.execute(R8$$SyntheticClass:7)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SQLiteEventStore.runCriticalSection(SQLiteEventStore.java:14)
+	at com.google.android.datatransport.runtime.scheduling.jobscheduling.Uploader.logAndUpdateState(Uploader.java:26)
+	at com.google.android.datatransport.runtime.scheduling.jobscheduling.Uploader$$ExternalSyntheticLambda0.run(R8$$SyntheticClass:46)
+	at com.google.android.datatransport.runtime.SafeLoggingExecutor$SafeLoggingRunnable.run(SafeLoggingExecutor.java:3)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1137)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:637)
+	at java.lang.Thread.run(Thread.java:1012)
+
+[BIND STRING] 1 = 2
+--> Rows: 1
+===> 1=1
+
+[QUERY API]
+Table: transport_contexts
+Columns: _id
+Where: backend_name = ? and priority = ? and extras = ?
+Args: cct,0,MSRodHRwczovL2ZpcmViYXNlbG9nZ2luZy1wYS5nb29nbGVhcGlzLmNvbS92MS9maXJlbG9nL2xl
+Z2FjeS9iYXRjaGxvZ1xBSXphU3lDY2traUg4aTJaQVJ3T3MxTEV6RktsZDE1YU9HOG96S28=
+
+[BIND STRING] 3 = MSRodHRwczovL2ZpcmViYXNlbG9nZ2luZy1wYS5nb29nbGVhcGlzLmNvbS92MS9maXJlbG9nL2xl
+Z2FjeS9iYXRjaGxvZ1xBSXphU3lDY2traUg4aTJaQVJ3T3MxTEV6RktsZDE1YU9HOG96S28=
+
+[BIND STRING] 2 = 0
+[BIND STRING] 1 = cct
+[BIND STRING] 1 = 2
+
+[QUERY API]
+Table: transport_contexts
+Columns: _id
+Where: backend_name = ? and priority = ? and extras = ?
+Args: cct,1,MSRodHRwczovL2ZpcmViYXNlbG9nZ2luZy1wYS5nb29nbGVhcGlzLmNvbS92MS9maXJlbG9nL2xl
+Z2FjeS9iYXRjaGxvZ1xBSXphU3lDY2traUg4aTJaQVJ3T3MxTEV6RktsZDE1YU9HOG96S28=
+
+[BIND STRING] 3 = MSRodHRwczovL2ZpcmViYXNlbG9nZ2luZy1wYS5nb29nbGVhcGlzLmNvbS92MS9maXJlbG9nL2xl
+Z2FjeS9iYXRjaGxvZ1xBSXphU3lDY2traUg4aTJaQVJ3T3MxTEV6RktsZDE1YU9HOG96S28=
+
+[BIND STRING] 2 = 1
+[BIND STRING] 1 = cct
+
+[QUERY API]
+Table: transport_contexts
+Columns: _id
+Where: backend_name = ? and priority = ? and extras = ?
+Args: cct,2,MSRodHRwczovL2ZpcmViYXNlbG9nZ2luZy1wYS5nb29nbGVhcGlzLmNvbS92MS9maXJlbG9nL2xl
+Z2FjeS9iYXRjaGxvZ1xBSXphU3lDY2traUg4aTJaQVJ3T3MxTEV6RktsZDE1YU9HOG96S28=
+
+[BIND STRING] 3 = MSRodHRwczovL2ZpcmViYXNlbG9nZ2luZy1wYS5nb29nbGVhcGlzLmNvbS92MS9maXJlbG9nL2xl
+Z2FjeS9iYXRjaGxvZ1xBSXphU3lDY2traUg4aTJaQVJ3T3MxTEV6RktsZDE1YU9HOG96S28=
+
+[BIND STRING] 2 = 2
+[BIND STRING] 1 = cct
+
+[QUERY API]
+Table: event_metadata
+Columns: event_id,name,value
+Where: event_id IN (3)
+Args: null
+
+[RAW QUERY] SELECT log_source, reason, events_dropped_count FROM log_event_dropped
+[STACK TRACE]
+java.lang.Exception
+	at android.database.sqlite.SQLiteDatabase.rawQuery(Native Method)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SQLiteEventStore.loadClientMetrics(SQLiteEventStore.java:41)
+	at com.google.android.datatransport.runtime.scheduling.jobscheduling.Uploader$$ExternalSyntheticLambda10.execute(R8$$SyntheticClass:3)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SQLiteEventStore.runCriticalSection(SQLiteEventStore.java:14)
+	at com.google.android.datatransport.runtime.scheduling.jobscheduling.Uploader.logAndUpdateState(Uploader.java:126)
+	at com.google.android.datatransport.runtime.scheduling.jobscheduling.Uploader$$ExternalSyntheticLambda0.run(R8$$SyntheticClass:46)
+	at com.google.android.datatransport.runtime.SafeLoggingExecutor$SafeLoggingRunnable.run(SafeLoggingExecutor.java:3)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1137)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:637)
+	at java.lang.Thread.run(Thread.java:1012)
+
+--> Rows: 0
+
+[RAW QUERY] SELECT last_metrics_upload_ms FROM global_log_event_state LIMIT 1
+[STACK TRACE]
+java.lang.Exception
+	at android.database.sqlite.SQLiteDatabase.rawQuery(Native Method)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SQLiteEventStore$$ExternalSyntheticLambda9.apply(R8$$SyntheticClass:8)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SQLiteEventStore.inTransaction(SQLiteEventStore.java:8)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SQLiteEventStore$$ExternalSyntheticLambda8.apply(R8$$SyntheticClass:202)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SQLiteEventStore.tryWithCursor(SQLiteEventStore.java:1)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SQLiteEventStore.loadClientMetrics(SQLiteEventStore.java:50)
+	at com.google.android.datatransport.runtime.scheduling.jobscheduling.Uploader$$ExternalSyntheticLambda10.execute(R8$$SyntheticClass:3)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SQLiteEventStore.runCriticalSection(SQLiteEventStore.java:14)
+	at com.google.android.datatransport.runtime.scheduling.jobscheduling.Uploader.logAndUpdateState(Uploader.java:126)
+	at com.google.android.datatransport.runtime.scheduling.jobscheduling.Uploader$$ExternalSyntheticLambda0.run(R8$$SyntheticClass:46)
+	at com.google.android.datatransport.runtime.SafeLoggingExecutor$SafeLoggingRunnable.run(SafeLoggingExecutor.java:3)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1137)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:637)
+	at java.lang.Thread.run(Thread.java:1012)
+
+--> Rows: 1
+===> last_metrics_upload_ms=1775048175089
+
+[COMPILE STATEMENT]
+SQL: PRAGMA page_count
+
+[COMPILE STATEMENT]
+SQL: PRAGMA page_size
+
+[COMPILE STATEMENT]
+SQL: DELETE FROM events WHERE _id in (3)
+[EXECUTE PREPARED STATEMENT]
+
+[COMPILE STATEMENT]
+SQL: DELETE FROM log_event_dropped
+[EXECUTE PREPARED STATEMENT]
+
+[COMPILE STATEMENT]
+SQL: UPDATE global_log_event_state SET last_metrics_upload_ms=1775048240044
+[EXECUTE PREPARED STATEMENT]
+
+[QUERY API]
+Table: transport_contexts
+Columns: _id
+Where: backend_name = ? and priority = ? and extras = ?
+Args: cct,0,MSRodHRwczovL2ZpcmViYXNlbG9nZ2luZy1wYS5nb29nbGVhcGlzLmNvbS92MS9maXJlbG9nL2xl
+Z2FjeS9iYXRjaGxvZ1xBSXphU3lDY2traUg4aTJaQVJ3T3MxTEV6RktsZDE1YU9HOG96S28=
+
+[BIND STRING] 3 = MSRodHRwczovL2ZpcmViYXNlbG9nZ2luZy1wYS5nb29nbGVhcGlzLmNvbS92MS9maXJlbG9nL2xl
+Z2FjeS9iYXRjaGxvZ1xBSXphU3lDY2traUg4aTJaQVJ3T3MxTEV6RktsZDE1YU9HOG96S28=
+
+[BIND STRING] 2 = 0
+[BIND STRING] 1 = cct
+
+[RAW QUERY] SELECT 1 FROM events WHERE context_id = ? LIMIT 1
+[STACK TRACE]
+java.lang.Exception
+	at android.database.sqlite.SQLiteDatabase.rawQuery(Native Method)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SQLiteEventStore.hasPendingEventsFor(SQLiteEventStore.java:31)
+	at com.google.android.datatransport.runtime.scheduling.jobscheduling.Uploader$$ExternalSyntheticLambda3.execute(R8$$SyntheticClass:7)
+	at com.google.android.datatransport.runtime.scheduling.persistence.SQLiteEventStore.runCriticalSection(SQLiteEventStore.java:14)
+	at com.google.android.datatransport.runtime.scheduling.jobscheduling.Uploader.logAndUpdateState(Uploader.java:26)
+	at com.google.android.datatransport.runtime.scheduling.jobscheduling.Uploader$$ExternalSyntheticLambda0.run(R8$$SyntheticClass:46)
+	at com.google.android.datatransport.runtime.SafeLoggingExecutor$SafeLoggingRunnable.run(SafeLoggingExecutor.java:3)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1137)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:637)
+	at java.lang.Thread.run(Thread.java:1012)
+
+[BIND STRING] 1 = 2
+--> Rows: 0
+
+[UPDATE] Table: transport_contexts
+Values: {"next_request_ms":"<instance: java.lang.Object, $className: java.lang.Long>"}
+Where: backend_name = ? and priority = ?
+Args: cct,0
+[BIND STRING] 1 = Booking::Privacy::UcsSyncWorker::unique_name::CM_PUSH_CONSENT
+[BIND STRING] 1 = c1404d93-00a2-4765-8f78-2b35fa00e616
+[BIND LONG] 2 = 0
+[BIND STRING] 3 = com.booking.identity.privacy.ucs.UcsSyncWorker
+[BIND STRING] 4 = androidx.work.OverwritingInputMerger
+[BIND LONG] 7 = 0
+[BIND LONG] 8 = 0
+[BIND LONG] 9 = 0
+[BIND LONG] 10 = 0
+[BIND LONG] 11 = 0
+[BIND LONG] 12 = 10000
+[BIND LONG] 13 = 1775048410956
+[BIND LONG] 14 = 0
+[BIND LONG] 15 = -1
+[BIND LONG] 16 = 0
+[BIND LONG] 17 = 0
+[BIND LONG] 18 = 0
+[BIND LONG] 19 = 0
+[BIND LONG] 20 = 1
+[BIND LONG] 21 = 0
+[BIND LONG] 22 = 0
+[BIND LONG] 23 = 0
+[BIND LONG] 24 = 0
+[BIND LONG] 25 = -1
+[BIND LONG] 26 = -1
+[BIND STRING] 1 = com.booking.identity.privacy.ucs.UcsSyncWorker
+[BIND STRING] 2 = c1404d93-00a2-4765-8f78-2b35fa00e616
+[BIND STRING] 1 = Booking::Privacy::UcsSyncWorker::CM_PUSH_CONSENT
+[BIND STRING] 2 = c1404d93-00a2-4765-8f78-2b35fa00e616
+[BIND STRING] 1 = Booking::Privacy::UcsSyncWorker::unique_name::CM_PUSH_CONSENT
+[BIND STRING] 2 = c1404d93-00a2-4765-8f78-2b35fa00e616
+[BIND LONG] 1 = 20
+[BIND LONG] 1 = 200
+[BIND LONG] 1 = 1775048410962
+[BIND STRING] 2 = c1404d93-00a2-4765-8f78-2b35fa00e616
+[BIND STRING] 1 = c1404d93-00a2-4765-8f78-2b35fa00e616
+[BIND STRING] 1 = c1404d93-00a2-4765-8f78-2b35fa00e616
+[BIND LONG] 2 = 0
+[BIND STRING] 1 = next_job_scheduler_id
+[BIND STRING] 1 = next_job_scheduler_id
+[BIND LONG] 2 = 4
+[BIND STRING] 1 = c1404d93-00a2-4765-8f78-2b35fa00e616
+[BIND LONG] 2 = 0
+[BIND LONG] 3 = 3
+[BIND STRING] 1 = c1404d93-00a2-4765-8f78-2b35fa00e616
+[BIND STRING] 1 = c1404d93-00a2-4765-8f78-2b35fa00e616
+[BIND STRING] 1 = c1404d93-00a2-4765-8f78-2b35fa00e616
+[BIND STRING] 1 = c1404d93-00a2-4765-8f78-2b35fa00e616
+[BIND LONG] 1 = 1
+[BIND STRING] 2 = c1404d93-00a2-4765-8f78-2b35fa00e616
+[BIND STRING] 1 = c1404d93-00a2-4765-8f78-2b35fa00e616
+[BIND STRING] 1 = c1404d93-00a2-4765-8f78-2b35fa00e616
+[BIND STRING] 1 = c1404d93-00a2-4765-8f78-2b35fa00e616
+[BIND STRING] 1 = c1404d93-00a2-4765-8f78-2b35fa00e616
+[BIND STRING] 1 = c1404d93-00a2-4765-8f78-2b35fa00e616
+[BIND LONG] 1 = 2
+[BIND STRING] 2 = c1404d93-00a2-4765-8f78-2b35fa00e616
+[BIND STRING] 2 = c1404d93-00a2-4765-8f78-2b35fa00e616
+[BIND STRING] 1 = c1404d93-00a2-4765-8f78-2b35fa00e616
+[BIND LONG] 1 = 20
+[BIND LONG] 1 = 200

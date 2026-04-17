@@ -1,0 +1,112 @@
+[CIPHER INIT]
+Mode: 1 (Encryption)
+Key Encoded:  109,110,-22,67,-125,12,-64,-64,-63,-38,44,43,-45,-118,11,60
+Key Format: RAW
+Key Instance:  undefined
+Key Class:  javax.crypto.spec.SecretKeySpec
+Key: 6d6eea43830cc0c0c1da2c2bd38a0b3c
+IV: 31e09cf07dffa07db3e1974d787eeb50
+[CIPHER DO FINAL]
+[STACK TRACE]
+#1 Class: dalvik.system.VMStack // Method: getThreadStackTrace // Line: -2
+#2 Class: java.lang.Thread // Method: getStackTrace // Line: 1841
+#3 Class: javax.crypto.Cipher // Method: doFinal // Line: -2
+#4 Class: SeFHhd.JdSECU // Method: FVVrpO // Line: 59
+#5 Class: SeFHhd.JdSECU // Method: mGaRXf // Line: 2
+#6 Class: SeFHhd.JdSECU // Method: JbjQm // Line: 2
+#7 Class: SeFHhd.JdSECU // Method: JbjQm // Line: 1
+#8 Class: SeFHhd.NrxnLY // Method: NNJeOO // Line: 69
+#9 Class: SeFHhd.NrxnLY // Method: SdNMMB // Line: 66
+#10 Class: SeFHhd.MhFPdi // Method: njUscE // Line: 266
+#11 Class: SeFHhd.EenkWE // Method: $invoke$special$pjkxSi // Line: 227
+#12 Class: SeFHhd.EenkWE // Method: $invoke$special$DNcuTs // Line: 290
+#13 Class: SeFHhd.EenkWE // Method: nRWHQR // Line: 23
+#14 Class: SeFHhd.EenkWE$pFsQPh // Method: run // Line: 94
+#15 Class: java.lang.Thread // Method: run // Line: 1012
+[ENCRYPT]
+IN (plaintext): tags://test-keys;file:///su/su.d;file:///su;file:///sbin/su;file:///sbin_orig/su;file:///su/suhide;file:///su/su.d;pkg://com.koushikdutta.superuser;file:///su;file:///su/xbin;pkg://com.ramdroid.appquarantine;file:///system/bin/su;pkg://eu.chainfire.supersu;file:///system/xbin/su;pkg://com.topjohnwu.magisk;pkg://com.zachspong.temprootremovejb;pkg://com.thirdparty.superuser;file:///system/bin/.ext/.su;file:///system/usr/we-need-root/su-backup;file:///system/su;file:///data/.magisk/hidelist;file:///sbin_orig/magisk;file:///su/suhide;pkg://com.noshufou.android.su;file:///magisk/.core/hidelist;prop://ro.build.fingerprint?htc%2Ftelstra_wwe%2Fhtc_a11ul%3A4.4.3%2FKTU84L%2F423017.2%3Auser%2Frelease-keys;file:///system/app/Superuser.apk;file:///su/xbin;file:///system/xbin/mu;
+OUT (cipher): *hidden*
+
+
+
+
+
+[CIPHER INIT]
+Mode: 2 (Decryption)
+Key Encoded:  -65,-68,104,125,38,-128,-107,79,66,30,-127,-108,29,116,-66,-45
+Key Format: RAW
+Key Instance:  undefined
+Key Class:  javax.crypto.spec.SecretKeySpec
+Key: bfbc687d2680954f421e81941d74bed3
+IV: 63653366346236336662646131626535
+[CIPHER DO FINAL]
+[STACK TRACE]
+#1 Class: dalvik.system.VMStack // Method: getThreadStackTrace // Line: -2
+#2 Class: java.lang.Thread // Method: getStackTrace // Line: 1841
+#3 Class: javax.crypto.Cipher // Method: doFinal // Line: -2
+#4 Class: SeFHhd.JdSECU // Method: jLEbhS // Line: 59
+#5 Class: SeFHhd.JdSECU // Method: jzdmYq // Line: 85
+#6 Class: SeFHhd.NllGRg // Method: mVjMKb // Line: 9
+#7 Class: SeFHhd.NllGRg // Method: jcwTdi // Line: 2
+#8 Class: SeFHhd.EenkWE$ndTFVI // Method: onComplete // Line: 32
+#9 Class: mijtkD.MqxvOL // Method: run // Line: 294
+#10 Class: java.util.concurrent.Executors$RunnableAdapter // Method: call // Line: 463
+#11 Class: java.util.concurrent.FutureTask // Method: run // Line: 264
+#12 Class: com.lexisnexisrisk.threatmetrix.tmxprofilingconnections.TMXProfilingConnections$TMXFutureTask // Method: run // Line: 1
+#13 Class: java.util.concurrent.ThreadPoolExecutor // Method: runWorker // Line: 1137
+#14 Class: java.util.concurrent.ThreadPoolExecutor$Worker // Method: run // Line: 637
+#15 Class: java.lang.Thread // Method: run // Line: 1012
+[DECRYPT]
+IN (cipher): *hidden*
+OUT (plaintext): <MC><SN>ddc6f54979d9812e</SN><N>ce3f4b63fbda1be5</N><S>D9BC895B00A2C65C888981B3222DA57B</S><w>ce3f4b63fbda1be5</w><SPD>h64.online-metrix.net</SPD><DDL><DDI>am1.e.aa.online-metrix.net</DDI></DDL><BHS>1</BHS><BBF>1500</BBF><BBD>120</BBD><BBI>500</BBI><BBP>6</BBP><BBT>65535</BBT><BBR>1</BBR><BBS>1</BBS><UDD>120</UDD><UDI>500</UDI><UDP>6</UDP><UDTS>65535</UDTS><UDR>1</UDR><UDS>1</UDS><MSS>eu-aa.online-metrix.net</MSS><PS><P>tags://test-keys</P><P>file:///su/su.d</P><P>file:///su</P><P>file:///sbin/su</P><P>file:///sbin_orig/su</P><P>file:///su/suhide</P><P>file:///su/su.d</P><P>pkg://com.koushikdutta.superuser</P><P>file:///su</P><P>file:///su/xbin</P><P>pkg://com.ramdroid.appquarantine</P><P>file:///system/bin/su</P><P>pkg://eu.chainfire.supersu</P><P>file:///system/xbin/su</P><P>pkg://com.topjohnwu.magisk</P><P>pkg://com.zachspong.temprootremovejb</P><P>pkg://com.thirdparty.superuser</P><P>file:///system/bin/.ext/.su</P><P>file:///system/usr/we-need-root/su-backup</P><P>file:///system/su</P><P>file:///data/.magisk/hidelist</P><P>file:///sbin_orig/magisk</P><P>file:///su/suhide</P><P>pkg://com.noshufou.android.su</P><P>file:///magisk/.core/hidelist</P><P>prop://ro.build.fingerprint?htc%2Ftelstra_wwe%2Fhtc_a11ul%3A4.4.3%2FKTU84L%2F423017.2%3Auser%2Frelease-keys</P><P>file:///system/app/Superuser.apk</P><P>file:///su/xbin</P><P>file:///system/xbin/mu</P></PS><EM><M>id://imei?e21833235b6eef10</M><M>file:///ueventd.android_x86.rc</M><M>id://phone?15555215578</M><M>id://phone?15555215566</M><M>prop://ro.hardware?generic_x86</M><M>prop://ro.product.name?vbox86p</M><M>prop://ro.bootloader?nox</M><M>file:///dev/socket/genyd</M><M>file:///fstab.ttVM_x86</M><M>prop://ro.product.manufacturer?redfinger</M><M>file:///dev/socket/qemud</M><M>prop://qemu.sf.lcd_density?nil</M><M>prop://ro.hardware?andy</M><M>prop://ro.product.name?google_sdk</M><M>file:///x86.prop</M><M>prop://ro.product.model?Android%20SDK%20built%20for%20x86</M><M>file:///ueventd.android_x86.rc</M><M>id://phone?15555215574</M><M>id://phone?15555215580</M><M>id://phone?15555215556</M><M>prop://ro.product.name?sdk</M><M>prop://qemu.sf.fake_camera?nil</M><M>prop://ro.product.brand?redfinger</M><M>prop://init.svc.qemu-props?nil</M><M>file:///ueventd.vbox86.rc</M><M>prop://ro.kernel.android.qemud?nil</M><M>file:///fstab.vbox86</M><M>prop://ro.serialno?nox</M><M>prop://ro.product.model?NoxW</M><M>prop://ro.product.name?sdk_x86</M><M>id://phone?15555215572</M><M>id://phone?15555215576</M><M>prop://ro.product.brand?AMIDuOS</M><M>id://phone?15555215570</M><M>prop://ro.product.brand?generic</M><M>prop://ro.product.device?generic</M><M>prop://init.svc.qemud?nil</M><M>prop://ro.product.brand?generic_x86</M><M>file:///dev/qemu_pipe</M><M>prop://ro.hardware?goldfish</M><M>prop://ro.product.model?sdk</M><M>prop://ro.product.board?nox</M><M>id://phone?15555215558</M><M>id://phone?15555215564</M><M>prop://ro.build.host?andy</M><M>prop://ro.product.device?AndyOSX</M><M>prop://ro.product.device?generic_x86</M><M>prop://ro.product.device?duos_cbuf</M><M>file:///init.vbox86.rc</M><M>prop://ro.product.model?droid4x</M><M>prop://ro.product.board?goldfish</M><M>id://phone?15555215582</M><M>file:///sys/qemu_trace</M><M>prop://ro.product.name?AndyOSX</M><M>prop://ro.product.model?Emulator</M><M>prop://ro.product.name?duos_cbuf</M><M>id://imsi?310260000000000</M><M>id://phone?15555215562</M><M>prop://ro.product.device?nox</M><M>prop://ro.product.name?sdk</M><M>prop://ro.hardware?duos</M><M>file:///ueventd.andy.rc</M><M>prop://ro.hardware?vbox86</M><M>prop://ro.product.brand?AndyOS</M><M>prop://ro.build.host?duos-build3</M><M>id://phone?15555215568</M><M>file:///init.ttVM_x86.rc</M><M>id://phone?15555215554</M><M>prop://ro.product.model?google_sdk</M><M>id://phone?15555215560</M><M>file:///ueventd.ttVM_x86.rc</M><M>prop://ro.product.manufacturer?Genymotion</M><M>prop://ro.hardware?nox</M><M>id://imei?012345678912345</M><M>prop://ro.product.manufacturer?AndyOS%2C%20Inc.</M><M>prop://ro.build.display.id?andy_vm_custom%2046.1.112</M><M>prop://ro.product.manufacturer?Xamarin</M><M>id://phone?15555215584</M><M>prop://ro.product.model?AMIDuOS</M><M>id://imei?000000000000000</M><M>prop://ro.product.model?AndyOSX</M><M>file:///dev/socket/baseband_genyd</M><M>prop://ro.product.name?nox</M><M>file:///fstab.andy</M></EM><UP><P>android.permission.CHANGE_WIFI_STATE</P><P>android.permission.ACCESS_WIFI_STATE</P><P>com.google.android.gms.permission.AD_ID</P><P>android.permission.QUERY_ALL_PACKAGES</P><P>android.permission.ACCESS_FINE_LOCATION</P><P>android.permission.ACCESS_NETWORK_STATE</P><P>android.permission.ACTIVITY_RECOGNITION</P><P>android.permission.ACCESS_COARSE_LOCATION</P></UP><D>2048</D></MC>
+
+
+
+
+
+
+
+[DECRYPT]
+IN (cipher): *hidden*
+OUT (plaintext): {"expiry":1791333143,"type":"dpop","value":"CAES-QFS9gEaK8tx0E9ZU5lBUGAAR08_N0-low_-DlFhxmhZQq2dWrN_4v1rdf9Fvwl5CugIMXO0NMsqO16TLzPakzu2yeGTym8thgOErWER_WUeIJb830JeBCuDH7B0d52xQl82S77ybPNDPxH_GFUadUZbeqfjmtVNyvjo0_x3LqTa254DTFwLIT5pArdsTmR_HTdeSJ1F3RYPncUshj3yDJexE_vCQR48BYZhf8gMc60NjVPpcNFmlLri8u9PUW09K9r3VeDQRi89oUzxl_on8B42hpejVIT8lFbAUZrM5tKJoUlnYpFEyMndIRuHUdmsknapn4BAdNablCM"}
+
+
+{
+	"payloadAuthenticated": {
+		"refreshTokenType": "dpop",
+		"refreshTokenExpiresIn": 31536000,
+		"userCreated": true,
+		"accessToken": "CAESoQYSzwUIAhCq55PtAhrEBexmn8PziplUpDc2o-dahkpOTu-4veNIgrHx3XlkJfypCzmpj5Ky1PjkPfoW1Q73I0mUHPsVPWx-F33lDFixH59akSeOcMASl5kVGg4WzRFIRE6O2Cq23ooMwznxVF9UyMs52wNFFIuFHWjFpW3kQVf9ZJ5KaoVlmLsh_aB9VHcdWKLAVggmMCLLnoFafQ3RljhnwOZ6KGzgQJZw1FrqSOpHwCF6GFO2x65kREewJMoGCMWI7umvXtsp0RbMnHfj4cmWAxXrqRNNmyhDf-6miR11IAGDCiIsyqTMS1a7bHpkJjM-DM_pqcS8w_sdgF4BoZ1ds9W9M6WQ23DGrwattBTX4Wi586MdJ9CV9guev77duFuMbpi35H8KSP0Mqy_URkPXzjKNsv5Idfr-Wc88KLLRP5nDkuvYNGeF_3T6HB86qccCFBzGnSO-SRIsD7sGS6g-jjBG5xXBtXEdejn8hQJDbebCYcMXcykxFW6p5_FUqG2AaPZ4d4R5AJVXJxSmlVBbywPLDT_KnxGo7diRFRvsEUuFIsaD0Lg8VojWeiYrlaGJH6h0C85GSITbYY7pcS_vQD5_kbGHrhLKjZ1gIfw_dj9aQvQi_NuZfXomvaQCkrVq-VlWDhiKx0r9o2TmWqXuiyI2AjMRCrNX9zncujrs9KNS_kXYRy5uVm_Z4DjqXbjUhpRNGusz0UUC551lwra0CsbEyRNtl9Db1EfqSRZSzJjbjVKrwhuKA7dgzA0auqJxbs8dkjfEPA7_I7eia3SoPtWX-7sY2zDa9lafqzI40ykAslRJsmJmqhGJ4tr3mpTNIt4OPZ5egtJgH6bU896bfQmOnRDzW5U0hIu5GWP3QEISpq1dDM3KZWBE--CwglWM6w0XUvgILhgZsDKxRzyOtbln5FSn_AhUFTFHeMlzxm97FGaNhxzSBz6cpUfz2UP78hpAfSmnb8-7SihL6kDZM9Zhie8R2qX43uORGLszBKzm5ov9ueNeTtDErlQQSoA8KBwEK_UwYXwWgTLpXcZ2PuMTCyACKgEFMPqHrJ0GOAE",
+		"idToken": "eyJ0eXAiOiJKV1QiLCJraWQiOiJxaU1UZnRPRHBCL0VWd3VJeVN3eCIsImFsZyI6IkVTMjU2In0.eyJpc3MiOiJodHRwczovL2FjY291bnQuYm9va2luZy5jb20iLCJhdWQiOiJlRVVwdnRnUHo3R3YyTlNPZHV6RCIsImlhdCI6MTc3NTY1NzgxNywic3ViIjoiNGI4Y2FjZGYtOTk4MS00NWY5LWI0YzQtMTBmODUwYmYyMDMxIiwiZXhwIjoxNzc1NjU4NDE3LCJhY3IiOiJBQUwxIiwiYm9va2luZ191c2VyX2lkIjoiNGI4Y2FjZGYtOTk4MS00NWY5LWI0YzQtMTBmODUwYmYyMDMxIn0.GkgOibf-HHbyFMZ6gaLTnHBP6XJXUioJOcl61RewSpcIavOo0d_VPBGf6XsXTNCjVJEOm8BLQQl7KGXNiCUpFw",
+		"accessTokenExpiresIn": 1800,
+		"accessTokenType": "bearer",
+		"refreshToken": "CAEShAJSgQLSV2G2qnbA0f9vamDh1r9iAUWWxx2GneaPvis8la8cTlVkEvdheNW_VUKg4MSaRygzrsLk5gEpZwYIwq1w_hyXK5VddnW-3l33p_hTLh_y75YZcppzgRrpQeH_P_nwo65sozV6zX-rn5Ka_HS7ye824fumlCx36nJmnY3ZEpipES8o2Htx8F-dBpxPOQDztt8lM_RhDgt0_oshAc-Yb7sgZhIxKCthnfAAvxuSgPslIYzo6NbftxldZAkc3J7OCQLw-zzeHMvjEmBLEil4TQzul96jViua7AfGxpCR1E5pwAZq_dvIlF39gbXWoYavZy4Bd_M4ZRC_mbvCSv1PcxQf8Q"
+	},
+	"nextStep": "STEP_SUCCESS",
+	"identifier": {
+		"type": "IDENTIFIER_TYPE__EMAIL",
+		"value": "renasa6391@lealking.com"
+	}
+}
+
+
+
+
+[CIPHER DO FINAL]
+[STACK TRACE]
+#1 Class: dalvik.system.VMStack // Method: getThreadStackTrace // Line: -2
+#2 Class: java.lang.Thread // Method: getStackTrace // Line: 1841
+#3 Class: javax.crypto.Cipher // Method: doFinal // Line: -2
+#4 Class: com.flexdb.crypto.Encryptor // Method: encryptBytes // Line: 21
+#5 Class: com.flexdb.crypto.EncryptedDataSerializer // Method: serialize // Line: 11
+#6 Class: com.flexdb.api.KeyValueStore // Method: set // Line: 49
+#7 Class: com.booking.identity.storage.Storage // Method: set // Line: 10
+#8 Class: com.booking.identity.profile.service.repository.PersonalProfileRepositoryImpl$savePersonalProfile$2 // Method: invokeSuspend // Line: 49
+#9 Class: kotlin.coroutines.jvm.internal.BaseContinuationImpl // Method: resumeWith // Line: 13
+#10 Class: kotlinx.coroutines.DispatchedTask // Method: run // Line: 117
+#11 Class: kotlinx.coroutines.scheduling.CoroutineScheduler$Worker // Method: run // Line: 128
+[ENCRYPT]
+IN (plaintext): {"email":{"confirmed":true,"address":"renasa6391@lealking.com"},"genius_status":1,"name":{}}
+OUT (cipher): *hidden*
+No initialization for this cipher with hash code 146540092
+Skipping JSON log.
