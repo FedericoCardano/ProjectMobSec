@@ -3,6 +3,70 @@ Java.perform(function () {
     var store = {};
     var threadMap = {};
 
+
+    // Definisci la funzione di log per stampare store
+    function logApolloRequests() {
+        console.log("\n============ APOLLO REQUESTS LOG ============");
+
+        var NumberOfKeys = Object.keys(store).length;
+
+        if (NumberOfKeys === 0) {
+            console.log("\nStore is empty. There are no requests.");
+            console.log("\n========== APOLLO REQUESTS LOG END ==========\n");
+            return;
+        }
+
+        let count = 0;
+
+        for (var uuid in store) {
+            count++;
+            console.log("\nUUID: " + store[uuid].UUID);
+            console.log("\nClass:", store[uuid].class);
+            console.log("\nQuery:", store[uuid].query);
+            console.log("\nHeaders:", JSON.stringify(store[uuid].headers, null, 2));
+            console.log("\nResponse:", store[uuid].response);
+            console.log();
+            console.log("\nHTTP OP:", store[uuid].httpOP);
+            console.log("\nHTTP Headers:", JSON.stringify(store[uuid].HTTPheaders, null, 2));
+            console.log("\nHTTP Raw JSON:", store[uuid].rawJson);
+            console.log();
+            console.log("\nNetwork Request:", store[uuid].NetworkRequest);
+            if (count < NumberOfKeys)
+                console.log("\n--------------------------------------------------");
+        }
+
+        console.log("\n========== APOLLO REQUESTS LOG END ==========\n");
+    }
+
+    globalThis.logApolloRequests = logApolloRequests;
+
+
+/*
+    function logApolloRequestsT() {
+        console.log("\n========== APOLLO REQUESTS ==========");
+        
+
+        const data = Object.values(store).map(req => ({
+            UUID: req.UUID,
+            Class: req.class,
+            Query: req.query,
+            Headers: req.headers,
+            Response: req.response,
+            'HTTP OP': req.httpOP,
+            'HTTP Headers': req.HTTPheaders,
+            'HTTP Raw JSON': req.rawJson,
+            'Network Request': req.NetworkRequest
+        }));
+        
+        console.table(data);
+    }
+
+    globalThis.logApolloRequestsT = logApolloRequestsT;
+*/
+    
+
+
+
     var NetworkInterceptor = Java.use("com.apollographql.apollo3.interceptor.NetworkInterceptor");
     var interceptOriginal = NetworkInterceptor.intercept;
 
@@ -74,20 +138,33 @@ Java.perform(function () {
             }
 
             var iter = headers.iterator();
+            let count = 0;
             while (iter.hasNext()) {
-                var h = iter.next();
-                
-                try {
-                    var name = h.name();
-                    var value = h.value();
 
-                    store[UUID].headers.push({
-                        name: name,
-                        value: value
+                var h = iter.next();
+                count++;
+
+                try {
+                    var nameField = h.getClass().getDeclaredField("name");
+                    var valueField = h.getClass().getDeclaredField("value");
+
+                    nameField.setAccessible(true);
+                    var HeaderName = nameField.get(h).toString();
+                    valueField.setAccessible(true);
+                    var HeaderValue = valueField.get(h).toString();
+
+                    console.log("Header #" + count + " = " + HeaderName + " : " + HeaderValue);
+
+                    store[uuid].headers.push({
+                        name: HeaderName,
+                        value: HeaderValue
                     });
 
                 } catch (e) {
-                    store[UUID].headers.push({
+                    console.log("Header #" + count + " = " + h.toString());
+                    console.log("Warning! Saving as raw header.")
+
+                    store[uuid].headers.push({
                         raw: h
                     });
                 }
@@ -205,22 +282,32 @@ Java.perform(function () {
             store[uuid].HTTPheaders = [];
         }
 
+
+        let count = 0;
         while (it.hasNext()) {
+
             var h = it.next();
+            count++;
 
             try {
-                var name = h.name();
-                var value = h.value();
+                var nameField = h.getClass().getDeclaredField("name");
+                var valueField = h.getClass().getDeclaredField("value");
 
-                console.log(h.name() + ": " + h.value());
+                nameField.setAccessible(true);
+                var HTTPname = nameField.get(h).toString();
+                valueField.setAccessible(true);
+                var HTTPvalue = valueField.get(h).toString();
+
+                console.log("HTTP header #" + count + " = " + HTTPname + " : " + HTTPvalue);
 
                 store[uuid].HTTPheaders.push({
-                    name: name,
-                    value: value
+                    name: HTTPname,
+                    value: HTTPvalue
                 });
 
             } catch (e) {
-                console.log("Header to string:", h.toString());
+                console.log("HTTP header #" + count + " = " + h.toString());
+                console.log("Warning! Saving as raw header.")
 
                 store[uuid].HTTPheaders.push({
                     raw: h
@@ -240,7 +327,7 @@ Java.perform(function () {
         return response;
     };
 
-
+/*
     setTimeout(function () {
         console.log("\n========== STORE CONTENTS ==========");
         for (var uuid in store) {
