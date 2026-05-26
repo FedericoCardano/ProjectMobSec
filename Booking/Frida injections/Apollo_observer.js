@@ -1,10 +1,9 @@
+
 Java.perform(function () {
 
     var store = {};
     var threadMap = {};
 
-
-    // Definisci la funzione di log per stampare store
     function logApolloRequests() {
         console.log("\n============ APOLLO REQUESTS LOG ============");
 
@@ -41,30 +40,6 @@ Java.perform(function () {
     globalThis.logApolloRequests = logApolloRequests;
 
 
-/*
-    function logApolloRequestsT() {
-        console.log("\n========== APOLLO REQUESTS ==========");
-        
-
-        const data = Object.values(store).map(req => ({
-            UUID: req.UUID,
-            Class: req.class,
-            Query: req.query,
-            Headers: req.headers,
-            Response: req.response,
-            'HTTP OP': req.httpOP,
-            'HTTP Headers': req.HTTPheaders,
-            'HTTP Raw JSON': req.rawJson,
-            'Network Request': req.NetworkRequest
-        }));
-        
-        console.table(data);
-    }
-
-    globalThis.logApolloRequestsT = logApolloRequestsT;
-*/
-    
-
 
 
     var NetworkInterceptor = Java.use("com.apollographql.apollo3.interceptor.NetworkInterceptor");
@@ -90,7 +65,6 @@ Java.perform(function () {
 
         return flow;
     };
-
 
 
 
@@ -155,7 +129,7 @@ Java.perform(function () {
 
                     console.log("Header #" + count + " = " + HeaderName + " : " + HeaderValue);
 
-                    store[uuid].headers.push({
+                    store[UUID].headers.push({
                         name: HeaderName,
                         value: HeaderValue
                     });
@@ -164,7 +138,7 @@ Java.perform(function () {
                     console.log("Header #" + count + " = " + h.toString());
                     console.log("Warning! Saving as raw header.")
 
-                    store[uuid].headers.push({
+                    store[UUID].headers.push({
                         raw: h
                     });
                 }
@@ -176,33 +150,9 @@ Java.perform(function () {
 
 
 
+
     var ObjectAdapter = Java.use("com.apollographql.apollo3.api.ObjectAdapter");
     var toJsonOriginal = ObjectAdapter.toJson;
-
-    /*
-    ObjectAdapter.toJson.implementation = function (writer, adapters, value) {
-
-        // console.log("\n====== ADAPTER JSON ======");
-        // console.log("Value class: " + value.$className);
-
-        // try {
-        //     console.log("Value: " + value.toString());
-        // } catch (e) {}
-
-        if (value.$className.includes("$Data")) {
-
-            console.log("\n====== ROOT RESPONSE ======");
-            console.log("Class: " + value.$className);
-
-            try {
-                console.log(value.toString());
-            } catch (e) {}
-
-        }
-
-        return toJsonOriginal.call(this, writer, adapters, value);
-    };
-    */
 
     ObjectAdapter.toJson.implementation = function (writer, adapters, value) {
 
@@ -223,6 +173,8 @@ Java.perform(function () {
 
         return toJsonOriginal.call(this, writer, adapters, value);
     };
+
+
 
 
     var HT = Java.use("com.apollographql.apollo3.network.http.HttpNetworkTransport");
@@ -282,7 +234,6 @@ Java.perform(function () {
             store[uuid].HTTPheaders = [];
         }
 
-
         let count = 0;
         while (it.hasNext()) {
 
@@ -315,9 +266,7 @@ Java.perform(function () {
             }
         }
 
-
         var response = OriginalHTExecute.call(this, request);
-
 
         try {
             var peek = response.peekBody(1024 * 1024);
@@ -327,37 +276,17 @@ Java.perform(function () {
         return response;
     };
 
-/*
-    setTimeout(function () {
-        console.log("\n========== STORE CONTENTS ==========");
-        for (var uuid in store) {
-            console.log("\nUUID: " + store[uuid].UUID);
-            console.log("\nClass:", store[uuid].class);
-            console.log("\nQuery:", store[uuid].query);
-            console.log("\nHeaders:", store[uuid].headers);
-            console.log("\nResponse:", store[uuid].response);
-            console.log();
-            console.log("\nHTTP OP:", store[uuid].httpOP);
-            console.log("\nHTTP Headers:", store[uuid].HTTPheaders);
-            console.log("\nHTTP Raw JSON:", store[uuid].rawJson);
-            console.log();
-            console.log("\nNetwork Request:", store[uuid].NetworkRequest);
-            console.log("\n-------------------------");
-        }
-    }, 10000);  
 
 
 
-/*
-    var RealCall = Java.use("okhttp3.internal.connection");
-    var OriginalRealCallMethod = RealCall.getResponseWithInterceptorChain;
+    var RealCall = Java.use("okhttp3.internal.connection.RealCall");
+    var OriginalRealCallMethod = RealCall.getResponseWithInterceptorChain$okhttp;
 
     
-    RealCall.getResponseWithInterceptorChain.implementation = function () {
+    RealCall.getResponseWithInterceptorChain$okhttp.implementation = function () {
 
         console.log("\n===== OKHTTP CALL START =====");
 
-        // request HTTP finale (GIÀ pronta da Apollo)
         var request = this.request();
         console.log("URL:", request.url().toString());
         console.log("Method:", request.method());
@@ -367,7 +296,6 @@ Java.perform(function () {
             console.log(headers.name(i) + ": " + headers.value(i));
         }
 
-        // esegue la request vera
         var response = OriginalRealCallMethod.call(this);
 
         console.log("\n===== OKHTTP RESPONSE =====");
@@ -382,6 +310,43 @@ Java.perform(function () {
 
         return response;
     };
-*/
+});
+
+
+/*
+Java.perform(function () {
+
+    var RealCall = Java.use("okhttp3.internal.connection.RealCall");
+    var OriginalRealCallMethod = RealCall.getResponseWithInterceptorChain$okhttp;
+
+    
+    RealCall.getResponseWithInterceptorChain$okhttp.implementation = function () {
+
+        console.log("\n===== OKHTTP CALL START =====");
+
+        var request = this.request();
+        console.log("URL:", request.url().toString());
+        console.log("Method:", request.method());
+
+        var headers = request.headers();
+        for (var i = 0; i < headers.size(); i++) {
+            console.log(headers.name(i) + ": " + headers.value(i));
+        }
+
+        var response = OriginalRealCallMethod.call(this);
+
+        console.log("\n===== OKHTTP RESPONSE =====");
+        console.log("Code:", response.code());
+        console.log("Message:", response.message());
+
+        try {
+            console.log("Body:", response.peekBody(1024 * 1024).string());
+        } catch (e) {
+            console.log("Body error:", e);
+        }
+
+        return response;
+    };
 
 });
+*/
