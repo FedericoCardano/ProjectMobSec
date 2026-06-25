@@ -14,6 +14,13 @@
         "integrity_impact": "None",
         "availability_impact": "None"
       }
+
+Le stringhe trovate e decodificate non rappresentano nulla di significativo.
+Le uniche 2 stringhe illeggibili anche da decodificate (le prime 2, quelle lunghe) non e' stato possibile decifrarle o capire cosa significhino.
+
+
+
+
 4)  "CryptoConstantKey",
       "name": "Constant encryption key hardcoded",
       "description": "Apps that store encryption keys in the source code are vulnerable to forgery attacks and information leaks. Android apps can use block cipher algorithms to encrypt sensitive information using the Cipher API. The Cipher API expects a key, if such a key used for encryption/decryption is saved in the source code, then an attacker can get access to it and abuse it.",
@@ -29,6 +36,30 @@
         "integrity_impact": "None",
         "availability_impact": "None"
       }
+
+Per quanto riguarda la vulnerabilita' segnalata da SEBASTiAn, non e' stato possibile ricostruire la logica dietro al codice,
+inoltre ci troviamo nel package degli ADS, quindi non particolarmente interessanti. Tuttavia SEBASTiAn segnala che la stringa
+"IV size should be either 12 or 16 bytes" utilizzata da un' eccezione dichiarata nella classe com.google.android.gms.internal.ads.zzgvq (riga 31)
+sembra essere erroneamente utilizzata da un costruttore di cifrario AES come IV, che dovrebbe essere sempre random per garantire sicurezza.
+Pur non essendoci una fuga di dati evidente (siamo nei google ads) segnaliamo comunque il bug.
+
+Inoltre, si segnala anche la classe com.alipay.sdk.m.l0.a, all'interno dell' SDK di Alipay (servizio di pagamento cinese) che contiene in chiaro
+tutte le informazioni del cifrario utilizzato e contiene 2 metodi che restituiscono rispettivamente una chiave e un IV entrambi costanti.
+Tali metodi vengono utilizzati dagli altri due contenuti nella classe, che svolgono rispettivamente encryption e decryption con quelle 
+informazioni sempre costanti. 
+Anche se tali metodi pare vengano usati solo da un'altra classe nello stesso package (com.alipay.sdk.m.n0.d) e anche se vengono sempre cifrati
+plaintext diversi, resta comunque un cifrario in un contesto di pagamenti che utilizza chiave e IV fisse: chiunque abbia accesso alla classe 
+di cifratura tramite reverse engineering, puo' facilmente eludere la cifratura utilizzata, visto che la chiave e l'IV sono facilmente accessibili.
+
+E' possibile visualizzare le chiavi e l'IV utilizzando Frida con lo script alipayAES.js, che si aggancia alle classi menzionate sopra.
+Chiave e IV son sempre gli stessi, mentre l'UTDID cambia ogni volta (ciphertext dell'unica classe che usa questo cifrario insicuro: com.alipay.sdk.m.n0.d).
+
+E' anche possibile far partire cipherObserver.js per visualizzare tutte le chiamate a cipherDoFinal e 
+metodi simili che gestiscono la cifratura all' interno dell'app. 
+
+
+
+
 11) "InsecureConnection",
       "name": "SSL Connection Checking",
       "description": "The application contains URLs that are **NOT** under SSL. This is a security hazard since information exchanged with those URLs can be intercepted and altered by a malicious user.",
@@ -43,7 +74,13 @@
         "confidentiality_impact": "High",
         "integrity_impact": "High",
         "availability_impact": "Low"
-      },
+      }
+
+Per quanto riguarda l'analisi di sicurezza delle comunicazioni, è già stato fatto uno studio su Charles Proxy ed è stata trovata la
+vulnerabilità di tipo IDOR, già ampiamente spiegata nel file API vulnerabilities.pdf
+
+
+
 13): "KeystoreWithoutPassword",
       "name": "KeyStore Protection Checking",
       "description": "The Keystores below seem **NOT** protected by password. This is a security hazard since malicious users that have physical access to the Keystore file can access the keys and certificates contained in it.",
@@ -59,6 +96,34 @@
         "integrity_impact": "None",
         "availability_impact": "None"
       }
+
+Segnalazione della classe com.booking.identity.session.internal.DPoPEncryptor che a riga 186 fa generazione di key pairs senza passphrase per la chiave privata,
+data la presenza di setUserAuthenticationRequired(false): infatti a riga 152 la private key viene presa con getKey(str, null) (la password e' null).
+Sembrerebbe che Booking non si altera se gli altero il DPoP. (not very good)
+
+Il client invia effettivamente un DPoP con htm e htu arbitrariamente modificati e le endpoint /api/identity/authenticate/v1.0/context/initialize 
+e /api/identity/authenticate/v1.0/passkeys/get-challenge continuano a rispondere con HTTP 200 (OK).
+
+Apparentemente sembrava che il DPoP potesse essere modificato, ottenendo ugualmente risposta 200.
+In realtà, erano state osservate chiamate API che molto probabilmente non richiedevano DPoP (veniva comunque inviato ma non controllato dal server, in quanto non "enforced").
+È stata notata la chiamata API https://account.booking.com/api/identity/oauth/v1.0/get_mobile_tokens che restituiva come body il seguente messaggio:
+{"error":[{"code":"ERROR_CODE__INVALID_DPOP_PROOF"}]}
+confermando che in realtà il DPoP viene correttamente verificato, a quanto pare solo per un sottoinsieme di richieste (più critiche, che richiedono maggiore attenzione
+ovvero con il DPoP enforced). Anche in questo caso, si otteneva codice 200 di risposta, ma ovviamente il body è autoesplicativo.
+
+Risultato finale: 
+False positive, getKey(str, null) è comportamento normale. Le chiavi non sono estraibili. Il codice non presenta falle evidenti di sicurezza.
+DPoP gestito correttamente da codice, nulla da segnalare di negativo. Il sistema DPoP lato server valida correttamente la proof.
+Le modifiche manuali invalidano la richiesta come previsto. Il flusso standard senza tampering funziona.
+
+Le altre classi segnalate da SEBASTiAn sono implementazioni di librerie/framework (Android/Conscrypt/Braintree) che operano secondo pattern standard
+di inizializzazione e validazione certificati, senza indicazioni di vulnerabilità sfruttabili -> implementano gestione certificati e trust manager 
+senza logica custom o anomalie di sicurezza: nessuna evidenza di vulnerabilità.
+
+
+
+
+
 16): "SqliteExecSql",
       "name": "Potential SQL injection",
       "description": "Android allows apps to save data in a local database called SQLite. SQL queries are used to interact with the SQLite database. `execSQL()` method of SQLite allows developers to execute queries such as `INSERT/DELETE/UPDATE` which do not return any result. If an app uses inputs (e.g., user input via UI or data from web) to create a SQL statement to be executed via `execSQL()` method, then the app may be vulnerable to SQL injection attack.",
@@ -74,6 +139,19 @@
         "integrity_impact": "None",
         "availability_impact": "None"
       }
+
+Per quanto riguarda i database e possibili injections, sono stati fatti test con gli script Query_observer.js e queryINJ.js
+i quali analizzano il traffico di query SQLite ed esfiltrano i database tramite la tabella sqlite_master (corrispondente a information_schema in SQL)
+Questi sono tutti database in locale che non contengono informazioni critiche, ma solo soltanto dei tracker, o comunque roba poco rilevante.
+La roba interessante viene fatta ovviamente tutta tramite server utilizzando Apollo e GraphQL, una combo molto efficiente (advanced data management)
+che non si basa su SQL, si possono impartire solo le query scritte nel codice di Booking (le query sono delle classi) e non si possono 
+far partire query al di fuori di quelle definite appunto nel codice. Sistema molto sicuro, da manuale, per grandi app come Booking, non si trova nessuna falla evidente.
+Apollo_observer.js è un altro script di osservazione traffico Apollo/GraphQL (query API). Si vedono ovviamente query interessanti ma
+non c'è modo evidente per alterarle. Nessuna falla di sicurezza da segnalare.
+Le query Apollo scritte su codice sono disponibili nella cartella apollo.generated (letteralmente esfiltrate da jadx)
+
+
+
 20): "WebViewJavaScriptEnabled",
       "name": "WebView Potential XSS Attacks Checking",
       "description": "Found `\"setJavaScriptEnabled(true)\"` in WebView. Enabling JavaScript exposes to malicious injection of code that would be executed with the same permissions (XSS attacks).",
@@ -89,16 +167,20 @@
         "integrity_impact": "Low",
         "availability_impact": "None"
       }
+
+
 --------- MobSF ---------
 App signed with SHA1 with RSA (certificates)
+
 Encryption mode CBC with PKCS5/PKCS7 padding
-    alipay/sdk/m/*
+    alipay/sdk/m/* (discusso precedentemente nella sezione CryptoConstantKey)
+
 Clear text traffic
     bstatic.com
     static.booking.cn
     localhost
 
-    Permissions
+Permissions
     GET.ACCOUNTS
     MANAGE:ACCOUNTS
     READ_PHONE_STATE
