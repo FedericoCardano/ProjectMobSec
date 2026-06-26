@@ -76,8 +76,8 @@ metodi simili che gestiscono la cifratura all' interno dell'app.
         "availability_impact": "Low"
       }
 
-Per quanto riguarda l'analisi di sicurezza delle comunicazioni, è già stato fatto uno studio su Charles Proxy ed è stata trovata la
-vulnerabilità di tipo IDOR, già ampiamente spiegata nel file API vulnerabilities.pdf
+Per quanto riguarda l'analisi di sicurezza delle comunicazioni, e' gia' stato fatto uno studio su Charles Proxy ed e' stata trovata la
+vulnerabilita' di tipo IDOR, gia' ampiamente spiegata nel file API vulnerabilities.pdf
 
 
 
@@ -105,20 +105,20 @@ Il client invia effettivamente un DPoP con htm e htu arbitrariamente modificati 
 e /api/identity/authenticate/v1.0/passkeys/get-challenge continuano a rispondere con HTTP 200 (OK).
 
 Apparentemente sembrava che il DPoP potesse essere modificato, ottenendo ugualmente risposta 200.
-In realtà, erano state osservate chiamate API che molto probabilmente non richiedevano DPoP (veniva comunque inviato ma non controllato dal server, in quanto non "enforced").
-È stata notata la chiamata API https://account.booking.com/api/identity/oauth/v1.0/get_mobile_tokens che restituiva come body il seguente messaggio:
+In realta', erano state osservate chiamate API che molto probabilmente non richiedevano DPoP (veniva comunque inviato ma non controllato dal server, in quanto non "enforced").
+E' stata notata la chiamata API https://account.booking.com/api/identity/oauth/v1.0/get_mobile_tokens che restituiva come body il seguente messaggio:
 {"error":[{"code":"ERROR_CODE__INVALID_DPOP_PROOF"}]}
-confermando che in realtà il DPoP viene correttamente verificato, a quanto pare solo per un sottoinsieme di richieste (più critiche, che richiedono maggiore attenzione
-ovvero con il DPoP enforced). Anche in questo caso, si otteneva codice 200 di risposta, ma ovviamente il body è autoesplicativo.
+confermando che in realta' il DPoP viene correttamente verificato, a quanto pare solo per un sottoinsieme di richieste (piu' critiche, che richiedono maggiore attenzione
+ovvero con il DPoP enforced). Anche in questo caso, si otteneva codice 200 di risposta, ma ovviamente il body e' autoesplicativo.
 
 Risultato finale: 
-False positive, getKey(str, null) è comportamento normale. Le chiavi non sono estraibili. Il codice non presenta falle evidenti di sicurezza.
+False positive, getKey(str, null) e' comportamento normale. Le chiavi non sono estraibili. Il codice non presenta falle evidenti di sicurezza.
 DPoP gestito correttamente da codice, nulla da segnalare di negativo. Il sistema DPoP lato server valida correttamente la proof.
 Le modifiche manuali invalidano la richiesta come previsto. Il flusso standard senza tampering funziona.
 
 Le altre classi segnalate da SEBASTiAn sono implementazioni di librerie/framework (Android/Conscrypt/Braintree) che operano secondo pattern standard
-di inizializzazione e validazione certificati, senza indicazioni di vulnerabilità sfruttabili -> implementano gestione certificati e trust manager 
-senza logica custom o anomalie di sicurezza: nessuna evidenza di vulnerabilità.
+di inizializzazione e validazione certificati, senza indicazioni di vulnerabilita' sfruttabili -> implementano gestione certificati e trust manager 
+senza logica custom o anomalie di sicurezza: nessuna evidenza di vulnerabilita'.
 
 
 
@@ -146,8 +146,8 @@ Questi sono tutti database in locale che non contengono informazioni critiche, m
 La roba interessante viene fatta ovviamente tutta tramite server utilizzando Apollo e GraphQL, una combo molto efficiente (advanced data management)
 che non si basa su SQL, si possono impartire solo le query scritte nel codice di Booking (le query sono delle classi) e non si possono 
 far partire query al di fuori di quelle definite appunto nel codice. Sistema molto sicuro, da manuale, per grandi app come Booking, non si trova nessuna falla evidente.
-Apollo_observer.js è un altro script di osservazione traffico Apollo/GraphQL (query API). Si vedono ovviamente query interessanti ma
-non c'è modo evidente per alterarle. Nessuna falla di sicurezza da segnalare.
+Apollo_observer.js e' un altro script di osservazione traffico Apollo/GraphQL (query API). Si vedono ovviamente query interessanti ma
+non c'e' modo evidente per alterarle. Nessuna falla di sicurezza da segnalare.
 Le query Apollo scritte su codice sono disponibili nella cartella apollo.generated (letteralmente esfiltrate da jadx)
 
 
@@ -168,17 +168,20 @@ Le query Apollo scritte su codice sono disponibili nella cartella apollo.generat
         "availability_impact": "None"
       }
 
+Vulnerabilita' ampiamente analizzata da Fra, nei suoi report PDF riguardanti WebView (presenti nella cartella GitHub)
+
+
 
 --------- MobSF ---------
-App signed with SHA1 with RSA (certificates)
+App signed with SHA1 with RSA (certificates, informazione di pubblico dominio)
 
 Encryption mode CBC with PKCS5/PKCS7 padding
     alipay/sdk/m/* (discusso precedentemente nella sezione CryptoConstantKey)
 
 Clear text traffic
-    bstatic.com
-    static.booking.cn
-    localhost
+    bstatic.com (mai visto su Charles?)
+    static.booking.cn (sono solo foto di camere/hotel e localita')
+    localhost (e' localhost, non va online)
 
 Permissions
     GET.ACCOUNTS
